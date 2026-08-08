@@ -33,7 +33,6 @@ namespace WoTMapWPF
             InitializeGlComponent();
             InitializeTimer();
             panels.Add("Map", new PanelButtonTuple { Panel = MapControl, Button = ShowMapButton });
-            panels.Add("SavePath", new PanelButtonTuple { Panel = SavePathControl, Button = ShowSavePathButton });
             panels.Add("LoadPath", new PanelButtonTuple { Panel = LoadPathControl, Button = ShowLoadPathButton });
             panels.Add("Settings", new PanelButtonTuple { Panel = SettingsControl, Button = ShowSettingsButton });
             Map.New();
@@ -379,21 +378,6 @@ namespace WoTMapWPF
             ShowPanel("Map", windowTitle);
         }
 
-        private void ShowSavePathButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (ViewModel.Path.Nodes.Count < 1)
-            {
-                NotificationControl.ShowNotificationAndHide($"There is no path to save.");
-                return;
-            }
-            List<string> existingPaths = new List<string>();
-            string dir = $"{saveLocation}\\maps\\{ViewModel.MapImageMD5}\\paths";
-            if (Directory.Exists(dir))
-                existingPaths.AddRange(Directory.GetFiles(dir, "*.info"));
-            SavePathControl.ResetControl(existingPaths);
-            ShowPanel("SavePath", " - Save Path");
-        }
-
         private void ShowLoadPathButton_Click(object sender, RoutedEventArgs e)
         {
             List<PathFileDefinition> paths = new List<PathFileDefinition>();
@@ -420,31 +404,6 @@ namespace WoTMapWPF
         private void ShowSettingsButton_Click(object sender, RoutedEventArgs e)
         {
             ShowPanel("Settings", " - Settings");
-        }
-
-        private void SavePathControl_SaveButtonClicked(object sender, EventArgs e)
-        {
-            SavePathControl spc = (SavePathControl)sender;
-            string pathName = spc.PathName;
-            if (!string.IsNullOrWhiteSpace(pathName))
-            {
-                string imageMD5 = ViewModel.MapImageMD5;
-                if (File.Exists($"{saveLocation}\\maps\\{imageMD5}\\paths\\{pathName}.info"))
-                {
-                    ConfirmActionWindow caw = new ConfirmActionWindow($"A path with the name \"{pathName}\" already exists.\nDo you wish to replace it?");
-                    if(!caw.ShowDialog().GetValueOrDefault())
-                        return;
-                }
-                PathFileDefinition pathFileDefinition = new PathFileDefinition();
-                pathFileDefinition.Name = pathName;
-                pathFileDefinition.ImageMD5 = imageMD5;
-                pathFileDefinition.Path = ViewModel.Path;
-                string jsonString = JsonSerializer.Serialize(pathFileDefinition, jsonSerializerOptions);
-                Directory.CreateDirectory($"{saveLocation}\\maps\\{imageMD5}\\paths");
-                File.WriteAllText($"{saveLocation}\\maps\\{imageMD5}\\paths\\{pathName}.info", jsonString);
-                ShowDefaultPanel();
-                NotificationControl.ShowNotificationAndHide($"Saved path \"{pathFileDefinition.Name}\".");
-            }
         }
 
         private void LoadPathControl_LoadButtonClicked(object sender, EventArgs e)

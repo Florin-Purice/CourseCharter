@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Windows;
 using System.Windows.Controls;
 
 namespace WoTMapWPF.CustomControls
@@ -13,22 +9,9 @@ namespace WoTMapWPF.CustomControls
     /// </summary>
     public partial class SavePathControl : UserControl
     {
-        public event EventHandler? SaveButtonClicked;
-
         public SavePathControl()
         {
             InitializeComponent();
-        }
-
-        public string PathName { get => (DataContext as SavePathControlViewModel).Name; }
-
-        public void ResetControl(List<string> existingPaths)
-        {
-            SavePathControlViewModel model = (SavePathControlViewModel)DataContext;
-            model.Name = "path_name";
-            for(int i = 0; i < existingPaths.Count; i++)
-                existingPaths[i] = System.IO.Path.GetFileNameWithoutExtension(existingPaths[i]);
-            model.NameSuggestionValues = existingPaths;
         }
 
         /// <summary>
@@ -50,11 +33,6 @@ namespace WoTMapWPF.CustomControls
                     stringBuilder.Append(c);
             textboxSender.Text = stringBuilder.ToString();
             textboxSender.SelectionStart = cursorPosition;
-        }
-
-        private void SaveButton_Click(object sender, RoutedEventArgs e)
-        {
-            SaveButtonClicked?.Invoke(this, EventArgs.Empty);
         }
     }
 }

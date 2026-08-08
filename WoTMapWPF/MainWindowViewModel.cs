@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using WoTMapWPF.CustomControls;
 using WoTMapWPF.Services;
 using WoTMapWPF.Stores;
 
@@ -8,38 +9,37 @@ namespace WoTMapWPF
     public partial class MainWindowViewModel : ViewModelBase
     {
         private readonly NavigationStore navigationStore;
-        private readonly INavigationService guideNavigationService;
-        private readonly INavigationService loadMapNavigationService;
+        private readonly NotificationService notificationService;
+        private readonly INavigationService mapNavigationService;
         private readonly INavigationService newMapNavigationService;
+        private readonly INavigationService loadMapNavigationService;
+        private readonly INavigationService savePathNavigationService;
+        private readonly INavigationService guideNavigationService;
         [ObservableProperty]
-        private string distanceUnit;
-        [ObservableProperty]
-        private double distanceUnitsPerPixel;
-        [ObservableProperty]
-        private string mapImageMD5;
-        [ObservableProperty]
-        private string mapName;
+        private NotificationControlViewModel notificationControlViewModel;
         [ObservableProperty]
         private string windowTitleBase;
-        [ObservableProperty]
-        private Path path;
-        [ObservableProperty]
-        private Path? oldPath;
 
-        public MainWindowViewModel(NavigationStore navigationStore, INavigationService newMapNavigationService, INavigationService loadMapNavigationService, INavigationService guideNavigationService)
+        public MainWindowViewModel(
+            NavigationStore navigationStore, 
+            NotificationControlViewModel notificationControlViewModel,
+            NotificationService notificationService,
+            INavigationService mapNavigationService,
+            INavigationService newMapNavigationService, 
+            INavigationService loadMapNavigationService, 
+            INavigationService savePathNavigationService,
+            INavigationService guideNavigationService)
         {
             this.navigationStore = navigationStore;
-            this.loadMapNavigationService = loadMapNavigationService;
+            NotificationControlViewModel = notificationControlViewModel;
+            this.notificationService = notificationService;
+            this.mapNavigationService = mapNavigationService;
             this.newMapNavigationService = newMapNavigationService;
+            this.loadMapNavigationService = loadMapNavigationService;
+            this.savePathNavigationService = savePathNavigationService;
             this.guideNavigationService = guideNavigationService;
             navigationStore.ViewModelChanged += NavigationStore_ViewModelChanged;
-            DistanceUnit = "km";
-            DistanceUnitsPerPixel = 1;
-            MapImageMD5 = string.Empty;
-            MapName = string.Empty;
             WindowTitleBase = "CourseCharter";
-            Path = new Path();
-            OldPath = null;
         }
 
         public ViewModelBase? CurrentViewModel => navigationStore.CurrentViewModel;
@@ -54,8 +54,20 @@ namespace WoTMapWPF
         public void ShowLoadMapPanel()
         {
             if (!loadMapNavigationService.Navigate())
+                mapNavigationService.Navigate();
+        }
+
+        [RelayCommand]
+        public void ShowSavePathPanel()
+        {
+            if (!savePathNavigationService.Navigate())
             {
-                //to-do handle case
+                notificationService.DoNotify(new NotificationMessage
+                {
+                    Message = "There is no path to save.",
+                    Type = NotificationType.ShowAndHide
+                });
+                mapNavigationService.Navigate();
             }
         }
 

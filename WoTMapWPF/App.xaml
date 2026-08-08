@@ -356,8 +356,8 @@
             </Style>
             <!--#endregion-->
 
-            <!--#region NotificationControl-->
-            <Style TargetType="custom:NotificationControl" x:Key="NotificationControlStyle">
+            <!--#region MainMenuButton-->
+            <!--<Style x:Key="NotificationControlStyle" TargetType="custom:NotificationControl">
                 <Setter Property="Opacity" Value="0.9"/>
                 <Setter Property="Height" Value="100"/>
                 <Setter Property="Background" Value="{DynamicResource ThemeColorSuccess}"/>
@@ -376,7 +376,7 @@
                         <Setter Property="HorizontalAlignment" Value="Center"/>
                     </Style>
                 </Style.Resources>
-            </Style>
+            </Style>-->
             <!--#endregion-->
 
             <!--#region MainMenuButton-->

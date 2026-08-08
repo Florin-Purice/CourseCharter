@@ -41,11 +41,21 @@ namespace WoTMapWPF
                 s.GetRequiredService<NotificationService>(),
                 s.GetRequiredService<MapManagerService>(),
                 CreateMapNavigationService(s)));
+            services.AddTransient<SavePathControlViewModel>(s => new SavePathControlViewModel(
+                s.GetRequiredService<NotificationService>(),
+                s.GetRequiredService<MapManagerService>(),
+                CreateMapNavigationService(s)));
             services.AddSingleton<GuideControlViewModel>();
+            services.AddSingleton<NotificationControlViewModel>(s => new NotificationControlViewModel(
+                s.GetRequiredService<NotificationService>()));
             services.AddSingleton<MainWindowViewModel>(s => new MainWindowViewModel(
                 s.GetRequiredService<NavigationStore>(),
+                s.GetRequiredService<NotificationControlViewModel>(),
+                s.GetRequiredService<NotificationService>(),
+                CreateMapNavigationService(s),
                 CreateNewMapNavigationService(s),
                 CreateLoadMapNavigationService(s),
+                CreateSavePathNavigationService(s),
                 CreateGuideNavigationService(s)));
             services.AddSingleton<MainWindow>(s => new MainWindow(s.GetRequiredService<MainWindowViewModel>()));
 
@@ -150,6 +160,15 @@ namespace WoTMapWPF
                 provider.GetRequiredService<NavigationStore>(),
                 () => provider.GetRequiredService<LoadMapControlViewModel>(),
                 (vm) => vm.Maps.Count > 0
+            );
+        }
+
+        private INavigationService CreateSavePathNavigationService(IServiceProvider provider)
+        {
+            return new NavigationService<SavePathControlViewModel>(
+                provider.GetRequiredService<NavigationStore>(),
+                () => provider.GetRequiredService<SavePathControlViewModel>(),
+                (vm) => vm.IsValid
             );
         }
 

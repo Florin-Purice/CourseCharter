@@ -15,11 +15,20 @@
         FontSize="{DynamicResource FontSizeMain}"
         Background="{DynamicResource ThemeColorMain}">
     <Window.Resources>
+        <DataTemplate DataType="{x:Type custom:NewMapControlViewModel}">
+            <custom:NewMapControl/>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type custom:LoadMapControlViewModel}">
             <custom:LoadMapControl/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type custom:SavePathControlViewModel}">
+            <custom:SavePathControl/>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type custom:GuideControlViewModel}">
             <custom:GuideControl/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type custom:NotificationControlViewModel}">
+            <custom:NotificationControl/>
         </DataTemplate>
     </Window.Resources>
     <Grid>
@@ -43,7 +52,7 @@
                 </Button>
                 <Button Style="{DynamicResource MainMenuButtonStyle}"
                         ToolTip="Create a new map"
-                        Command="">
+                        Command="{Binding ShowNewMapPanelCommand}">
                     <Image Source="Res/save_map_button.png"/>
                 </Button>
                 <Button Style="{DynamicResource MainMenuButtonStyle}"
@@ -51,10 +60,9 @@
                         Command="{Binding ShowLoadMapPanelCommand}">
                     <Image Source="Res/load_map_button.png"/>
                 </Button>
-                <Button Name="ShowSavePathButton" 
-                    Style="{DynamicResource MainMenuButtonStyle}" 
-                    Click="ShowSavePathButton_Click"
-                    ToolTip="Save current path">
+                <Button Style="{DynamicResource MainMenuButtonStyle}"
+                        ToolTip="Save current path"
+                        Command="{Binding ShowSavePathPanelCommand}">
                     <Image Source="Res/save_path_button.png"/>
                 </Button>
                 <Button Name="ShowLoadPathButton" 
@@ -63,10 +71,9 @@
                     ToolTip="Load a path">
                     <Image Source="Res/load_path_button.png"/>
                 </Button>
-                <Button Name="ShowGuideButton" 
-                    Style="{DynamicResource MainMenuButtonStyle}" 
-                    Click="ShowGuideButton_Click"
-                    ToolTip="How to use">
+                <Button Style="{DynamicResource MainMenuButtonStyle}" 
+                        ToolTip="How to use"
+                        Command="{Binding ShowGuidePanelCommand}">
                     <Image Source="Res/T_Ctrl_Key_White.png"/>
                 </Button>
             </StackPanel>
@@ -200,9 +207,7 @@
             </Grid>-->
         </Border>
         <StackPanel Grid.ColumnSpan="2" VerticalAlignment="Bottom">
-            <custom:NotificationControl x:Name="NotificationControl"
-                                        Style="{DynamicResource NotificationControlStyle}"
-                                        Visibility="Hidden"/>
+            <ContentControl Content="{Binding NotificationControlViewModel}"/>
         </StackPanel>
     </Grid>
 </Window>

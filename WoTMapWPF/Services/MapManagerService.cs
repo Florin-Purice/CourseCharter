@@ -25,29 +25,32 @@ namespace WoTMapWPF.Services
             jsonSerializerOptions.WriteIndented = true;
         }
 
-        public event Action NewMapLoaded;
+        public event Action? NewMapLoaded;
         public event Action? ActivePathAltered;
         public event Action<PropertyChangedEventArgs>? ActivePathPropertiesChanged;
         public event Action? AutosavePossible;
 
         [ObservableProperty]
         public partial Map? Map { get; private set; }
+        [ObservableProperty]
+        public partial MapFileDefinition? MapInfo { get; private set; }
 
-        public bool LoadMap(MapFileDefinition map)
+        public bool LoadMap(MapFileDefinition mfd)
         {
             try
             {
                 string? saveLocation = Settings.Get<string>("SaveLocation");
                 if (saveLocation == null)
                     return false;
-                new Map($"{saveLocation}\\maps\\{map.ImageMD5}\\map_image{map.ImageExt}");
+                Map = new Map($"{saveLocation}\\maps\\{mfd.ImageMD5}\\map_image{mfd.ImageExt}");
+                MapInfo = mfd;
                 ChangePathAndClearHistory(new Path());
                 //if autosave enabled try load autosaved path
                 bool? isPathAutosaveEnabled = Settings.Get<bool>("IsPathAutosaveEnabled");
                 if (isPathAutosaveEnabled.GetValueOrDefault())
                     try
                     {
-                        string fileName = $"{saveLocation}\\maps\\{map.ImageMD5}\\autosave\\__autosave_path__.info";
+                        string fileName = $"{saveLocation}\\maps\\{mfd.ImageMD5}\\autosave\\__autosave_path__.info";
                         if (File.Exists(fileName))
                         {
                             string jsonString = File.ReadAllText(fileName);

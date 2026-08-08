@@ -5,17 +5,42 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WoTMapWPF.CustomControls"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.DataContext>
-        <local:NotificationControlViewModel/>
-    </UserControl.DataContext>
-    <Grid>
+             d:DataContext="{d:DesignInstance Type=local:NotificationControlViewModel}"
+             d:DesignHeight="450" d:DesignWidth="800"
+             Style="{DynamicResource NotificationControlStyle}">
+    <UserControl.Resources>
+        <Style x:Key="NotificationControlStyle" TargetType="UserControl">
+            <Setter Property="Visibility" Value="Hidden"/>
+            <Setter Property="Opacity" Value="0.9"/>
+            <Setter Property="Height" Value="100"/>
+            <Setter Property="Background" Value="{DynamicResource ThemeColorSuccess}"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemeColorText}"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsVisible}" Value="True">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsError}" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource ThemeColorError}"/>
+                    <Setter Property="Foreground" Value="{DynamicResource ThemeColorText}"/>
+                </DataTrigger>
+            </Style.Triggers>
+            <Style.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="TextWrapping" Value="Wrap"/>
+                    <Setter Property="Margin" Value="15"/>
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                </Style>
+            </Style.Resources>
+        </Style>
+    </UserControl.Resources>
+    <Grid Style="{DynamicResource NotificationGridStyle}">
         <ScrollViewer Grid.Row="0"
                       VerticalScrollBarVisibility="Auto">
             <TextBlock Text="{Binding Text}"/>
         </ScrollViewer>
         <StackPanel HorizontalAlignment="Right">
-            <Button Click="CloseButton_Click" Style="{DynamicResource CloseButtonStyle}">
+            <Button Style="{DynamicResource CloseButtonStyle}" Command="{Binding CloseCommand}">
                 <Image Source="..\Res\close_button.png"/>
             </Button>
         </StackPanel>
