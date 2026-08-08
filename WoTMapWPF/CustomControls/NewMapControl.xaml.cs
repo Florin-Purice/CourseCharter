@@ -1,14 +1,8 @@
-﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Imaging;
 
 namespace WoTMapWPF.CustomControls
 {
@@ -22,66 +16,6 @@ namespace WoTMapWPF.CustomControls
         public NewMapControl()
         {
             InitializeComponent();
-            ResetControl(new List<string>());
-        }
-
-        public NewMapControlViewModel ViewModel { get => (NewMapControlViewModel)DataContext; }
-
-        public void ResetControl(List<string> existingMaps)
-        {
-            NewMapControlViewModel model = ViewModel;
-            model.ImageFileName = "-no image selected-";
-            model.ImageFilePath = string.Empty;
-            model.ImageMD5 = string.Empty;
-            model.Name = "map_name";
-            model.UnitsPerPixel = 1;
-            model.SamplePixels = 1;
-            model.SampleUnits = 1;
-            model.UnitLabel = "km";
-            MapImage.Source = null;
-            for (int i = 0; i < existingMaps.Count; i++)
-                existingMaps[i] = System.IO.Path.GetFileNameWithoutExtension(existingMaps[i]);
-            model.NameSuggestionValues = existingMaps;
-        }
-
-        private void OpenFileButton_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog ofd = new OpenFileDialog();
-            if (ofd.ShowDialog().GetValueOrDefault())
-            {
-                if (ofd.CheckFileExists)
-                {
-                    try
-                    {
-                        BitmapImage bitmapImage = new BitmapImage();
-                        bitmapImage.BeginInit();
-                        bitmapImage.UriSource = new Uri(ofd.FileName);
-                        bitmapImage.DecodePixelHeight = (int)MapImage.Height;
-                        bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                        bitmapImage.EndInit();
-                        bitmapImage.Freeze();
-                        MapImage.Source = bitmapImage;
-                        NewMapControlViewModel viewModel = DataContext as NewMapControlViewModel;
-                        using (MD5 md5 = MD5.Create())
-                        {
-                            using (FileStream stream = File.OpenRead(ofd.FileName))
-                            {
-                                byte[] hashBytes = md5.ComputeHash(stream);
-                                string hashString = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
-                                viewModel.ImageMD5 = hashString;
-                            }
-                        }
-                        viewModel.ImageFilePath = ofd.FileName;
-                        viewModel.ImageFileName = ofd.SafeFileName;
-                    }
-                    catch { }
-                }
-            }
-        }
-
-        private void SaveButton_Click(object sender, RoutedEventArgs e)
-        {
-            SaveButtonClicked?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>

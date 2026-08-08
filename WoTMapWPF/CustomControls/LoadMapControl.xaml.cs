@@ -14,36 +14,9 @@ namespace WoTMapWPF.CustomControls
     /// </summary>
     public partial class LoadMapControl : UserControl
     {
-        public event EventHandler? LoadButtonClicked;
-        public event EventHandler? DeleteRequested;
-
         public LoadMapControl()
         {
             InitializeComponent();
-        }
-
-        public MapFileDefinition Selected { get => ((LoadMapControlViewModel)DataContext).SelectedMap; }
-
-        public void ResetControl(List<MapFileDefinition> maps)
-        {
-            LoadMapControlViewModel model = (LoadMapControlViewModel)DataContext;
-            model.SelectedMap = null;
-            model.Maps.Clear();
-            maps.Sort((a, b) => a == null ? 1 : a.Name.CompareTo(b.Name));
-            foreach (MapFileDefinition map in maps)
-                model.Maps.Add(map);
-            //also recolor preview button images in case the theme was changed
-            model.RecolorBitmaps();
-        }
-
-        private void LoadButton_Click(object sender, RoutedEventArgs e)
-        {
-            LoadButtonClicked?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void DeleteButton_Click(object sender, RoutedEventArgs e)
-        {
-            DeleteRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private async void PreviewButton_PreviewMouseDown(object sender, MouseButtonEventArgs e)
@@ -56,9 +29,9 @@ namespace WoTMapWPF.CustomControls
                     image.Tag = new object();
                     MapFileDefinition map = (MapFileDefinition)((Button)sender).DataContext;
                     int imageHeight = (int)image.Height;
-                    string saveLocation = (string)App.Current.Resources["SaveLocation"];
+                    string? saveLocation = Settings.Get<string>("SaveLocation");
                     string imageLocation = $"{saveLocation}\\maps\\{map.ImageMD5}\\map_image{map.ImageExt}";
-                    BitmapImage loadedImage = await Task.Run(() => LoadImage(imageLocation, imageHeight));
+                    BitmapImage? loadedImage = await Task.Run(() => LoadImage(imageLocation, imageHeight));
                     if (loadedImage != null)
                         image.Source = loadedImage;
                     else

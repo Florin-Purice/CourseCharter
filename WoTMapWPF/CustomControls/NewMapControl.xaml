@@ -6,10 +6,8 @@
              xmlns:local="clr-namespace:WoTMapWPF.CustomControls"
              xmlns:app="clr-namespace:WoTMapWPF"
              mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type=local:NewMapControlViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.DataContext>
-        <local:NewMapControlViewModel/>
-    </UserControl.DataContext>
     <Border Style="{DynamicResource PanelBorderStyle}">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -62,16 +60,16 @@
                 <TextBlock Text="{Binding UnitsPerPixel}"/>
             </Border>
             <Border Grid.Row="6" Grid.Column="0" Style="{DynamicResource PaddedBorder}">
-                <Button Click="OpenFileButton_Click">Select map image</Button>
+                <Button Command="{Binding SelectImageCommand}" Content="Select map image"/>
             </Border>
             <Border Grid.Row="6" Grid.Column="1" Style="{DynamicResource PaddedBorder}">
                 <TextBlock Text="{Binding ImageFileName}"/>
             </Border>
             <Border Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Style="{DynamicResource PaddedBorder}">
-                <Image Name="MapImage" Height="200"/>
+                <Image Height="{Binding ImageHeight}" Source="{Binding MapImage}"/>
             </Border>
             <Border Grid.Row="8" Grid.ColumnSpan="2" Style="{DynamicResource PaddedBorder}">
-                <Button Style="{DynamicResource SubmitButton}" Click="SaveButton_Click">Save</Button>
+                <Button Style="{DynamicResource SubmitButton}" Command="{Binding SaveCommand}" Content="Save"/>
             </Border>
         </Grid>
     </Border>

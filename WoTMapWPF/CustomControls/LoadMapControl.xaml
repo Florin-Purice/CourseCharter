@@ -5,10 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WoTMapWPF.CustomControls"
              mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type=local:LoadMapControlViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.DataContext>
-        <local:LoadMapControlViewModel/>
-    </UserControl.DataContext>
     <Border Style="{DynamicResource PanelBorderStyle}">
         <Grid>
             <Grid.RowDefinitions>
@@ -60,8 +58,7 @@
                                     <TextBlock Grid.Column="0" Text="{Binding UnitLabel}"/>
                                     <Button Visibility="{Binding Path=IsSelected, RelativeSource={RelativeSource AncestorType=ListViewItem}, Converter={StaticResource BoolToVisConverter}}"
                                     Grid.Column="1"
-                                    Style="{DynamicResource CloseButtonStyle}"
-                                    Click="DeleteButton_Click">
+                                    Style="{DynamicResource CloseButtonStyle}" Command="{Binding DataContext.DeleteMapCommand, RelativeSource={RelativeSource AncestorType=local:LoadMapControl}}">
                                         <Image Source="..\Res\close_button.png"/>
                                     </Button>
                                 </Grid>
@@ -71,7 +68,7 @@
                 </ListView>
             </Border>
             <Border Grid.Row="2" Style="{DynamicResource PaddedBorder}">
-                <Button Click="LoadButton_Click" Style="{DynamicResource SubmitButton}">Load</Button>
+                <Button Style="{DynamicResource SubmitButton}" Command="{Binding LoadMapCommand}" Content="Load"/>
             </Border>
         </Grid>
     </Border>

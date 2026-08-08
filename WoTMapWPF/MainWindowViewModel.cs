@@ -1,41 +1,73 @@
-﻿using System.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using WoTMapWPF.Services;
+using WoTMapWPF.Stores;
 
 namespace WoTMapWPF
 {
-    public class MainWindowViewModel : INotifyPropertyChanged
+    public partial class MainWindowViewModel : ViewModelBase
     {
+        private readonly NavigationStore navigationStore;
+        private readonly INavigationService guideNavigationService;
+        private readonly INavigationService loadMapNavigationService;
+        private readonly INavigationService newMapNavigationService;
+        [ObservableProperty]
         private string distanceUnit;
+        [ObservableProperty]
         private double distanceUnitsPerPixel;
+        [ObservableProperty]
         private string mapImageMD5;
+        [ObservableProperty]
         private string mapName;
+        [ObservableProperty]
         private string windowTitleBase;
+        [ObservableProperty]
         private Path path;
+        [ObservableProperty]
         private Path? oldPath;
 
-        public MainWindowViewModel()
+        public MainWindowViewModel(NavigationStore navigationStore, INavigationService newMapNavigationService, INavigationService loadMapNavigationService, INavigationService guideNavigationService)
         {
-            distanceUnit = string.Empty;
-            distanceUnitsPerPixel = 1;
-            mapImageMD5 = string.Empty;
-            mapName = string.Empty;
-            windowTitleBase = string.Empty;
-            path = new Path();
-            oldPath = null;
+            this.navigationStore = navigationStore;
+            this.loadMapNavigationService = loadMapNavigationService;
+            this.newMapNavigationService = newMapNavigationService;
+            this.guideNavigationService = guideNavigationService;
+            navigationStore.ViewModelChanged += NavigationStore_ViewModelChanged;
+            DistanceUnit = "km";
+            DistanceUnitsPerPixel = 1;
+            MapImageMD5 = string.Empty;
+            MapName = string.Empty;
+            WindowTitleBase = "CourseCharter";
+            Path = new Path();
+            OldPath = null;
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public ViewModelBase? CurrentViewModel => navigationStore.CurrentViewModel;
 
-        public string DistanceUnit { get => distanceUnit; set { distanceUnit = value; OnPropertyChanged("DistanceUnit"); } }
-        public double DistanceUnitsPerPixel { get => distanceUnitsPerPixel; set { distanceUnitsPerPixel = value; OnPropertyChanged("DistanceUnitsPerPixel"); } }
-        public string MapImageMD5 { get => mapImageMD5; set { mapImageMD5 = value; OnPropertyChanged("MapImageMD5"); } }
-        public string MapName { get => mapName; set { mapName = value; OnPropertyChanged("MapName"); } }
-        public Path Path { get => path; set { OldPath = path; path = value; OnPropertyChanged("Path"); } }
-        public Path? OldPath { get => oldPath; set { oldPath = value; OnPropertyChanged("OldPath"); } }
-        public string WindowTitleBase { get => windowTitleBase; set { windowTitleBase = value; OnPropertyChanged("WindowTitleBase"); } }
-
-        private void OnPropertyChanged(string propName)
+        [RelayCommand]
+        public void ShowNewMapPanel()
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+            newMapNavigationService.Navigate();
+        }
+
+        [RelayCommand]
+        public void ShowLoadMapPanel()
+        {
+            if (!loadMapNavigationService.Navigate())
+            {
+                //to-do handle case
+            }
+        }
+
+        [RelayCommand]
+        public void ShowGuidePanel()
+        {
+            guideNavigationService?.Navigate();
+        }
+
+        private void NavigationStore_ViewModelChanged()
+        {
+            OnPropertyChanged(nameof(CurrentViewModel));
         }
     }
 }

@@ -7,17 +7,21 @@
         xmlns:local="clr-namespace:WoTMapWPF"
         xmlns:custom="clr-namespace:WoTMapWPF.CustomControls"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
         Title="CourseCharter" 
         Height="700" Width="1200"
         SourceInitialized="Window_SourceInitialized"
         Closing="Window_Closing"
         FontSize="{DynamicResource FontSizeMain}"
         Background="{DynamicResource ThemeColorMain}">
-    <Window.DataContext>
-        <local:MainWindowViewModel DistanceUnit="km"
-                                   MapImageMD5=""
-                                   WindowTitleBase="CourseCharter"/>
-    </Window.DataContext>
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type custom:LoadMapControlViewModel}">
+            <custom:LoadMapControl/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type custom:GuideControlViewModel}">
+            <custom:GuideControl/>
+        </DataTemplate>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -37,16 +41,14 @@
                     ToolTip="Show map">
                     <Image Source="Res/map_button.png"/>
                 </Button>
-                <Button Name="ShowNewMapButton" 
-                    Style="{DynamicResource MainMenuButtonStyle}" 
-                    Click="ShowNewMapButton_Click"
-                    ToolTip="Create a new map">
+                <Button Style="{DynamicResource MainMenuButtonStyle}"
+                        ToolTip="Create a new map"
+                        Command="">
                     <Image Source="Res/save_map_button.png"/>
                 </Button>
-                <Button Name="ShowLoadMapButton" 
-                    Style="{DynamicResource MainMenuButtonStyle}" 
-                    Click="ShowLoadMapButton_Click"
-                    ToolTip="Load map">
+                <Button Style="{DynamicResource MainMenuButtonStyle}"
+                        ToolTip="Load map"
+                        Command="{Binding ShowLoadMapPanelCommand}">
                     <Image Source="Res/load_map_button.png"/>
                 </Button>
                 <Button Name="ShowSavePathButton" 
@@ -77,7 +79,9 @@
             </Button>
         </Grid>
         <Border Grid.Column="1" Style="{DynamicResource PanelContainerStyle}">
-            <Grid>
+            <ContentControl Content="{Binding CurrentViewModel}"/>
+
+            <!--<Grid>
                 <Grid x:Name="MapControl" Style="{DynamicResource MapControlStyle}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -193,7 +197,7 @@
                 <custom:SettingsControl x:Name="SettingsControl"
                                         Style="{DynamicResource FormPanel}"
                                         Visibility="Hidden"/>
-            </Grid>
+            </Grid>-->
         </Border>
         <StackPanel Grid.ColumnSpan="2" VerticalAlignment="Bottom">
             <custom:NotificationControl x:Name="NotificationControl"

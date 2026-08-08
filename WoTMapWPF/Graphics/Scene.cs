@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Media;
+using WoTMapWPF.Services;
 using static WoTMapWPF.PathNode;
 
 namespace WoTMapWPF.Graphics
@@ -14,8 +15,8 @@ namespace WoTMapWPF.Graphics
     public class Scene
     {
         public const float VERTICAL_UNITS = 100.0f;
+        private readonly MapManagerService mapManagerService;
         private bool initDone;
-        private Path path;
         private int vpMatrixUniformLocation;
         private int textureModeUniformLocation;
         private int fixedColorUniformLocation;
@@ -27,11 +28,12 @@ namespace WoTMapWPF.Graphics
         private RouteMarker endSelectedMarker = new RouteMarker(RouteMarker.MarkerType.EndSelected);
         private int moveMarkerIndex = -1;
 
-        public Scene(GLWpfControl glc, Path path)
+        public Scene(GLWpfControl glc, MapManagerService mapManagerService)
         {
             initDone = false;
             GLControl = glc;
-            this.path = path;
+            this.mapManagerService = mapManagerService;
+            mapManagerService.NewMapLoaded += MapManagerService_NewMapLoaded;
             ResetCamera();
         }
 
@@ -44,6 +46,8 @@ namespace WoTMapWPF.Graphics
         public int CameraZoomLevel { get; private set; }
         public double ZoomBase { get; private set; } = 1.2;
         public float Scale { get; private set; }
+        public Path? ActivePath => mapManagerService.ActivePath;
+        public Map? Map => mapManagerService.Map;
 
         public void Paint()
         {
@@ -108,34 +112,40 @@ namespace WoTMapWPF.Graphics
 
         public void AddMarker(double mouseX, double mouseY)
         {
-            (float xu, float yu) = MousePositionToGlCoord(mouseX, mouseY);
-            if (IsLocationOnMap(xu, yu))
+            if(ActivePath != null)
             {
-                int markerIndex;
-                GLPosition position = new GLPosition(xu, yu);
-                if (path.SelectedIndex >= 0 && path.SelectedIndex < path.Nodes.Count)
-                    markerIndex = path.SelectedIndex + 1;
-                else
-                    markerIndex = path.Nodes.Count;
-                path.InsertNode(markerIndex, new PathNode { Position = position });
-                //select the new marker
-                path.SelectedIndex = markerIndex;
+                (float xu, float yu) = MousePositionToGlCoord(mouseX, mouseY);
+                if (IsLocationOnMap(xu, yu))
+                {
+                    int markerIndex;
+                    GLPosition position = new GLPosition(xu, yu);
+                    if (ActivePath.SelectedIndex >= 0 && ActivePath.SelectedIndex < ActivePath.Nodes.Count)
+                        markerIndex = ActivePath.SelectedIndex + 1;
+                    else
+                        markerIndex = ActivePath.Nodes.Count;
+                    ActivePath.InsertNode(markerIndex, new PathNode { Position = position });
+                    //select the new marker
+                    ActivePath.SelectedIndex = markerIndex;
+                }
+                moveMarkerIndex = -1;
             }
-            moveMarkerIndex = -1;
         }
 
         public void HandleClick(double mouseX, double mouseY)
         {
-            //select nearby marker
-            (float xu, float yu) = MousePositionToGlCoord(mouseX, mouseY);
-            int selected = GetNearbyMarkerIndex(xu, yu);
-            if (selected >= 0)
-                path.SelectedIndex = selected;
-            //report move finished if it's the case
-            if (moveMarkerIndex >= 0)
+            if (ActivePath != null)
             {
-                moveMarkerIndex = -1;
-                path.OnMoveFinished();
+                //select nearby marker
+                (float xu, float yu) = MousePositionToGlCoord(mouseX, mouseY);
+                int selected = GetNearbyMarkerIndex(xu, yu);
+                if (selected >= 0)
+                    ActivePath.SelectedIndex = selected;
+                //report move finished if it's the case
+                if (moveMarkerIndex >= 0)
+                {
+                    moveMarkerIndex = -1;
+                    ActivePath.OnMoveFinished();
+                }
             }
         }
 
@@ -147,28 +157,26 @@ namespace WoTMapWPF.Graphics
 
         public void MoveMarker(double mouseX, double mouseY, double xPixels, double yPixels)
         {
-            (float xu, float yu) = MousePositionToGlCoord(mouseX, mouseY);
-            int nearby;
-            if (moveMarkerIndex >= 0 && moveMarkerIndex < path.Nodes.Count)
-                nearby = moveMarkerIndex;
-            else
-                nearby = GetNearbyMarkerIndex(xu, yu);
-            if (nearby >= 0)
+            if (ActivePath != null)
             {
-                float xuMov = (float)xPixels / PixelsPerUnit + path.Nodes[nearby].Position.X;
-                float yuMov = (float)yPixels / PixelsPerUnit + path.Nodes[nearby].Position.Y;
-                if (IsLocationOnMap(xuMov, yuMov))
+                (float xu, float yu) = MousePositionToGlCoord(mouseX, mouseY);
+                int nearby;
+                if (moveMarkerIndex >= 0 && moveMarkerIndex < ActivePath.Nodes.Count)
+                    nearby = moveMarkerIndex;
+                else
+                    nearby = GetNearbyMarkerIndex(xu, yu);
+                if (nearby >= 0)
                 {
-                    GLPosition newPosition = new GLPosition(xuMov, yuMov);
-                    path.Nodes[nearby].Position = newPosition;
+                    float xuMov = (float)xPixels / PixelsPerUnit + ActivePath.Nodes[nearby].Position.X;
+                    float yuMov = (float)yPixels / PixelsPerUnit + ActivePath.Nodes[nearby].Position.Y;
+                    if (IsLocationOnMap(xuMov, yuMov))
+                    {
+                        GLPosition newPosition = new GLPosition(xuMov, yuMov);
+                        ActivePath.Nodes[nearby].Position = newPosition;
+                    }
+                    moveMarkerIndex = nearby;
                 }
-                moveMarkerIndex = nearby;
             }
-        }
-
-        public void SetPath(Path path)
-        {
-            this.path = path;
         }
 
         public void ChangeShaderFixedColor(byte r, byte g, byte b, byte a)
@@ -191,43 +199,43 @@ namespace WoTMapWPF.Graphics
             GL.LineStipple(lineStippleFactor, lineStipplePattern);
 
             GL.Uniform1(textureModeUniformLocation, 1);
-            Map.Instance?.Draw(this);
+            Map?.Draw(this);
 
-            if (path != null && path.Nodes.Count > 0)
+            if (ActivePath != null && ActivePath.Nodes.Count > 0)
             {
                 //draw path lines
-                if (path.Nodes.Count > 1)
+                if (ActivePath.Nodes.Count > 1)
                 {
                     SolidColorBrush lineBrush = (SolidColorBrush)Application.Current.Resources["DashedPathColor"];
                     Color lineColor = lineBrush.Color;
                     GL.Uniform1(textureModeUniformLocation, 0);
                     GL.Uniform4(fixedColorUniformLocation, lineColor.R / 255f, lineColor.G / 255f, lineColor.B / 255f, 1.0f);
                     GL.Begin(PrimitiveType.LineStrip);
-                    for (int i = path.Nodes.Count - 1; i >= 0; --i)
+                    for (int i = ActivePath.Nodes.Count - 1; i >= 0; --i)
                     {
-                        GL.Vertex3(path.Nodes[i].Position.X, path.Nodes[i].Position.Y, 0);
+                        GL.Vertex3(ActivePath.Nodes[i].Position.X, ActivePath.Nodes[i].Position.Y, 0);
                     }
                     GL.End();
                 }
                 //draw pin markers
                 RouteMarker markerToDraw;
                 GL.Uniform1(textureModeUniformLocation, 2);
-                for (int i = 0; i < path.Nodes.Count - 1; ++i)
+                for (int i = 0; i < ActivePath.Nodes.Count - 1; ++i)
                 {
-                    if (i == path.SelectedIndex)
+                    if (i == ActivePath.SelectedIndex)
                         markerToDraw = normalSelectedMarker;
                     else
                         markerToDraw = normalMarker;
-                    markerToDraw.PosX = path.Nodes[i].Position.X;
-                    markerToDraw.PosY = path.Nodes[i].Position.Y;
+                    markerToDraw.PosX = ActivePath.Nodes[i].Position.X;
+                    markerToDraw.PosY = ActivePath.Nodes[i].Position.Y;
                     markerToDraw.Draw(this);
                 }
-                if (path.SelectedIndex == path.Nodes.Count - 1)
+                if (ActivePath.SelectedIndex == ActivePath.Nodes.Count - 1)
                     markerToDraw = endSelectedMarker;
                 else
                     markerToDraw = endMarker;
-                markerToDraw.PosX = path.Nodes.Last().Position.X;
-                markerToDraw.PosY = path.Nodes.Last().Position.Y;
+                markerToDraw.PosX = ActivePath.Nodes.Last().Position.X;
+                markerToDraw.PosY = ActivePath.Nodes.Last().Position.Y;
                 markerToDraw.Draw(this);
             }
         }
@@ -268,6 +276,11 @@ namespace WoTMapWPF.Graphics
             initDone = true;
         }
 
+        private void MapManagerService_NewMapLoaded()
+        {
+            ResetCamera();
+        }
+
         private void ComputeViewMatrix()
         {
             Matrix4 translateM = Matrix4.CreateTranslation(-CameraTranslateX, -CameraTranslateY, 0f);
@@ -277,12 +290,17 @@ namespace WoTMapWPF.Graphics
 
         private string ReadShaderString(string fileName)
         {
-            using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("WoTMapWPF.Graphics.Shaders." + fileName))
+            using (Stream? stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("WoTMapWPF.Graphics.Shaders." + fileName))
             {
-                using (StreamReader reader = new StreamReader(stream))
+                if (stream != null)
                 {
-                    return reader.ReadToEnd();
+                    using (StreamReader reader = new StreamReader(stream))
+                    {
+                        return reader.ReadToEnd();
+                    }
                 }
+                else
+                    return string.Empty;
             }
         }
 
@@ -297,28 +315,36 @@ namespace WoTMapWPF.Graphics
 
         private bool IsLocationOnMap(float x, float y)
         {
-            float halfMapH = VERTICAL_UNITS / 2;
-            float halfMapW = halfMapH * Map.Instance.AspectRatio;
-            if (x >= -halfMapW && x <= halfMapW && y >= -halfMapH && y <= halfMapH)
-                return true;
+            if (Map != null)
+            {
+                float halfMapH = VERTICAL_UNITS / 2;
+                float halfMapW = halfMapH * Map.AspectRatio;
+                if (x >= -halfMapW && x <= halfMapW && y >= -halfMapH && y <= halfMapH)
+                    return true;
+                else
+                    return false;
+            }
             else
                 return false;
         }
 
         private int GetNearbyMarkerIndex(float x, float y)
         {
-            double pinSize = (double)App.Current.Resources["PinSize"];
-            float markerSize = (float)pinSize / PixelsPerUnit;
             int selected = -1;
-            for (int i = path.Nodes.Count - 1; i >= 0; --i)
+            if (ActivePath != null)
             {
-                //translate marker position to compensate for offset texture (the point is at the center but the icon is shown above)
-                float xm = path.Nodes[i].Position.X;
-                float ym = path.Nodes[i].Position.Y + markerSize / 4;
-                if ((x - xm) * (x - xm) + (y - ym) * (y - ym) < markerSize * markerSize / 16)
+                double pinSize = (double)App.Current.Resources["PinSize"];
+                float markerSize = (float)pinSize / PixelsPerUnit;
+                for (int i = ActivePath.Nodes.Count - 1; i >= 0; --i)
                 {
-                    selected = i;
-                    break;
+                    //translate marker position to compensate for offset texture (the point is at the center but the icon is shown above)
+                    float xm = ActivePath.Nodes[i].Position.X;
+                    float ym = ActivePath.Nodes[i].Position.Y + markerSize / 4;
+                    if ((x - xm) * (x - xm) + (y - ym) * (y - ym) < markerSize * markerSize / 16)
+                    {
+                        selected = i;
+                        break;
+                    }
                 }
             }
             return selected;

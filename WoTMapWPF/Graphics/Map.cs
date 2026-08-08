@@ -11,10 +11,9 @@ namespace WoTMapWPF.Graphics
         public int Vao;
         public int IndicesCount;
         public readonly string TexturePath;
-        private static Map? _mapInstance = null;
         private readonly List<int> buffers = new List<int>();
 
-        private Map()
+        public Map()
         {
             TexturePath = "../Res/no_map.png";
             Uri textureUri = new Uri(TexturePath, UriKind.Relative);
@@ -25,7 +24,7 @@ namespace WoTMapWPF.Graphics
             Init();
         }
 
-        private Map(string texPath)
+        public Map(string texPath)
         {
             TexturePath = texPath;
             TextureID = TextureLoader.LoadTexture(texPath, out int wp, out int hp);
@@ -58,20 +57,9 @@ namespace WoTMapWPF.Graphics
             GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
-        public static Map? Instance { get => _mapInstance; }
         public float AspectRatio { get; private set; }
         public float HeightP { get; private set; }
         public float WidthP { get; private set; }
-
-        public static Map New(string? texPath = null)
-        {
-            _mapInstance?.Dispose();
-            if (texPath == null)
-                _mapInstance = new Map();
-            else
-                _mapInstance = new Map(texPath);
-            return _mapInstance;
-        }
 
         private void Init()
         {
