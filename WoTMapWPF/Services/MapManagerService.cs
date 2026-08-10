@@ -104,7 +104,7 @@ namespace WoTMapWPF.Services
             }
         }
 
-        public void ChangePathAndClearHistory(Path newPath)
+        public void ChangePathAndClearHistory(Path? newPath)
         {
             ActivePath = newPath;
             backwardStack.Clear();

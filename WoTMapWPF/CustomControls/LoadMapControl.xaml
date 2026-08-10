@@ -56,9 +56,10 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Grid.Column="0" Text="{Binding UnitLabel}"/>
-                                    <Button Visibility="{Binding Path=IsSelected, RelativeSource={RelativeSource AncestorType=ListViewItem}, Converter={StaticResource BoolToVisConverter}}"
-                                    Grid.Column="1"
-                                    Style="{DynamicResource CloseButtonStyle}" Command="{Binding DataContext.DeleteMapCommand, RelativeSource={RelativeSource AncestorType=local:LoadMapControl}}">
+                                    <Button Visibility="{Binding Path=IsSelected, RelativeSource={RelativeSource AncestorType=ListViewItem}, Converter={StaticResource BoolToVisConverter}}" 
+                                            Grid.Column="1"
+                                            Style="{DynamicResource CloseButtonStyle}" 
+                                            Command="{Binding DataContext.DeleteMapCommand, RelativeSource={RelativeSource AncestorType=local:LoadMapControl}}">
                                         <Image Source="..\Res\close_button.png"/>
                                     </Button>
                                 </Grid>

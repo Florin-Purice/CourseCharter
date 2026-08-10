@@ -14,6 +14,7 @@ namespace WoTMapWPF
         private readonly INavigationService newMapNavigationService;
         private readonly INavigationService loadMapNavigationService;
         private readonly INavigationService savePathNavigationService;
+        private readonly INavigationService loadPathNavigationService;
         private readonly INavigationService guideNavigationService;
         [ObservableProperty]
         private NotificationControlViewModel notificationControlViewModel;
@@ -28,6 +29,7 @@ namespace WoTMapWPF
             INavigationService newMapNavigationService, 
             INavigationService loadMapNavigationService, 
             INavigationService savePathNavigationService,
+            INavigationService loadPathNavigationService,
             INavigationService guideNavigationService)
         {
             this.navigationStore = navigationStore;
@@ -37,6 +39,7 @@ namespace WoTMapWPF
             this.newMapNavigationService = newMapNavigationService;
             this.loadMapNavigationService = loadMapNavigationService;
             this.savePathNavigationService = savePathNavigationService;
+            this.loadPathNavigationService = loadPathNavigationService;
             this.guideNavigationService = guideNavigationService;
             navigationStore.ViewModelChanged += NavigationStore_ViewModelChanged;
             WindowTitleBase = "CourseCharter";
@@ -65,6 +68,20 @@ namespace WoTMapWPF
                 notificationService.DoNotify(new NotificationMessage
                 {
                     Message = "There is no path to save.",
+                    Type = NotificationType.ShowAndHide
+                });
+                mapNavigationService.Navigate();
+            }
+        }
+
+        [RelayCommand]
+        public void ShowLoadPathPanel()
+        {
+            if (!loadPathNavigationService.Navigate())
+            {
+                notificationService.DoNotify(new NotificationMessage
+                {
+                    Message = "No saved paths found for current map.",
                     Type = NotificationType.ShowAndHide
                 });
                 mapNavigationService.Navigate();

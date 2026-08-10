@@ -24,6 +24,9 @@
         <DataTemplate DataType="{x:Type custom:SavePathControlViewModel}">
             <custom:SavePathControl/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type custom:LoadPathControlViewModel}">
+            <custom:LoadPathControl/>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type custom:GuideControlViewModel}">
             <custom:GuideControl/>
         </DataTemplate>
@@ -65,10 +68,9 @@
                         Command="{Binding ShowSavePathPanelCommand}">
                     <Image Source="Res/save_path_button.png"/>
                 </Button>
-                <Button Name="ShowLoadPathButton" 
-                    Style="{DynamicResource MainMenuButtonStyle}" 
-                    Click="ShowLoadPathButton_Click"
-                    ToolTip="Load a path">
+                <Button Style="{DynamicResource MainMenuButtonStyle}"
+                        ToolTip="Load a path"
+                        Command="{Binding ShowLoadPathPanelCommand}">
                     <Image Source="Res/load_path_button.png"/>
                 </Button>
                 <Button Style="{DynamicResource MainMenuButtonStyle}" 

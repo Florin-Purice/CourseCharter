@@ -64,7 +64,22 @@ namespace WoTMapWPF.CustomControls
                 previewOnBitmap = new WriteableBitmap(bitmapImage);
             }
 
-            LoadMapList();
+            string? saveLocation = Settings.Get<string>("SaveLocation");
+            List<MapFileDefinition> maps = new List<MapFileDefinition>();
+            if (Directory.Exists($"{saveLocation}\\maps"))
+                foreach (string subdir in Directory.GetDirectories($"{saveLocation}\\maps"))
+                    foreach (string mapInfoFile in Directory.GetFiles(subdir, "*.info"))
+                        try
+                        {
+                            string jsonString = File.ReadAllText(mapInfoFile);
+                            MapFileDefinition? map = JsonSerializer.Deserialize<MapFileDefinition>(jsonString, jsonSerializerOptions);
+                            if (map != null)
+                                maps.Add(map);
+                        }
+                        catch { }
+            maps.Sort((a, b) => a == null ? 1 : a.Name.CompareTo(b.Name));
+            foreach (MapFileDefinition map in maps)
+                Maps.Add(map);
             ////also recolor preview button images in case the theme was changed
             //SolidColorBrush brush = (SolidColorBrush)App.Current.Resources["ThemeColorText"];
             //if (PreviewOffBitmap != null)
@@ -144,41 +159,16 @@ namespace WoTMapWPF.CustomControls
                                 catch { }
                     if (maps.Count > 0)
                     {
-                        ResetWithNewMapList(maps);
+                        SelectedMap = null;
+                        Maps.Clear();
+                        maps.Sort((a, b) => a == null ? 1 : a.Name.CompareTo(b.Name));
+                        foreach (MapFileDefinition map in maps)
+                            Maps.Add(map);
                     }
                     else
                         mapNavigationService.Navigate();
                 }
             }
-        }
-
-        private void ResetWithNewMapList(List<MapFileDefinition> maps)
-        {
-            SelectedMap = null;
-            Maps.Clear();
-            maps.Sort((a, b) => a == null ? 1 : a.Name.CompareTo(b.Name));
-            foreach (MapFileDefinition map in maps)
-                Maps.Add(map);
-        }
-
-        private void LoadMapList()
-        {
-            string? saveLocation = Settings.Get<string>("SaveLocation");
-            List<MapFileDefinition> maps = new List<MapFileDefinition>();
-            if (Directory.Exists($"{saveLocation}\\maps"))
-                foreach (string subdir in Directory.GetDirectories($"{saveLocation}\\maps"))
-                    foreach (string mapInfoFile in Directory.GetFiles(subdir, "*.info"))
-                        try
-                        {
-                            string jsonString = File.ReadAllText(mapInfoFile);
-                            MapFileDefinition? map = JsonSerializer.Deserialize<MapFileDefinition>(jsonString, jsonSerializerOptions);
-                            if (map != null)
-                                maps.Add(map);
-                        }
-                        catch { }
-            maps.Sort((a, b) => a == null ? 1 : a.Name.CompareTo(b.Name));
-            foreach (MapFileDefinition map in maps)
-                Maps.Add(map);
         }
     }
 }

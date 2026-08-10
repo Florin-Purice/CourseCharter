@@ -378,53 +378,9 @@ namespace WoTMapWPF
             ShowPanel("Map", windowTitle);
         }
 
-        private void ShowLoadPathButton_Click(object sender, RoutedEventArgs e)
-        {
-            List<PathFileDefinition> paths = new List<PathFileDefinition>();
-            string dir = $"{saveLocation}\\maps\\{ViewModel.MapImageMD5}\\paths";
-            if (Directory.Exists(dir))
-                foreach (string pathInfoFile in Directory.GetFiles(dir, "*.info"))
-                    try
-                    {
-                        string jsonString = File.ReadAllText(pathInfoFile);
-                        PathFileDefinition path = JsonSerializer.Deserialize<PathFileDefinition>(jsonString, jsonSerializerOptions);
-                        if (path != null)
-                            paths.Add(path);
-                    }
-                    catch { }
-            if (paths.Count > 0)
-            {
-                LoadPathControl.ResetControl(paths);
-                ShowPanel("LoadPath", " - Load Path");
-            }
-            else
-                NotificationControl.ShowNotificationAndHide("No saved paths found for current map.");
-        }
-
         private void ShowSettingsButton_Click(object sender, RoutedEventArgs e)
         {
             ShowPanel("Settings", " - Settings");
-        }
-
-        private void LoadPathControl_LoadButtonClicked(object sender, EventArgs e)
-        {
-            LoadPathControl lpc = (LoadPathControl)sender;
-            PathFileDefinition pathFileDefinition = lpc.SelectedPath;
-            if (pathFileDefinition != null)
-            {
-                ApplyPath(new Path());
-                try
-                {
-                    ApplyPath(pathFileDefinition.Path);
-                    StorePathState();
-                    NotificationControl.ShowNotificationAndHide($"Loaded path \"{lpc.SelectedPath.Name}\".");
-                }
-                catch
-                {
-                    NotificationControl.ShowError("Could not load path.");
-                }
-                ShowDefaultPanel();
-            }
         }
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
@@ -458,44 +414,6 @@ namespace WoTMapWPF
         private void ListViewItem_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             ((ListViewItem)sender).IsSelected = true;
-        }
-
-        private void LoadPathControl_DeleteRequested(object sender, EventArgs e)
-        {
-            LoadPathControl lpc = (LoadPathControl)sender;
-            PathFileDefinition pathFileDefinition = lpc.SelectedPath;
-            if (pathFileDefinition != null)
-            {
-                string message = $"Are you sure you want to delete the path \"{pathFileDefinition.Name}\"?";
-                ConfirmActionWindow caw = new ConfirmActionWindow(message);
-                if (caw.ShowDialog().GetValueOrDefault())
-                {
-                    List<PathFileDefinition> paths = new List<PathFileDefinition>();
-                    string dir = $"{saveLocation}\\maps\\{ViewModel.MapImageMD5}\\paths";
-                    if (Directory.Exists(dir))
-                        foreach (string pathInfoFile in Directory.GetFiles(dir, "*.info"))
-                            try
-                            {
-                                string jsonString = File.ReadAllText(pathInfoFile);
-                                PathFileDefinition path = JsonSerializer.Deserialize<PathFileDefinition>(jsonString, jsonSerializerOptions);
-                                if (path != null)
-                                {
-                                    if (pathFileDefinition.Equals(path))
-                                    {
-                                        File.Delete(pathInfoFile);
-                                        NotificationControl.ShowNotificationAndHide($"Deleted path \"{pathFileDefinition.Name}\".");
-                                    }
-                                    else
-                                        paths.Add(path);
-                                }
-                            }
-                            catch { }
-                    if (paths.Count > 0)
-                        LoadPathControl.ResetControl(paths);
-                    else
-                        ShowDefaultPanel();
-                }
-            }
         }
         #endregion
 

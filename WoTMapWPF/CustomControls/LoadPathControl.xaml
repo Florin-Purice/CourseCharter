@@ -5,10 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WoTMapWPF.CustomControls"
              mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type=local:LoadPathControlViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.DataContext>
-        <local:LoadPathControlViewModel/>
-    </UserControl.DataContext>
     <Border Style="{DynamicResource PanelBorderStyle}">
         <Grid>
             <Grid.RowDefinitions>
@@ -27,9 +25,9 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" Text="{Binding Name}"/>
                                 <Button Visibility="{Binding Path=IsSelected, RelativeSource={RelativeSource AncestorType=ListViewItem}, Converter={StaticResource BoolToVisConverter}}"
-                                    Grid.Column="1"
-                                    Style="{DynamicResource CloseButtonStyle}"
-                                    Click="DeleteButton_Click">
+                                        Grid.Column="1"
+                                        Style="{DynamicResource CloseButtonStyle}"
+                                        Command="{Binding DataContext.DeletePathCommand, RelativeSource={RelativeSource AncestorType=local:LoadPathControl}}">
                                     <Image Source="..\Res\close_button.png"/>
                                 </Button>
                             </Grid>
@@ -38,7 +36,7 @@
                 </ListView>
             </Border>
             <Border Grid.Row="1" Style="{DynamicResource PaddedBorder}">
-                <Button Click="LoadButton_Click" Style="{DynamicResource SubmitButton}">Load</Button>
+                <Button Style="{DynamicResource SubmitButton}" Command="{Binding LoadPathCommand}" Content="Load"/>
             </Border>
         </Grid>
     </Border>
