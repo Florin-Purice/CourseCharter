@@ -16,6 +16,7 @@ namespace WoTMapWPF
         private readonly INavigationService savePathNavigationService;
         private readonly INavigationService loadPathNavigationService;
         private readonly INavigationService guideNavigationService;
+        private readonly INavigationService settingsNavigationService;
         [ObservableProperty]
         private NotificationControlViewModel notificationControlViewModel;
         [ObservableProperty]
@@ -30,7 +31,8 @@ namespace WoTMapWPF
             INavigationService loadMapNavigationService, 
             INavigationService savePathNavigationService,
             INavigationService loadPathNavigationService,
-            INavigationService guideNavigationService)
+            INavigationService guideNavigationService,
+            INavigationService settingsNavigationService)
         {
             this.navigationStore = navigationStore;
             NotificationControlViewModel = notificationControlViewModel;
@@ -41,6 +43,7 @@ namespace WoTMapWPF
             this.savePathNavigationService = savePathNavigationService;
             this.loadPathNavigationService = loadPathNavigationService;
             this.guideNavigationService = guideNavigationService;
+            this.settingsNavigationService = settingsNavigationService;
             navigationStore.ViewModelChanged += NavigationStore_ViewModelChanged;
             WindowTitleBase = "CourseCharter";
         }
@@ -92,6 +95,12 @@ namespace WoTMapWPF
         public void ShowGuidePanel()
         {
             guideNavigationService?.Navigate();
+        }
+
+        [RelayCommand]
+        public void ShowSettingsPanel()
+        {
+            settingsNavigationService?.Navigate();
         }
 
         private void NavigationStore_ViewModelChanged()

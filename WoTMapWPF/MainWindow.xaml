@@ -30,6 +30,9 @@
         <DataTemplate DataType="{x:Type custom:GuideControlViewModel}">
             <custom:GuideControl/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type custom:SettingsControlViewModel}">
+            <custom:SettingsControl/>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type custom:NotificationControlViewModel}">
             <custom:NotificationControl/>
         </DataTemplate>
@@ -88,7 +91,7 @@
             </Button>
         </Grid>
         <Border Grid.Column="1" Style="{DynamicResource PanelContainerStyle}">
-            <ContentControl Content="{Binding CurrentViewModel}"/>
+            <ContentControl Style="{DynamicResource FormPanel}" Content="{Binding CurrentViewModel}"/>
 
             <!--<Grid>
                 <Grid x:Name="MapControl" Style="{DynamicResource MapControlStyle}">

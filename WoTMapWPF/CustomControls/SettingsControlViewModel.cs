@@ -1,5 +1,6 @@
-﻿using System;
-using System.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System;
 using System.IO;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -7,24 +8,32 @@ using System.Windows.Resources;
 
 namespace WoTMapWPF.CustomControls
 {
-    internal class SettingsControlViewModel : INotifyPropertyChanged
+    public partial class SettingsControlViewModel : ViewModelBase
     {
+        [ObservableProperty]
         private WriteableBitmap pinBitmap;
+        [ObservableProperty]
         private WriteableBitmap pinSelectedBitmap;
+        [ObservableProperty]
         private WriteableBitmap dashedPathBitmap;
+        [ObservableProperty]
         private Color colorA;
+        [ObservableProperty]
         private Color colorB;
+        [ObservableProperty]
         private Color colorC;
+        [ObservableProperty]
         private bool isPathAutosaveEnabled;
+        [ObservableProperty]
         private int lineStippleFactor;
+        [ObservableProperty]
         private double lineWidth;
+        [ObservableProperty]
         private double pinSize;
-
-        public event PropertyChangedEventHandler? PropertyChanged;
 
         public SettingsControlViewModel()
         {
-            InitializeViewBinding();
+            InitializeColorsFromSettings();
             int imageHeight = 300;
             BitmapImage bitmapImage = new BitmapImage();
             Uri uri = new Uri("../Res/pinA.png", UriKind.Relative);
@@ -67,32 +76,52 @@ namespace WoTMapWPF.CustomControls
             }
         }
 
-        public WriteableBitmap PinBitmap { get => pinBitmap; set { pinBitmap = value; OnPropertyChanged("PinBitmap"); } }
-        public WriteableBitmap PinSelectedBitmap { get => pinSelectedBitmap; set { pinSelectedBitmap = value; OnPropertyChanged("PinSelectedBitmap"); } }
-        public WriteableBitmap DashedPathBitmap { get => dashedPathBitmap; set { dashedPathBitmap = value; OnPropertyChanged("DashedPathBitmap"); } }
-        public Color ColorA { get => colorA; set { colorA = value; OnPropertyChanged("ColorA"); } }
-        public Color ColorB { get => colorB; set { colorB = value; OnPropertyChanged("ColorB"); } }
-        public Color ColorC { get => colorC; set { colorC = value; OnPropertyChanged("ColorC"); } }
-        public int LineStippleFactor { get => lineStippleFactor; set { lineStippleFactor = value; OnPropertyChanged("LineStippleFactor"); } }
-        public double LineWidth { get => lineWidth; set { lineWidth = value; OnPropertyChanged("LineWidth"); } }
-        public double PinSize { get => pinSize; set { pinSize = value; OnPropertyChanged("PinSize"); } }
-        public bool IsPathAutosaveEnabled { get => isPathAutosaveEnabled; set { isPathAutosaveEnabled = value; OnPropertyChanged("IsPathAutosaveEnabled"); } }
+        public event Action? ResetToDefault;
 
-        public void InitializeViewBinding()
+        public void InitializeColorsFromSettings()
         {
-            ColorA = ((SolidColorBrush)App.Current.Resources["PinColor"]).Color;
-            ColorB = ((SolidColorBrush)App.Current.Resources["PinSelectedColor"]).Color;
-            ColorC = ((SolidColorBrush)App.Current.Resources["DashedPathColor"]).Color;
-            if (App.Current.Resources.Contains("IsPathAutosaveEnabled"))
-                IsPathAutosaveEnabled = (bool)App.Current.Resources["IsPathAutosaveEnabled"];
-            LineStippleFactor = (int)App.Current.Resources["LineStippleFactor"];
-            LineWidth = (double)App.Current.Resources["LineWidth"];
-            PinSize = (double)App.Current.Resources["PinSize"];
+            SolidColorBrush? A = Settings.Get<SolidColorBrush>("PinColor");
+            ColorA = A != null ? A.Color : default;
+            SolidColorBrush? B = Settings.Get<SolidColorBrush>("PinSelectedColor");
+            ColorB = B != null ? B.Color : default;
+            SolidColorBrush? C = Settings.Get<SolidColorBrush>("DashedPathColor");
+            ColorC = C != null ? C.Color : default;
+            IsPathAutosaveEnabled = Settings.Get<bool>("IsPathAutosaveEnabled");
+            LineStippleFactor = Settings.Get<int>("LineStippleFactor");
+            LineWidth = Settings.Get<double>("LineWidth");
+            PinSize = Settings.Get<double>("PinSize");
         }
 
-        private void OnPropertyChanged(string propName)
+        partial void OnIsPathAutosaveEnabledChanged(bool value) => Settings.Set(nameof(IsPathAutosaveEnabled), value);
+
+        partial void OnLineStippleFactorChanged(int value) => Settings.Set(nameof(LineStippleFactor), value);
+
+        partial void OnLineWidthChanged(double value) => Settings.Set(nameof(LineWidth), value);
+
+        partial void OnPinSizeChanged(double value) => Settings.Set(nameof(PinSize), value);
+
+        partial void OnColorAChanged(Color value) => ChangeColorSetting("PinColor", value, PinBitmap);
+
+        partial void OnColorBChanged(Color value) => ChangeColorSetting("PinSelectedColor", value, PinSelectedBitmap);
+
+        partial void OnColorCChanged(Color value) => ChangeColorSetting("DashedPathColor", value, DashedPathBitmap);
+
+        [RelayCommand]
+        public void Reset()
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+            ConfirmActionWindow caw = new ConfirmActionWindow("Are you sure you want to restore default settings?");
+            if (caw.ShowDialog().GetValueOrDefault())
+            {
+                Settings.RestoreDefault();
+                InitializeColorsFromSettings();
+                ResetToDefault?.Invoke();
+            }
+        }
+
+        private void ChangeColorSetting(string settingName, Color newColor, WriteableBitmap writeableBitmap)
+        {
+            Settings.Set(settingName, new SolidColorBrush(newColor));
+            BitmapColorChanger.ChangeColorKeepAlpha(writeableBitmap, newColor);
         }
     }
 }

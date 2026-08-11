@@ -378,11 +378,6 @@ namespace WoTMapWPF
             ShowPanel("Map", windowTitle);
         }
 
-        private void ShowSettingsButton_Click(object sender, RoutedEventArgs e)
-        {
-            ShowPanel("Settings", " - Settings");
-        }
-
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
             PathNodesInfoListView.Tag = "ShowNamedOnly";

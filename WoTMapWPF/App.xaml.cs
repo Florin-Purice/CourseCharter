@@ -50,6 +50,7 @@ namespace WoTMapWPF
                 s.GetRequiredService<MapManagerService>(),
                 CreateMapNavigationService(s)));
             services.AddSingleton<GuideControlViewModel>();
+            services.AddTransient<SettingsControlViewModel>();
             services.AddSingleton<NotificationControlViewModel>(s => new NotificationControlViewModel(
                 s.GetRequiredService<NotificationService>()));
             services.AddSingleton<MainWindowViewModel>(s => new MainWindowViewModel(
@@ -61,7 +62,8 @@ namespace WoTMapWPF
                 CreateLoadMapNavigationService(s),
                 CreateSavePathNavigationService(s),
                 CreateLoadPathNavigationService(s),
-                CreateGuideNavigationService(s)));
+                CreateGuideNavigationService(s),
+                CreateSettingsNavigationService(s)));
             services.AddSingleton<MainWindow>(s => new MainWindow(s.GetRequiredService<MainWindowViewModel>()));
 
             serviceProvider = services.BuildServiceProvider();
@@ -191,6 +193,14 @@ namespace WoTMapWPF
             return new NavigationService<GuideControlViewModel>(
                 provider.GetRequiredService<NavigationStore>(),
                 () => provider.GetRequiredService<GuideControlViewModel>()
+            );
+        }
+
+        private INavigationService CreateSettingsNavigationService(IServiceProvider provider)
+        {
+            return new NavigationService<SettingsControlViewModel>(
+                provider.GetRequiredService<NavigationStore>(),
+                () => provider.GetRequiredService<SettingsControlViewModel>()
             );
         }
     }
