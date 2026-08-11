@@ -6,28 +6,27 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using WoTMapWPF.Services;
+using static WoTMapWPF.App;
 
 namespace WoTMapWPF.CustomControls
 {
     public partial class LoadPathControlViewModel : ViewModelBase
     {
         private readonly NotificationService notificationService;
+        private readonly CreateNewPath createNewPath;
         private readonly MapManagerService mapManagerService;
         private readonly INavigationService mapNavigationService;
-        private readonly JsonSerializerOptions jsonSerializerOptions;
 
         public LoadPathControlViewModel(
             NotificationService notificationService,
+            CreateNewPath createNewPath,
             MapManagerService mapManagerService,
             INavigationService mapNavigationService)
         {
             this.notificationService = notificationService;
+            this.createNewPath = createNewPath;
             this.mapManagerService = mapManagerService;
             this.mapNavigationService = mapNavigationService;
-
-            jsonSerializerOptions = new JsonSerializerOptions();
-            jsonSerializerOptions.NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals;
-            jsonSerializerOptions.WriteIndented = true;
 
             string? saveLocation = Settings.Get<string>("SaveLocation");
             List<PathFileDefinition> paths = new List<PathFileDefinition>();
@@ -37,7 +36,11 @@ namespace WoTMapWPF.CustomControls
                     try
                     {
                         string jsonString = File.ReadAllText(pathInfoFile);
-                        PathFileDefinition? path = JsonSerializer.Deserialize<PathFileDefinition>(jsonString, jsonSerializerOptions);
+                        PathFileDefinition? path = JsonSerializer.Deserialize<PathFileDefinition>(jsonString, new JsonSerializerOptions()
+                        {
+                            NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
+                            WriteIndented = true
+                        });
                         if (path != null)
                             paths.Add(path);
                     }
@@ -57,7 +60,7 @@ namespace WoTMapWPF.CustomControls
         {
             if (SelectedPath != null)
             {
-                mapManagerService.ChangePathAndClearHistory(new Path());
+                mapManagerService.ChangePathAndClearHistory(createNewPath());
                 try
                 {
                     mapManagerService.ChangePathAndClearHistory(SelectedPath.Path);
@@ -97,7 +100,11 @@ namespace WoTMapWPF.CustomControls
                             try
                             {
                                 string jsonString = File.ReadAllText(pathInfoFile);
-                                PathFileDefinition? path = JsonSerializer.Deserialize<PathFileDefinition>(jsonString, jsonSerializerOptions);
+                                PathFileDefinition? path = JsonSerializer.Deserialize<PathFileDefinition>(jsonString, new JsonSerializerOptions()
+                                {
+                                    NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
+                                    WriteIndented = true
+                                });
                                 if (path != null)
                                 {
                                     if (SelectedPath.Equals(path))

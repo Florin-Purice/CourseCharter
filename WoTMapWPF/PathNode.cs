@@ -70,6 +70,7 @@ namespace WoTMapWPF
         /// Distance in map pixels to next named node
         /// </summary>
         public double CompoundDistance { get { return compoundDistance; } set { compoundDistance = value; OnPropertyChanged("CompoundDistance"); } }
+
         [JsonIgnore]
         public string DisplayName
         {

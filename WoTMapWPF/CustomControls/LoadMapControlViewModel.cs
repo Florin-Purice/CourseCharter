@@ -18,7 +18,7 @@ namespace WoTMapWPF.CustomControls
         private readonly NotificationService notificationService;
         private readonly MapManagerService mapManagerService;
         private readonly INavigationService mapNavigationService;
-        private JsonSerializerOptions jsonSerializerOptions;
+
         [ObservableProperty]
         private MapFileDefinition? selectedMap;
         [ObservableProperty]
@@ -31,10 +31,6 @@ namespace WoTMapWPF.CustomControls
             this.notificationService = notificationService;
             this.mapManagerService = mapManagerService;
             this.mapNavigationService = mapNavigationService;
-
-            jsonSerializerOptions = new JsonSerializerOptions();
-            jsonSerializerOptions.NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals;
-            jsonSerializerOptions.WriteIndented = true;
 
             int imageHeight = 64;
             BitmapImage bitmapImage = new BitmapImage();
@@ -72,7 +68,11 @@ namespace WoTMapWPF.CustomControls
                         try
                         {
                             string jsonString = File.ReadAllText(mapInfoFile);
-                            MapFileDefinition? map = JsonSerializer.Deserialize<MapFileDefinition>(jsonString, jsonSerializerOptions);
+                            MapFileDefinition? map = JsonSerializer.Deserialize<MapFileDefinition>(jsonString, new JsonSerializerOptions()
+                            {
+                                NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
+                                WriteIndented = true
+                            });
                             if (map != null)
                                 maps.Add(map);
                         }
@@ -128,7 +128,11 @@ namespace WoTMapWPF.CustomControls
                                 try
                                 {
                                     string jsonString = File.ReadAllText(mapInfoFile);
-                                    MapFileDefinition? map = JsonSerializer.Deserialize<MapFileDefinition>(jsonString, jsonSerializerOptions);
+                                    MapFileDefinition? map = JsonSerializer.Deserialize<MapFileDefinition>(jsonString, new JsonSerializerOptions()
+                                    {
+                                        NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
+                                        WriteIndented = true
+                                    });
                                     if (map != null)
                                     {
                                         if (SelectedMap.Equals(map))

@@ -6,23 +6,22 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using WoTMapWPF.Graphics;
+using static WoTMapWPF.App;
 
 namespace WoTMapWPF.Services
 {
     public partial class MapManagerService : ObservableObject
     {
-        private readonly JsonSerializerOptions jsonSerializerOptions;
         private readonly Stack<Path> backwardStack = new Stack<Path>();
         private readonly Stack<Path> forwardStack = new Stack<Path>();
-
+        private readonly CreateNewPath createNewPath;
         [ObservableProperty]
         private Path? activePath;
 
-        public MapManagerService()
+        public MapManagerService(CreateNewPath createNewPath)
         {
-            jsonSerializerOptions = new JsonSerializerOptions();
-            jsonSerializerOptions.NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals;
-            jsonSerializerOptions.WriteIndented = true;
+            Map = new Map();
+            this.createNewPath = createNewPath;
         }
 
         public event Action? NewMapLoaded;
@@ -44,7 +43,7 @@ namespace WoTMapWPF.Services
                     return false;
                 Map = new Map($"{saveLocation}\\maps\\{mfd.ImageMD5}\\map_image{mfd.ImageExt}");
                 MapInfo = mfd;
-                ChangePathAndClearHistory(new Path());
+                ChangePathAndClearHistory(createNewPath());
                 //if autosave enabled try load autosaved path
                 bool? isPathAutosaveEnabled = Settings.Get<bool>("IsPathAutosaveEnabled");
                 if (isPathAutosaveEnabled.GetValueOrDefault())
@@ -54,7 +53,11 @@ namespace WoTMapWPF.Services
                         if (File.Exists(fileName))
                         {
                             string jsonString = File.ReadAllText(fileName);
-                            PathFileDefinition? pathDef = JsonSerializer.Deserialize<PathFileDefinition>(jsonString, jsonSerializerOptions);
+                            PathFileDefinition? pathDef = JsonSerializer.Deserialize<PathFileDefinition>(jsonString, new JsonSerializerOptions()
+                            {
+                                NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
+                                WriteIndented = true
+                            });
                             if (pathDef != null && pathDef.Path != null)
                             {
                                 ChangePathAndClearHistory(pathDef.Path);

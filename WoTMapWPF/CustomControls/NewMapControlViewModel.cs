@@ -15,7 +15,6 @@ namespace WoTMapWPF.CustomControls
 {
     public partial class NewMapControlViewModel : ViewModelBase
     {
-        private readonly JsonSerializerOptions jsonSerializerOptions;
         private readonly NotificationService notificationService;
         private readonly MapManagerService mapManagerService;
         private readonly INavigationService mapNavigationService;
@@ -52,10 +51,6 @@ namespace WoTMapWPF.CustomControls
             this.notificationService = notificationService;
             this.mapManagerService = mapManagerService;
             this.mapNavigationService = mapNavigationService;
-
-            jsonSerializerOptions = new JsonSerializerOptions();
-            jsonSerializerOptions.NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals;
-            jsonSerializerOptions.WriteIndented = true;
 
             string? saveLocation = Settings.Get<string>("SaveLocation");
             List<string> existingMaps = new List<string>();
@@ -98,7 +93,12 @@ namespace WoTMapWPF.CustomControls
                 map.SampleUnits = SampleUnits;
                 map.SamplePixels = SamplePixels;
                 map.ImageExt = imageFileExtension;
-                string jsonString = JsonSerializer.Serialize(map, jsonSerializerOptions);
+
+                string jsonString = JsonSerializer.Serialize(map, new JsonSerializerOptions()
+                {
+                    NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
+                    WriteIndented = true
+                });
                 Directory.CreateDirectory($"{saveLocation}\\maps\\{ImageMD5}");
                 if (!File.Exists($"{saveLocation}\\maps\\{ImageMD5}\\map_image{imageFileExtension}"))
                     File.Copy(ImageFilePath, $"{saveLocation}\\maps\\{ImageMD5}\\map_image{imageFileExtension}", true);

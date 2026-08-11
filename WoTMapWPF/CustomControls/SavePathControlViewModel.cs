@@ -10,10 +10,10 @@ namespace WoTMapWPF.CustomControls
 {
     public partial class SavePathControlViewModel : ViewModelBase
     {
-        private readonly JsonSerializerOptions jsonSerializerOptions;
         private readonly NotificationService notificationService;
         private readonly MapManagerService mapManagerService;
         private readonly INavigationService mapNavigationService;
+
         [ObservableProperty]
         private string name = string.Empty;
         [ObservableProperty]
@@ -27,10 +27,6 @@ namespace WoTMapWPF.CustomControls
             this.notificationService = notificationService;
             this.mapManagerService = mapManagerService;
             this.mapNavigationService = mapNavigationService;
-
-            jsonSerializerOptions = new JsonSerializerOptions();
-            jsonSerializerOptions.NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals;
-            jsonSerializerOptions.WriteIndented = true;
 
             if (Path?.Nodes.Count < 1)
             {
@@ -72,7 +68,11 @@ namespace WoTMapWPF.CustomControls
                 pathFileDefinition.Name = Name;
                 pathFileDefinition.ImageMD5 = imageMD5;
                 pathFileDefinition.Path = mapManagerService.ActivePath;
-                string jsonString = JsonSerializer.Serialize(pathFileDefinition, jsonSerializerOptions);
+                string jsonString = JsonSerializer.Serialize(pathFileDefinition, new JsonSerializerOptions()
+                {
+                    NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
+                    WriteIndented = true
+                });
                 Directory.CreateDirectory($"{saveLocation}\\maps\\{imageMD5}\\paths");
                 File.WriteAllText($"{saveLocation}\\maps\\{imageMD5}\\paths\\{Name}.info", jsonString);
                 notificationService.DoNotify(new NotificationMessage

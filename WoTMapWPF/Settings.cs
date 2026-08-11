@@ -1,10 +1,12 @@
-﻿using System.Windows;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Windows;
 
 namespace WoTMapWPF
 {
     internal static class Settings
     {
-        private static App app;
+        private readonly static App app;
 
         static Settings()
         {
