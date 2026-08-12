@@ -85,9 +85,5 @@ namespace WoTMapWPF.CustomControls
             if(e.PropertyName == "SelectedIndex" && ViewModel?.Path != null)
                     ChangeListViewSelectedNode(ViewModel.Path.SelectedIndex);
         }
-
-        private void Path_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-        }
     }
 }
