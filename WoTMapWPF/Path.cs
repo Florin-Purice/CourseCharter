@@ -9,16 +9,29 @@ using WoTMapWPF.Services;
 
 namespace WoTMapWPF
 {
-    public partial class Path : ObservableObject, ICloneable
+    public class Path : ICloneable, INotifyPropertyChanged
     {
+        private MapManagerService? mapManagerService;
         private List<PathNode> nodes;
-        private readonly MapManagerService mapManagerService;
+        private double totalDistance;
+        private int selectedIndex;
+
+        /// <summary>
+        /// Constructor for Path. Must call SetMapManager before using.
+        /// Used for deserializing
+        /// </summary>
+        public Path()
+        {
+            nodes = new List<PathNode>();
+            totalDistance = 0;
+            selectedIndex = -1;
+        }
 
         public Path(MapManagerService mapManagerService)
         {
             nodes = new List<PathNode>();
-            TotalDistance = 0;
-            SelectedIndex = -1;
+            totalDistance = 0;
+            selectedIndex = -1;
             this.mapManagerService = mapManagerService;
         }
 
@@ -26,26 +39,25 @@ namespace WoTMapWPF
         {
             mapManagerService = path.mapManagerService;
             nodes = new List<PathNode>();
-            TotalDistance = path.TotalDistance;
-            SelectedIndex = path.SelectedIndex;
+            totalDistance = path.TotalDistance;
+            selectedIndex = path.SelectedIndex;
             foreach (PathNode node in path.Nodes)
                 nodes.Add((PathNode)node.Clone());
             SubToNodes();
         }
 
         public event EventHandler? PathChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        /// <summary>
-        /// Total path distance in map image pixels
-        /// </summary>
-        [ObservableProperty]
-        public partial double TotalDistance { get; set; }
+        private void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
-        /// <summary>
-        /// Index of the selected path node
-        /// </summary>
-        [ObservableProperty]
-        public partial int SelectedIndex { get; set; }
+        public object Clone()
+        {
+            return new Path(this);
+        }
 
         public List<PathNode> Nodes
         {
@@ -58,11 +70,16 @@ namespace WoTMapWPF
                 OnPropertyChanged("Nodes");
             }
         }
+        /// <summary>
+        /// Total path distance in map image pixels
+        /// </summary>
+        public double TotalDistance { get => totalDistance; set { totalDistance = value; OnPropertyChanged("TotalDistance"); } }
+        /// <summary>
+        /// Index of the selected path node
+        /// </summary>
+        public int SelectedIndex { get => selectedIndex; set { selectedIndex = value; OnPropertyChanged("SelectedIndex"); } }
 
-        public object Clone()
-        {
-            return new Path(this);
-        }
+        public void SetMapManager(MapManagerService mapManagerService) => this.mapManagerService = mapManagerService;
 
         public void OnMoveFinished()
         {
@@ -102,7 +119,7 @@ namespace WoTMapWPF
         private void ComputeRelativeNodeData()
         {
             //compute all relative node data:
-            if (nodes.Count > 0 && mapManagerService.Map != null)
+            if (nodes.Count > 0 && mapManagerService?.Map != null)
             {
                 UnsubFromNodes();
                 double pixelsPerUnit = mapManagerService.Map.HeightP / Scene.VERTICAL_UNITS;
