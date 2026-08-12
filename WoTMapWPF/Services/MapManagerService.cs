@@ -38,14 +38,14 @@ namespace WoTMapWPF.Services
         {
             try
             {
-                string? saveLocation = Settings.Get<string>("SaveLocation");
+                string? saveLocation = Settings.GetOrDefault<string>("SaveLocation");
                 if (saveLocation == null)
                     return false;
                 Map = new Map($"{saveLocation}\\maps\\{mfd.ImageMD5}\\map_image{mfd.ImageExt}");
                 MapInfo = mfd;
                 ChangePathAndClearHistory(createNewPath());
                 //if autosave enabled try load autosaved path
-                bool? isPathAutosaveEnabled = Settings.Get<bool>("IsPathAutosaveEnabled");
+                bool? isPathAutosaveEnabled = Settings.GetOrDefault<bool>("IsPathAutosaveEnabled");
                 if (isPathAutosaveEnabled.GetValueOrDefault())
                     try
                     {
@@ -138,6 +138,7 @@ namespace WoTMapWPF.Services
 
         private void ActivePath_PathChanged(object? sender, EventArgs e)
         {
+            StorePathState();
             ActivePathAltered?.Invoke();
         }
 

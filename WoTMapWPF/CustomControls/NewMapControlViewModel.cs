@@ -52,7 +52,7 @@ namespace WoTMapWPF.CustomControls
             this.mapManagerService = mapManagerService;
             this.mapNavigationService = mapNavigationService;
 
-            string? saveLocation = Settings.Get<string>("SaveLocation");
+            string? saveLocation = Settings.GetOrDefault<string>("SaveLocation");
             List<string> existingMaps = new List<string>();
             if (Directory.Exists($"{saveLocation}\\maps"))
                 foreach (string subdir in Directory.GetDirectories($"{saveLocation}\\maps"))
@@ -78,7 +78,7 @@ namespace WoTMapWPF.CustomControls
                 !string.IsNullOrWhiteSpace(UnitLabel) &&
                 !string.IsNullOrWhiteSpace(ImageMD5))
             {
-                string? saveLocation = Settings.Get<string>("SaveLocation");
+                string? saveLocation = Settings.GetOrDefault<string>("SaveLocation");
                 if (File.Exists($"{saveLocation}\\maps\\{ImageMD5}\\{Name}.info"))
                 {
                     ConfirmActionWindow caw = new ConfirmActionWindow($"A map with the name \"{Name}\" already exists for the selected image base.\nDo you wish to replace it?");

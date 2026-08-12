@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using WoTMapWPF.Graphics;
@@ -9,12 +10,18 @@ namespace WoTMapWPF.CustomControls
     {
         public MapControl()
         {
-            ViewModel = (MapControlViewModel)DataContext;
-            ViewModel.PropertyChanged += ViewModel_PropertyChanged;
             InitializeComponent();
+            DataContextChanged += OnDataContextChanged;
         }
 
-        public MapControlViewModel ViewModel { get; private set; }
+        private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            ViewModel = DataContext as MapControlViewModel;
+            ViewModel?.PropertyChanged += ViewModel_PropertyChanged;
+            ViewModel?.MapManagerService.ActivePathPropertiesChanged += MapManagerService_ActivePathPropertiesChanged;
+        }
+
+        public MapControlViewModel? ViewModel { get; private set; }
 
         private void PathNodesInfoListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -22,7 +29,7 @@ namespace WoTMapWPF.CustomControls
             if (listView.SelectedItem != null)
             {
                 PathNode selectedNode = (PathNode)listView.SelectedItem;
-                ViewModel.Path?.SelectedIndex = selectedNode.Index;
+                ViewModel?.Path?.SelectedIndex = selectedNode.Index;
             }
         }
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
@@ -52,12 +59,10 @@ namespace WoTMapWPF.CustomControls
             switch (e.PropertyName)
             {
                 case "Path":
-                    if(ViewModel.Path != null)
+                    if(ViewModel?.Path != null)
                     {
                         PathNodesInfoListView.ItemsSource = ViewModel.Path.Nodes;
                         ChangeListViewSelectedNode(ViewModel.Path.SelectedIndex);
-                        //ViewModel.Scene?.SetPath(ViewModel.Path);
-                        //ResetPathSubscriptions(ViewModel.OldPath, ViewModel.Path);
                     }
                     break;
             }
@@ -73,6 +78,16 @@ namespace WoTMapWPF.CustomControls
             }
             else
                 PathNodesInfoListView.UnselectAll();
+        }
+
+        private void MapManagerService_ActivePathPropertiesChanged(System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if(e.PropertyName == "SelectedIndex" && ViewModel?.Path != null)
+                    ChangeListViewSelectedNode(ViewModel.Path.SelectedIndex);
+        }
+
+        private void Path_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
         }
     }
 }

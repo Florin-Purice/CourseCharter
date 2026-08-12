@@ -42,15 +42,16 @@ namespace WoTMapWPF.CustomControls
         public partial bool IsNodesInfoVisible { get; private set; } = false;
         public bool IsNodesInfoHidden => !IsNodesInfoVisible;
         public Scene Scene => scene;
-        public Map? Map => mapManagerService.Map;
-        public Path? Path => mapManagerService.ActivePath;
+        public Map? Map => MapManagerService.Map;
+        public Path? Path => MapManagerService.ActivePath;
+        public MapManagerService MapManagerService => mapManagerService;
 
         [RelayCommand]
         public void ToggleNodesInfoVisibility() => IsNodesInfoVisible = !IsNodesInfoVisible;
 
         private void MapManagerService_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(mapManagerService.ActivePath))
+            if (e.PropertyName == nameof(MapManagerService.ActivePath))
                 OnPropertyChanged(nameof(Path));
         }
 
@@ -67,12 +68,12 @@ namespace WoTMapWPF.CustomControls
             GLControl.MouseLeave += OnGLControlMouseLeave;
             GLControl.MouseLeftButtonUp += OnGLControlMouseLeftButtonUp;
 
-            GLWpfControlSettings settings = new()
-            {
-                MajorVersion = 2,
-                MinorVersion = 1
-            };
-            GLControl.Start(settings);
+            //GLWpfControlSettings settings = new()
+            //{
+            //    MajorVersion = 2,
+            //    MinorVersion = 1
+            //};
+            //GLControl.Start(settings);
 
             Timer timer = new(1000d / 60d)
             {
@@ -153,7 +154,7 @@ namespace WoTMapWPF.CustomControls
                             ConfirmActionWindow caw = new ConfirmActionWindow(message);
                             if (caw.ShowDialog().GetValueOrDefault())
                             {
-                                mapManagerService.ChangePathAndClearHistory(createNewPath());
+                                MapManagerService.ChangePathAndClearHistory(createNewPath());
                                 AutosavePath();
                             }
                         }
@@ -162,14 +163,14 @@ namespace WoTMapWPF.CustomControls
                         if (Keyboard.Modifiers == ModifierKeys.Control)
                         {
                             e.Handled = true;
-                            mapManagerService.UndoPathState();
+                            MapManagerService.UndoPathState();
                         }
                         break;
                     case Key.Y:
                         if (Keyboard.Modifiers == ModifierKeys.Control)
                         {
                             e.Handled = true;
-                            mapManagerService.RedoPathState();
+                            MapManagerService.RedoPathState();
                         }
                         break;
                 }
@@ -190,14 +191,14 @@ namespace WoTMapWPF.CustomControls
         private void AutosavePath()
         {
             //save path to file if autosave is enabled
-            if (Settings.Get<bool>("IsPathAutosaveEnabled"))
+            if (Settings.GetOrDefault<bool>("IsPathAutosaveEnabled"))
             {
-                string? saveLocation = Settings.Get<string>("SaveLocation");
+                string? saveLocation = Settings.GetOrDefault<string>("SaveLocation");
                 string fileName = "__autosave_path__.info";
                 PathFileDefinition pathFileDefinition = new()
                 {
                     Name = "_autosave_",
-                    ImageMD5 = mapManagerService.MapInfo?.ImageMD5,
+                    ImageMD5 = MapManagerService.MapInfo?.ImageMD5,
                     Path = this.Path
                 };
                 string jsonString = JsonSerializer.Serialize(pathFileDefinition, new JsonSerializerOptions()

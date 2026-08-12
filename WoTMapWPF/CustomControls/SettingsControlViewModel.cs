@@ -33,7 +33,6 @@ namespace WoTMapWPF.CustomControls
 
         public SettingsControlViewModel()
         {
-            InitializeColorsFromSettings();
             int imageHeight = 300;
             BitmapImage bitmapImage = new BitmapImage();
             Uri uri = new Uri("../Res/pinA.png", UriKind.Relative);
@@ -74,22 +73,23 @@ namespace WoTMapWPF.CustomControls
                 bitmapImage.Freeze();
                 dashedPathBitmap = new WriteableBitmap(bitmapImage);
             }
+            InitializeColorsFromSettings();
         }
 
         public event Action? ResetToDefault;
 
         public void InitializeColorsFromSettings()
         {
-            SolidColorBrush? A = Settings.Get<SolidColorBrush>("PinColor");
+            SolidColorBrush? A = Settings.GetOrDefault<SolidColorBrush>("PinColor");
             ColorA = A != null ? A.Color : default;
-            SolidColorBrush? B = Settings.Get<SolidColorBrush>("PinSelectedColor");
+            SolidColorBrush? B = Settings.GetOrDefault<SolidColorBrush>("PinSelectedColor");
             ColorB = B != null ? B.Color : default;
-            SolidColorBrush? C = Settings.Get<SolidColorBrush>("DashedPathColor");
+            SolidColorBrush? C = Settings.GetOrDefault<SolidColorBrush>("DashedPathColor");
             ColorC = C != null ? C.Color : default;
-            IsPathAutosaveEnabled = Settings.Get<bool>("IsPathAutosaveEnabled");
-            LineStippleFactor = Settings.Get<int>("LineStippleFactor");
-            LineWidth = Settings.Get<double>("LineWidth");
-            PinSize = Settings.Get<double>("PinSize");
+            IsPathAutosaveEnabled = Settings.GetOrDefault<bool>("IsPathAutosaveEnabled");
+            LineStippleFactor = Settings.GetOrDefault<int>("LineStippleFactor");
+            LineWidth = Settings.GetOrDefault<double>("LineWidth");
+            PinSize = Settings.GetOrDefault<double>("PinSize");
         }
 
         partial void OnIsPathAutosaveEnabledChanged(bool value) => Settings.Set(nameof(IsPathAutosaveEnabled), value);

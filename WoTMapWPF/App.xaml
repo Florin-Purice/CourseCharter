@@ -193,7 +193,7 @@
                         <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
                         <Setter Property="Background" Value="{DynamicResource ThemeColorMuted}"/>
                     </Style>
-                    <Style TargetType="{x:Type local:CustomTextBox}">
+                    <Style TargetType="{x:Type custom:CustomTextBox}">
                         <Setter Property="Background" Value="{DynamicResource ThemeColorMain}"/>
                         <Setter Property="BorderBrush" Value="{DynamicResource ThemeColorVibrant}"/>
                         <Setter Property="Foreground" Value="{DynamicResource ThemeColorText}"/>
@@ -210,7 +210,7 @@
                         <Setter Property="IsReadOnly" Value="True"/>
                         <Setter Property="Template">
                             <Setter.Value>
-                                <ControlTemplate TargetType="{x:Type local:CustomTextBox}">
+                                <ControlTemplate TargetType="{x:Type custom:CustomTextBox}">
                                     <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
                                         <Grid>
                                             <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>

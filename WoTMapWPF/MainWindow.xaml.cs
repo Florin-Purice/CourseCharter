@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
@@ -35,87 +36,79 @@ namespace WoTMapWPF
             if (WindowState == WindowState.Maximized)
             {
                 // Use the RestoreBounds as the current values will be 0, 0 and the size of the screen
-                app.ChangeUserSetting("WindowTop", RestoreBounds.Top);
-                app.ChangeUserSetting("WindowLeft", RestoreBounds.Left);
-                app.ChangeUserSetting("WindowHeight", RestoreBounds.Height);
-                app.ChangeUserSetting("WindowWidth", RestoreBounds.Width);
-                app.ChangeUserSetting("IsWindowMaximized", true);
+                Settings.Set("WindowTop", RestoreBounds.Top);
+                Settings.Set("WindowLeft", RestoreBounds.Left);
+                Settings.Set("WindowHeight", RestoreBounds.Height);
+                Settings.Set("WindowWidth", RestoreBounds.Width);
+                Settings.Set("IsWindowMaximized", true);
             }
             else
             {
-                app.ChangeUserSetting("WindowTop", this.Top);
-                app.ChangeUserSetting("WindowLeft", this.Left);
-                app.ChangeUserSetting("WindowHeight", this.Height);
-                app.ChangeUserSetting("WindowWidth", this.Width);
-                app.ChangeUserSetting("IsWindowMaximized", false);
+                Settings.Set("WindowTop", this.Top);
+                Settings.Set("WindowLeft", this.Left);
+                Settings.Set("WindowHeight", this.Height);
+                Settings.Set("WindowWidth", this.Width);
+                Settings.Set("IsWindowMaximized", false);
             }
             //save currently opened map
-            app.ChangeUserSetting("LastOpenedMapName", ViewModel.MapName);
-            app.ChangeUserSetting("LastOpenedMapImageMD5", ViewModel.MapImageMD5);
+            if (ViewModel.MapManagerService.MapInfo != null)
+            {
+                Settings.Set("LastOpenedMapName", ViewModel.MapManagerService.MapInfo.Name);
+                Settings.Set("LastOpenedMapImageMD5", ViewModel.MapManagerService.MapInfo.ImageMD5);
+            }
         }
 
         private void Window_SourceInitialized(object sender, EventArgs e)
         {
             //window position/size
-            if (App.Current.Resources.Contains("WindowTop"))
+            if (Settings.Exists("WindowTop"))
             {
-                this.Top = (double)App.Current.Resources["WindowTop"];
+                this.Top = Settings.Get<double>("WindowTop");
             }
-            if (App.Current.Resources.Contains("WindowLeft"))
+            if (Settings.Exists("WindowLeft"))
             {
-                this.Left = (double)App.Current.Resources["WindowLeft"];
+                this.Left = Settings.Get<double>("WindowLeft");
             }
-            if (App.Current.Resources.Contains("WindowHeight"))
+            if (Settings.Exists("WindowHeight"))
             {
-                this.Height = (double)App.Current.Resources["WindowHeight"];
+                this.Height = Settings.Get<double>("WindowHeight");
             }
-            if (App.Current.Resources.Contains("WindowWidth"))
+            if (Settings.Exists("WindowWidth"))
             {
-                this.Width = (double)App.Current.Resources["WindowWidth"];
+                this.Width = Settings.Get<double>("WindowWidth");
             }
-            if (App.Current.Resources.Contains("IsWindowMaximized") && (bool)App.Current.Resources["IsWindowMaximized"])
+            if (Settings.Exists("IsWindowMaximized") && Settings.Get<bool>("IsWindowMaximized"))
                 WindowState = WindowState.Maximized;
             //load last opened map
-            if (App.Current.Resources.Contains("LastOpenedMapName") && App.Current.Resources.Contains("LastOpenedMapImageMD5"))
+            if (Settings.Exists("LastOpenedMapName") && Settings.Exists("LastOpenedMapImageMD5"))
             {
-                string mapName = (string)App.Current.Resources["LastOpenedMapName"];
-                string mapImageMD5 = (string)App.Current.Resources["LastOpenedMapImageMD5"];
+                string mapName = Settings.Get<string>("LastOpenedMapName");
+                string mapImageMD5 = Settings.Get<string>("LastOpenedMapImageMD5");
+                string saveLocation = Settings.Get<string>("SaveLocation");
                 string mapPath = $"{saveLocation}\\maps\\{mapImageMD5}\\{mapName}.info";
                 if (File.Exists(mapPath))
                     try
                     {
                         string jsonString = File.ReadAllText(mapPath);
-                        MapFileDefinition map = JsonSerializer.Deserialize<MapFileDefinition>(jsonString, jsonSerializerOptions);
+                        MapFileDefinition? map = JsonSerializer.Deserialize<MapFileDefinition>(jsonString, new JsonSerializerOptions()
+                        {
+                            NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
+                            WriteIndented = true
+                        });
                         if (map != null)
-                            if (LoadMap(map))
+                            if (ViewModel.MapManagerService.LoadMap(map))
                             {
                                 //only reason to call this method here is for updating title with correct map name
-                                ShowDefaultPanel();
+                                //ShowDefaultPanel();
                             }
                     }
                     catch { }
             }
             //load user selected theme
-            if (App.Current.Resources.Contains("ThemeName"))
+            if (Settings.Exists("ThemeName"))
             {
                 string themeName = (string)App.Current.Resources["ThemeName"];
                 ((App)App.Current).ChangeTheme(themeName);
-            }
-        }
-
-        #region PATH
-        private void Path_PathChanged(object? sender, EventArgs e)
-        {
-            StorePathState();
-        }
-
-        private void Path_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case "SelectedIndex":
-                    ChangeListViewSelectedNode(ViewModel.Path.SelectedIndex);
-                    break;
             }
         }
     }

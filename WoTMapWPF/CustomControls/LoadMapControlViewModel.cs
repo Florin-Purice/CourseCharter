@@ -60,7 +60,7 @@ namespace WoTMapWPF.CustomControls
                 previewOnBitmap = new WriteableBitmap(bitmapImage);
             }
 
-            string? saveLocation = Settings.Get<string>("SaveLocation");
+            string? saveLocation = Settings.GetOrDefault<string>("SaveLocation");
             List<MapFileDefinition> maps = new List<MapFileDefinition>();
             if (Directory.Exists($"{saveLocation}\\maps"))
                 foreach (string subdir in Directory.GetDirectories($"{saveLocation}\\maps"))
@@ -120,7 +120,7 @@ namespace WoTMapWPF.CustomControls
                 ConfirmActionWindow caw = new ConfirmActionWindow(message);
                 if (caw.ShowDialog().GetValueOrDefault())
                 {
-                    string? saveLocation = Settings.Get<string>("SaveLocation");
+                    string? saveLocation = Settings.GetOrDefault<string>("SaveLocation");
                     List<MapFileDefinition> maps = new List<MapFileDefinition>();
                     if (Directory.Exists($"{saveLocation}\\maps"))
                         foreach (string subdir in Directory.GetDirectories($"{saveLocation}\\maps"))

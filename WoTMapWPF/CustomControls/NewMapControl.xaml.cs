@@ -11,8 +11,6 @@ namespace WoTMapWPF.CustomControls
     /// </summary>
     public partial class NewMapControl : UserControl
     {
-        public event EventHandler? SaveButtonClicked;
-
         public NewMapControl()
         {
             InitializeComponent();

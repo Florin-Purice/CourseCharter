@@ -15,6 +15,9 @@
         FontSize="{DynamicResource FontSizeMain}"
         Background="{DynamicResource ThemeColorMain}">
     <Window.Resources>
+        <DataTemplate DataType="{x:Type custom:MapControlViewModel}">
+            <custom:MapControl/>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type custom:NewMapControlViewModel}">
             <custom:NewMapControl/>
         </DataTemplate>
@@ -49,11 +52,9 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <StackPanel Style="{DynamicResource MainMenuPanel}">
-                <Button Name="ShowMapButton" 
-                    Style="{DynamicResource MainMenuButtonStyle}"
-                    IsEnabled="False"
-                    Click="ShowMapButton_Click"
-                    ToolTip="Show map">
+                <Button Style="{DynamicResource MainMenuButtonStyle}"
+                        ToolTip="Show map"
+                        Command="{Binding ShowMapPanelCommand}">
                     <Image Source="Res/map_button.png"/>
                 </Button>
                 <Button Style="{DynamicResource MainMenuButtonStyle}"
@@ -83,16 +84,15 @@
                 </Button>
             </StackPanel>
             <Button Grid.Row="2" 
-                    Name="ShowSettingsButton"
                     Style="{DynamicResource MainMenuButtonStyle}" 
-                    Click="ShowSettingsButton_Click"
-                    ToolTip="Settings">
+                    ToolTip="Settings"
+                    Command="{Binding ShowSettingsPanelCommand}">
                 <Image Source="Res/settings_button.png"/>
             </Button>
         </Grid>
         <Border Grid.Column="1" Style="{DynamicResource PanelContainerStyle}">
-            <ContentControl Style="{DynamicResource FormPanel}" Content="{Binding CurrentViewModel}"/>
-
+            <ContentControl Content="{Binding CurrentViewModel}"/>
+            <!--Style="{DynamicResource FormPanel}"-->
             <!--<Grid>
                 <Grid x:Name="MapControl" Style="{DynamicResource MapControlStyle}">
                     <Grid.ColumnDefinitions>

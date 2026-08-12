@@ -24,7 +24,7 @@ namespace WoTMapWPF.CustomControls
 
         private void SelectCorrectListViewThemeItem()
         {
-            string? themeName = Settings.Get<string>("ThemeName");
+            string? themeName = Settings.GetOrDefault<string>("ThemeName");
             ListViewItem? item = ThemeListView.Items.Cast<ListViewItem>().Where(e => (string)e.Tag == themeName).FirstOrDefault();
             if (item != null)
                 ThemeListView.SelectedItem = item;

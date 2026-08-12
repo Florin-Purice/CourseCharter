@@ -4,6 +4,7 @@ using OpenTK.Wpf;
 using System;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Xml;
 using WoTMapWPF.CustomControls;
@@ -18,19 +19,27 @@ namespace WoTMapWPF
     /// </summary>
     public partial class App : Application
     {
-        private readonly ServiceProvider serviceProvider;
         private readonly string settingsFileName = "Settings.xaml";
 
         [STAThread]
         public static void Main(string[] args)
         {
             using IHost host = CreateHostBuilder(args).Build();
-            host.Run();
+            host.Start();
+            //make sure GLWpfControl is created first
+            GLWpfControl gLControl = host.Services.GetRequiredService<GLWpfControl>();
+            GLWpfControlSettings settings = new()
+            {
+                MajorVersion = 2,
+                MinorVersion = 1
+            };
+            gLControl.Start(settings);
 
             App app = new();
             app.InitializeComponent();
             app.MainWindow = host.Services.GetRequiredService<MainWindow>();
             app.MainWindow.Visibility = Visibility.Visible;
+
             app.Run();
         }
 
@@ -50,6 +59,11 @@ namespace WoTMapWPF
                 services.AddSingleton<NavigationStore>();
                 services.AddSingleton<INavigationService>(CreateMapNavigationService);
 
+                services.AddSingleton<MapControlViewModel>(s => new MapControlViewModel(
+                    s.GetRequiredService<Scene>(),
+                    s.GetRequiredService<CreateNewPath>(),
+                    s.GetRequiredService<MapManagerService>(),
+                    s.GetRequiredService<GLWpfControl>()));
                 services.AddTransient<NewMapControlViewModel>(s => new NewMapControlViewModel(
                     s.GetRequiredService<NotificationService>(),
                     s.GetRequiredService<MapManagerService>(),
@@ -64,6 +78,7 @@ namespace WoTMapWPF
                     CreateMapNavigationService(s)));
                 services.AddTransient<LoadPathControlViewModel>(s => new LoadPathControlViewModel(
                     s.GetRequiredService<NotificationService>(),
+                    s.GetRequiredService<CreateNewPath>(),
                     s.GetRequiredService<MapManagerService>(),
                     CreateMapNavigationService(s)));
                 services.AddSingleton<GuideControlViewModel>();
@@ -72,6 +87,7 @@ namespace WoTMapWPF
                     s.GetRequiredService<NotificationService>()));
                 services.AddSingleton<MainWindowViewModel>(s => new MainWindowViewModel(
                     s.GetRequiredService<NavigationStore>(),
+                    s.GetRequiredService<MapManagerService>(),
                     s.GetRequiredService<NotificationControlViewModel>(),
                     s.GetRequiredService<NotificationService>(),
                     CreateMapNavigationService(s),
@@ -164,7 +180,10 @@ namespace WoTMapWPF
 
         private static INavigationService CreateMapNavigationService(IServiceProvider provider)
         {
-            throw new NotImplementedException();
+            return new NavigationService<MapControlViewModel>(
+                provider.GetRequiredService<NavigationStore>(),
+                () => provider.GetRequiredService<MapControlViewModel>()
+            );
         }
 
         private static INavigationService CreateNewMapNavigationService(IServiceProvider provider)

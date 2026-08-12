@@ -29,7 +29,7 @@ namespace WoTMapWPF.CustomControls
                     image.Tag = new object();
                     MapFileDefinition map = (MapFileDefinition)((Button)sender).DataContext;
                     int imageHeight = (int)image.Height;
-                    string? saveLocation = Settings.Get<string>("SaveLocation");
+                    string? saveLocation = Settings.GetOrDefault<string>("SaveLocation");
                     string imageLocation = $"{saveLocation}\\maps\\{map.ImageMD5}\\map_image{map.ImageExt}";
                     BitmapImage? loadedImage = await Task.Run(() => LoadImage(imageLocation, imageHeight));
                     if (loadedImage != null)

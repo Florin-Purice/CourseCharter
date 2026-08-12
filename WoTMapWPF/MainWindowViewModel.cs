@@ -24,6 +24,7 @@ namespace WoTMapWPF
 
         public MainWindowViewModel(
             NavigationStore navigationStore, 
+            MapManagerService mapManagerService,
             NotificationControlViewModel notificationControlViewModel,
             NotificationService notificationService,
             INavigationService mapNavigationService,
@@ -35,6 +36,7 @@ namespace WoTMapWPF
             INavigationService settingsNavigationService)
         {
             this.navigationStore = navigationStore;
+            MapManagerService = mapManagerService;
             NotificationControlViewModel = notificationControlViewModel;
             this.notificationService = notificationService;
             this.mapNavigationService = mapNavigationService;
@@ -49,6 +51,14 @@ namespace WoTMapWPF
         }
 
         public ViewModelBase? CurrentViewModel => navigationStore.CurrentViewModel;
+
+        public MapManagerService MapManagerService { get; }
+
+        [RelayCommand]
+        public void ShowMapPanel()
+        {
+            mapNavigationService.Navigate();
+        }
 
         [RelayCommand]
         public void ShowNewMapPanel()

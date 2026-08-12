@@ -34,7 +34,7 @@ namespace WoTMapWPF.CustomControls
             }
             else
             {
-                string? saveLocation = Settings.Get<string>("SaveLocation");
+                string? saveLocation = Settings.GetOrDefault<string>("SaveLocation");
                 string? mapImageHash = mapManagerService.MapInfo?.ImageMD5;
                 List<string> existingPaths = new List<string>();
                 string dir = $"{saveLocation}\\maps\\{mapImageHash}\\paths";
@@ -56,7 +56,7 @@ namespace WoTMapWPF.CustomControls
         {
             if (!string.IsNullOrWhiteSpace(Name))
             {
-                string? saveLocation = Settings.Get<string>("SaveLocation");
+                string? saveLocation = Settings.GetOrDefault<string>("SaveLocation");
                 string? imageMD5 = mapManagerService.MapInfo?.ImageMD5;
                 if (File.Exists($"{saveLocation}\\maps\\{imageMD5}\\paths\\{Name}.info"))
                 {

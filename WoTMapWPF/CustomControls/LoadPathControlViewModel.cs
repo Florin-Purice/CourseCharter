@@ -28,7 +28,7 @@ namespace WoTMapWPF.CustomControls
             this.mapManagerService = mapManagerService;
             this.mapNavigationService = mapNavigationService;
 
-            string? saveLocation = Settings.Get<string>("SaveLocation");
+            string? saveLocation = Settings.GetOrDefault<string>("SaveLocation");
             List<PathFileDefinition> paths = new List<PathFileDefinition>();
             string dir = $"{saveLocation}\\maps\\{mapManagerService.MapInfo?.ImageMD5}\\paths";
             if (Directory.Exists(dir))
@@ -92,7 +92,7 @@ namespace WoTMapWPF.CustomControls
                 ConfirmActionWindow caw = new ConfirmActionWindow(message);
                 if (caw.ShowDialog().GetValueOrDefault())
                 {
-                    string? saveLocation = Settings.Get<string>("SaveLocation");
+                    string? saveLocation = Settings.GetOrDefault<string>("SaveLocation");
                     List<PathFileDefinition> paths = new List<PathFileDefinition>();
                     string dir = $"{saveLocation}\\maps\\{mapManagerService.MapInfo?.ImageMD5}\\paths";
                     if (Directory.Exists(dir))
