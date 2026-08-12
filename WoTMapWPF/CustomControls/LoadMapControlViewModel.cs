@@ -15,9 +15,9 @@ namespace WoTMapWPF.CustomControls
 {
     public partial class LoadMapControlViewModel : ViewModelBase
     {
+        private readonly INavigationManager navigationManager;
         private readonly NotificationService notificationService;
         private readonly MapManagerService mapManagerService;
-        private readonly INavigationService mapNavigationService;
 
         [ObservableProperty]
         private MapFileDefinition? selectedMap;
@@ -26,11 +26,14 @@ namespace WoTMapWPF.CustomControls
         [ObservableProperty]
         private WriteableBitmap previewOffBitmap;
 
-        public LoadMapControlViewModel(NotificationService notificationService, MapManagerService mapManagerService, INavigationService mapNavigationService)
+        public LoadMapControlViewModel(
+            INavigationManager navigationManager,
+            NotificationService notificationService, 
+            MapManagerService mapManagerService)
         {
+            this.navigationManager = navigationManager;
             this.notificationService = notificationService;
             this.mapManagerService = mapManagerService;
-            this.mapNavigationService = mapNavigationService;
 
             int imageHeight = 64;
             BitmapImage bitmapImage = new BitmapImage();
@@ -107,7 +110,7 @@ namespace WoTMapWPF.CustomControls
                         Message = $"Could not load map \"{SelectedMap.Name}\".",
                         Type = NotificationType.ShowError
                     });
-                mapNavigationService.Navigate();
+                navigationManager.Navigate(NavigationTarget.MapPanel);
             }
         }
 
@@ -170,7 +173,7 @@ namespace WoTMapWPF.CustomControls
                             Maps.Add(map);
                     }
                     else
-                        mapNavigationService.Navigate();
+                        navigationManager.Navigate(NavigationTarget.MapPanel);
                 }
             }
         }

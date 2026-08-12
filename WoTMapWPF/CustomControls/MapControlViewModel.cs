@@ -32,11 +32,11 @@ namespace WoTMapWPF.CustomControls
             this.mapManagerService = mapManagerService;
             mapManagerService.PropertyChanged += MapManagerService_PropertyChanged;
             GLControl = gLWpfControl;
+            OnPropertyChanged(nameof(GLControl));
             InitializeGlControl();
         }
 
-        [ObservableProperty]
-        public partial GLWpfControl GLControl { get; private set; }
+        public GLWpfControl GLControl { get; private set; }
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsNodesInfoHidden))]
         public partial bool IsNodesInfoVisible { get; private set; } = false;
@@ -68,13 +68,6 @@ namespace WoTMapWPF.CustomControls
             GLControl.MouseLeave += OnGLControlMouseLeave;
             GLControl.MouseLeftButtonUp += OnGLControlMouseLeftButtonUp;
 
-            //GLWpfControlSettings settings = new()
-            //{
-            //    MajorVersion = 2,
-            //    MinorVersion = 1
-            //};
-            //GLControl.Start(settings);
-
             Timer timer = new(1000d / 60d)
             {
                 AutoReset = true,
@@ -84,7 +77,11 @@ namespace WoTMapWPF.CustomControls
             {
                 try
                 {
-                    ((App)App.Current).Dispatcher.Invoke(() => GLControl.InvalidateVisual());
+                    Application currentApp = App.Current;
+                    if (currentApp != null)
+                    {
+                        ((App)App.Current).Dispatcher.Invoke(() => GLControl.InvalidateVisual());
+                    }
                 }
                 catch { }
             };

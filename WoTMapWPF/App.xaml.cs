@@ -39,7 +39,7 @@ namespace WoTMapWPF
             app.InitializeComponent();
             app.MainWindow = host.Services.GetRequiredService<MainWindow>();
             app.MainWindow.Visibility = Visibility.Visible;
-
+            host.Services.GetRequiredService<INavigationService>().Navigate();
             app.Run();
         }
 
@@ -52,52 +52,23 @@ namespace WoTMapWPF
                         new Path(s.GetRequiredService<MapManagerService>())
                         ));
                 services.AddSingleton<GLWpfControl>();
-                services.AddSingleton<Scene>(s => new Scene(
-                    s.GetRequiredService<GLWpfControl>(),
-                    s.GetRequiredService<MapManagerService>()));
+                services.AddSingleton<Scene>();
                 services.AddSingleton<NotificationService>();
+
                 services.AddSingleton<NavigationStore>();
                 services.AddSingleton<INavigationService>(CreateMapNavigationService);
+                services.AddSingleton<INavigationManager>(CreateNavigationManager);
 
-                services.AddSingleton<MapControlViewModel>(s => new MapControlViewModel(
-                    s.GetRequiredService<Scene>(),
-                    s.GetRequiredService<CreateNewPath>(),
-                    s.GetRequiredService<MapManagerService>(),
-                    s.GetRequiredService<GLWpfControl>()));
-                services.AddTransient<NewMapControlViewModel>(s => new NewMapControlViewModel(
-                    s.GetRequiredService<NotificationService>(),
-                    s.GetRequiredService<MapManagerService>(),
-                    CreateMapNavigationService(s)));
-                services.AddTransient<LoadMapControlViewModel>(s => new LoadMapControlViewModel(
-                    s.GetRequiredService<NotificationService>(),
-                    s.GetRequiredService<MapManagerService>(),
-                    CreateMapNavigationService(s)));
-                services.AddTransient<SavePathControlViewModel>(s => new SavePathControlViewModel(
-                    s.GetRequiredService<NotificationService>(),
-                    s.GetRequiredService<MapManagerService>(),
-                    CreateMapNavigationService(s)));
-                services.AddTransient<LoadPathControlViewModel>(s => new LoadPathControlViewModel(
-                    s.GetRequiredService<NotificationService>(),
-                    s.GetRequiredService<CreateNewPath>(),
-                    s.GetRequiredService<MapManagerService>(),
-                    CreateMapNavigationService(s)));
+                services.AddSingleton<MapControlViewModel>();
+                services.AddTransient<NewMapControlViewModel>();
+                services.AddTransient<LoadMapControlViewModel>();
+                services.AddTransient<SavePathControlViewModel>();
+                services.AddTransient<LoadPathControlViewModel>();
                 services.AddSingleton<GuideControlViewModel>();
                 services.AddTransient<SettingsControlViewModel>();
-                services.AddSingleton<NotificationControlViewModel>(s => new NotificationControlViewModel(
-                    s.GetRequiredService<NotificationService>()));
-                services.AddSingleton<MainWindowViewModel>(s => new MainWindowViewModel(
-                    s.GetRequiredService<NavigationStore>(),
-                    s.GetRequiredService<MapManagerService>(),
-                    s.GetRequiredService<NotificationControlViewModel>(),
-                    s.GetRequiredService<NotificationService>(),
-                    CreateMapNavigationService(s),
-                    CreateNewMapNavigationService(s),
-                    CreateLoadMapNavigationService(s),
-                    CreateSavePathNavigationService(s),
-                    CreateLoadPathNavigationService(s),
-                    CreateGuideNavigationService(s),
-                    CreateSettingsNavigationService(s)));
-                services.AddSingleton<MainWindow>(s => new MainWindow(s.GetRequiredService<MainWindowViewModel>()));
+                services.AddSingleton<NotificationControlViewModel>();
+                services.AddSingleton<MainWindowViewModel>();
+                services.AddSingleton<MainWindow>();
             });
 
         public delegate Path CreateNewPath();
@@ -176,6 +147,19 @@ namespace WoTMapWPF
         private void Application_Exit(object sender, ExitEventArgs e)
         {
             SaveSettings();
+        }
+
+        private static INavigationManager CreateNavigationManager(IServiceProvider provider)
+        {
+            NavigationManager navManager = new NavigationManager();
+            navManager.Register(NavigationTarget.MapPanel, CreateMapNavigationService(provider));
+            navManager.Register(NavigationTarget.NewMapPanel, CreateNewMapNavigationService(provider));
+            navManager.Register(NavigationTarget.LoadMapPanel, CreateLoadMapNavigationService(provider));
+            navManager.Register(NavigationTarget.SavePathPanel, CreateSavePathNavigationService(provider));
+            navManager.Register(NavigationTarget.LoadPathPanel, CreateLoadPathNavigationService(provider));
+            navManager.Register(NavigationTarget.GuidePanel, CreateGuideNavigationService(provider));
+            navManager.Register(NavigationTarget.SettingsPanel, CreateSettingsNavigationService(provider));
+            return navManager;
         }
 
         private static INavigationService CreateMapNavigationService(IServiceProvider provider)

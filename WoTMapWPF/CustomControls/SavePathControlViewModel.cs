@@ -10,9 +10,9 @@ namespace WoTMapWPF.CustomControls
 {
     public partial class SavePathControlViewModel : ViewModelBase
     {
+        private readonly INavigationManager navigationManager;
         private readonly NotificationService notificationService;
         private readonly MapManagerService mapManagerService;
-        private readonly INavigationService mapNavigationService;
 
         [ObservableProperty]
         private string name = string.Empty;
@@ -20,13 +20,13 @@ namespace WoTMapWPF.CustomControls
         private List<string> nameSuggestionValues = new List<string>();
 
         public SavePathControlViewModel(
+            INavigationManager navigationManager,
             NotificationService notificationService,
-            MapManagerService mapManagerService,
-            INavigationService mapNavigationService)
+            MapManagerService mapManagerService)
         {
+            this.navigationManager = navigationManager;
             this.notificationService = notificationService;
             this.mapManagerService = mapManagerService;
-            this.mapNavigationService = mapNavigationService;
 
             if (Path?.Nodes.Count < 1)
             {
@@ -80,7 +80,7 @@ namespace WoTMapWPF.CustomControls
                     Message = $"Saved path \"{pathFileDefinition.Name}\".",
                     Type = NotificationType.ShowAndHide
                 });
-                mapNavigationService.Navigate();
+                navigationManager.Navigate(NavigationTarget.MapPanel);
             }
         }
     }

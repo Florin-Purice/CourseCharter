@@ -12,21 +12,21 @@ namespace WoTMapWPF.CustomControls
 {
     public partial class LoadPathControlViewModel : ViewModelBase
     {
+        private readonly INavigationManager navigationManager;
         private readonly NotificationService notificationService;
         private readonly CreateNewPath createNewPath;
         private readonly MapManagerService mapManagerService;
-        private readonly INavigationService mapNavigationService;
 
         public LoadPathControlViewModel(
+            INavigationManager navigationManager,
             NotificationService notificationService,
             CreateNewPath createNewPath,
-            MapManagerService mapManagerService,
-            INavigationService mapNavigationService)
+            MapManagerService mapManagerService)
         {
+            this.navigationManager = navigationManager;
             this.notificationService = notificationService;
             this.createNewPath = createNewPath;
             this.mapManagerService = mapManagerService;
-            this.mapNavigationService = mapNavigationService;
 
             string? saveLocation = Settings.GetOrDefault<string>("SaveLocation");
             List<PathFileDefinition> paths = new List<PathFileDefinition>();
@@ -79,7 +79,7 @@ namespace WoTMapWPF.CustomControls
                         Type = NotificationType.ShowError
                     });
                 }
-                mapNavigationService.Navigate();
+                navigationManager.Navigate(NavigationTarget.MapPanel);
             }
         }
 
@@ -130,7 +130,7 @@ namespace WoTMapWPF.CustomControls
                             Paths.Add(path);
                     }
                     else
-                        mapNavigationService.Navigate();
+                        navigationManager.Navigate(NavigationTarget.MapPanel);
                 }
             }
         }

@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using WoTMapWPF.CustomControls;
 using WoTMapWPF.Services;
@@ -9,14 +9,8 @@ namespace WoTMapWPF
     public partial class MainWindowViewModel : ViewModelBase
     {
         private readonly NavigationStore navigationStore;
+        private readonly INavigationManager navigationManager;
         private readonly NotificationService notificationService;
-        private readonly INavigationService mapNavigationService;
-        private readonly INavigationService newMapNavigationService;
-        private readonly INavigationService loadMapNavigationService;
-        private readonly INavigationService savePathNavigationService;
-        private readonly INavigationService loadPathNavigationService;
-        private readonly INavigationService guideNavigationService;
-        private readonly INavigationService settingsNavigationService;
         [ObservableProperty]
         private NotificationControlViewModel notificationControlViewModel;
         [ObservableProperty]
@@ -24,28 +18,15 @@ namespace WoTMapWPF
 
         public MainWindowViewModel(
             NavigationStore navigationStore, 
+            INavigationManager navigationManager,
             MapManagerService mapManagerService,
             NotificationControlViewModel notificationControlViewModel,
-            NotificationService notificationService,
-            INavigationService mapNavigationService,
-            INavigationService newMapNavigationService, 
-            INavigationService loadMapNavigationService, 
-            INavigationService savePathNavigationService,
-            INavigationService loadPathNavigationService,
-            INavigationService guideNavigationService,
-            INavigationService settingsNavigationService)
         {
             this.navigationStore = navigationStore;
+            this.navigationManager = navigationManager;
             MapManagerService = mapManagerService;
             NotificationControlViewModel = notificationControlViewModel;
             this.notificationService = notificationService;
-            this.mapNavigationService = mapNavigationService;
-            this.newMapNavigationService = newMapNavigationService;
-            this.loadMapNavigationService = loadMapNavigationService;
-            this.savePathNavigationService = savePathNavigationService;
-            this.loadPathNavigationService = loadPathNavigationService;
-            this.guideNavigationService = guideNavigationService;
-            this.settingsNavigationService = settingsNavigationService;
             navigationStore.ViewModelChanged += NavigationStore_ViewModelChanged;
             WindowTitleBase = "CourseCharter";
         }
@@ -57,60 +38,60 @@ namespace WoTMapWPF
         [RelayCommand]
         public void ShowMapPanel()
         {
-            mapNavigationService.Navigate();
+            navigationManager.Navigate(NavigationTarget.MapPanel);
         }
 
         [RelayCommand]
         public void ShowNewMapPanel()
         {
-            newMapNavigationService.Navigate();
+            navigationManager.Navigate(NavigationTarget.NewMapPanel);
         }
 
         [RelayCommand]
         public void ShowLoadMapPanel()
         {
-            if (!loadMapNavigationService.Navigate())
-                mapNavigationService.Navigate();
+            if (!navigationManager.Navigate(NavigationTarget.LoadMapPanel))
+                navigationManager.Navigate(NavigationTarget.MapPanel);
         }
 
         [RelayCommand]
         public void ShowSavePathPanel()
         {
-            if (!savePathNavigationService.Navigate())
+            if (!navigationManager.Navigate(NavigationTarget.SavePathPanel))
             {
                 notificationService.DoNotify(new NotificationMessage
                 {
                     Message = "There is no path to save.",
                     Type = NotificationType.ShowAndHide
                 });
-                mapNavigationService.Navigate();
+                navigationManager.Navigate(NavigationTarget.MapPanel);
             }
         }
 
         [RelayCommand]
         public void ShowLoadPathPanel()
         {
-            if (!loadPathNavigationService.Navigate())
+            if (!navigationManager.Navigate(NavigationTarget.LoadPathPanel))
             {
                 notificationService.DoNotify(new NotificationMessage
                 {
                     Message = "No saved paths found for current map.",
                     Type = NotificationType.ShowAndHide
                 });
-                mapNavigationService.Navigate();
+                navigationManager.Navigate(NavigationTarget.MapPanel);
             }
         }
 
         [RelayCommand]
         public void ShowGuidePanel()
         {
-            guideNavigationService?.Navigate();
+            navigationManager.Navigate(NavigationTarget.GuidePanel);
         }
 
         [RelayCommand]
         public void ShowSettingsPanel()
         {
-            settingsNavigationService?.Navigate();
+            navigationManager.Navigate(NavigationTarget.SettingsPanel);
         }
 
         private void NavigationStore_ViewModelChanged()

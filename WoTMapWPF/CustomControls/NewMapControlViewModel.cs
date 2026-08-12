@@ -15,9 +15,9 @@ namespace WoTMapWPF.CustomControls
 {
     public partial class NewMapControlViewModel : ViewModelBase
     {
+        private readonly INavigationManager navigationManager;
         private readonly NotificationService notificationService;
         private readonly MapManagerService mapManagerService;
-        private readonly INavigationService mapNavigationService;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(UnitsPerPixel))]
@@ -46,11 +46,14 @@ namespace WoTMapWPF.CustomControls
         [ObservableProperty]
         private BitmapImage? mapImage;
 
-        public NewMapControlViewModel(NotificationService notificationService, MapManagerService mapManagerService, INavigationService mapNavigationService)
+        public NewMapControlViewModel(
+            INavigationManager navigationManager,
+            NotificationService notificationService, 
+            MapManagerService mapManagerService)
         {
+            this.navigationManager = navigationManager;
             this.notificationService = notificationService;
             this.mapManagerService = mapManagerService;
-            this.mapNavigationService = mapNavigationService;
 
             string? saveLocation = Settings.GetOrDefault<string>("SaveLocation");
             List<string> existingMaps = new List<string>();
@@ -114,7 +117,7 @@ namespace WoTMapWPF.CustomControls
                         Message = $"Could not load map \"{map.Name}\".",
                         Type = NotificationType.ShowError
                     });
-                mapNavigationService.Navigate();
+                navigationManager.Navigate(NavigationTarget.MapPanel);
             }
         }
 
