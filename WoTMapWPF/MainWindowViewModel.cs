@@ -19,8 +19,9 @@ namespace WoTMapWPF
         public MainWindowViewModel(
             NavigationStore navigationStore, 
             INavigationManager navigationManager,
+            NotificationService notificationService,
             MapManagerService mapManagerService,
-            NotificationControlViewModel notificationControlViewModel,
+            NotificationControlViewModel notificationControlViewModel)
         {
             this.navigationStore = navigationStore;
             this.navigationManager = navigationManager;
