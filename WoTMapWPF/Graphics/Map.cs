@@ -11,7 +11,7 @@ namespace WoTMapWPF.Graphics
         public int Vao;
         public int IndicesCount;
         public readonly string TexturePath;
-        private readonly List<int> buffers = new List<int>();
+        private readonly List<int> buffers = [];
 
         public Map()
         {

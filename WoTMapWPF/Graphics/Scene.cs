@@ -47,7 +47,7 @@ namespace WoTMapWPF.Graphics
         public double ZoomBase { get; private set; } = 1.2;
         public float Scale { get; private set; }
         public Path? ActivePath => mapManagerService.ActivePath;
-        public Map? Map => mapManagerService.Map;
+        public Map Map => mapManagerService.Map;
 
         public void Paint()
         {
@@ -188,25 +188,25 @@ namespace WoTMapWPF.Graphics
         {
             Matrix4 vpMatrix = viewMatrix * projectionMatrix;
             GL.UniformMatrix4(vpMatrixUniformLocation, false, ref vpMatrix);
-            SolidColorBrush brush = (SolidColorBrush)App.Current.Resources["ThemeColorVibrant"];
+            SolidColorBrush brush = Settings.Get<SolidColorBrush>("ThemeColorVibrant");
             Color clearColor = brush.Color;
             GL.ClearColor(clearColor.R / 255f, clearColor.G / 255f, clearColor.B / 255f, clearColor.A / 255f);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            short lineStipplePattern = (short)App.Current.Resources["LineStipplePattern"];
-            int lineStippleFactor = (int)App.Current.Resources["LineStippleFactor"];
-            double lineWidth = (double)App.Current.Resources["LineWidth"];
+            short lineStipplePattern = Settings.Get<short>("LineStipplePattern");
+            int lineStippleFactor = Settings.Get<int>("LineStippleFactor");
+            double lineWidth = Settings.Get<double>("LineWidth");
             GL.LineWidth((float)lineWidth);
             GL.LineStipple(lineStippleFactor, lineStipplePattern);
 
             GL.Uniform1(textureModeUniformLocation, 1);
-            Map?.Draw(this);
+            Map.Draw(this);
 
             if (ActivePath != null && ActivePath.Nodes.Count > 0)
             {
                 //draw path lines
                 if (ActivePath.Nodes.Count > 1)
                 {
-                    SolidColorBrush lineBrush = (SolidColorBrush)Application.Current.Resources["DashedPathColor"];
+                    SolidColorBrush lineBrush = Settings.Get<SolidColorBrush>("DashedPathColor");
                     Color lineColor = lineBrush.Color;
                     GL.Uniform1(textureModeUniformLocation, 0);
                     GL.Uniform4(fixedColorUniformLocation, lineColor.R / 255f, lineColor.G / 255f, lineColor.B / 255f, 1.0f);
@@ -290,18 +290,14 @@ namespace WoTMapWPF.Graphics
 
         private string ReadShaderString(string fileName)
         {
-            using (Stream? stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("WoTMapWPF.Graphics.Shaders." + fileName))
+            using Stream? stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("WoTMapWPF.Graphics.Shaders." + fileName);
+            if (stream != null)
             {
-                if (stream != null)
-                {
-                    using (StreamReader reader = new StreamReader(stream))
-                    {
-                        return reader.ReadToEnd();
-                    }
-                }
-                else
-                    return string.Empty;
+                using StreamReader reader = new StreamReader(stream);
+                return reader.ReadToEnd();
             }
+            else
+                return string.Empty;
         }
 
         private (float glX, float glY) MousePositionToGlCoord(double mouseX, double mouseY)
@@ -333,7 +329,7 @@ namespace WoTMapWPF.Graphics
             int selected = -1;
             if (ActivePath != null)
             {
-                double pinSize = (double)App.Current.Resources["PinSize"];
+                double pinSize = Settings.Get<double>("PinSize");
                 float markerSize = (float)pinSize / PixelsPerUnit;
                 for (int i = ActivePath.Nodes.Count - 1; i >= 0; --i)
                 {
