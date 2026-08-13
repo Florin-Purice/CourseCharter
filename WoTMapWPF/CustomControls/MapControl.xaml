@@ -80,11 +80,11 @@
                         <TextBlock Text="{Binding MapManagerService.MapInfo.UnitLabel}"/>
                     </StackPanel>
                     <Border HorizontalAlignment="Right" ToolTip="Show details">
-                        <Image Source="Res/expand_button.png" Height="20" 
+                        <Image Source="../Res/expand_button.png" Height="20" 
                                Visibility="{Binding IsNodesInfoHidden, Converter={StaticResource BoolToVisConverter}}"/>
                     </Border>
                     <Border HorizontalAlignment="Right" ToolTip="Hide details">
-                        <Image Source="Res/collapse_button.png" Height="20"
+                        <Image Source="../Res/collapse_button.png" Height="20"
                                Visibility="{Binding IsNodesInfoVisible, Converter={StaticResource BoolToVisConverter}}"/>
                     </Border>
                 </Grid>
