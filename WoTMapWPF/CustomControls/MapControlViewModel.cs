@@ -31,6 +31,7 @@ namespace WoTMapWPF.CustomControls
             this.createNewPath = createNewPath;
             this.mapManagerService = mapManagerService;
             mapManagerService.PropertyChanged += MapManagerService_PropertyChanged;
+            mapManagerService.AutosaveRequested += MapManagerService_AutosaveRequested;
             GLControl = gLWpfControl;
             OnPropertyChanged(nameof(GLControl));
             InitializeGlControl();
@@ -45,16 +46,6 @@ namespace WoTMapWPF.CustomControls
         public MapManagerService MapManagerService => mapManagerService;
         public Map Map => MapManagerService.Map;
         public Path? Path => MapManagerService.ActivePath;
-        public double DistanceUnitsPerPixel 
-        {
-            get
-            {
-                double x = 0;
-                if(MapManagerService.MapInfo != null)
-                    x = (double)MapManagerService.MapInfo.SampleUnits/MapManagerService.MapInfo.SamplePixels;
-                return x;
-            }  
-        }
 
         [RelayCommand]
         public void ToggleNodesInfoVisibility() => IsNodesInfoVisible = !IsNodesInfoVisible;
@@ -64,6 +55,8 @@ namespace WoTMapWPF.CustomControls
             if (e.PropertyName == nameof(MapManagerService.ActivePath))
                 OnPropertyChanged(nameof(Path));
         }
+
+        private void MapManagerService_AutosaveRequested() => AutosavePath();
 
         #region GLCONTROL
         private void InitializeGlControl()
@@ -158,7 +151,7 @@ namespace WoTMapWPF.CustomControls
                         if (Path?.Nodes.Count > 0)
                         {
                             string message = "Are you sure you want to clear the current path?";
-                            ConfirmActionWindow caw = new ConfirmActionWindow(message);
+                            ConfirmActionWindow caw = new(message);
                             if (caw.ShowDialog().GetValueOrDefault())
                             {
                                 MapManagerService.ChangePathAndClearHistory(createNewPath());

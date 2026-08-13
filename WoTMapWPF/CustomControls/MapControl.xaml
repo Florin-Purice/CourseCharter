@@ -73,7 +73,7 @@
                      Command="{Binding ToggleNodesInfoVisibilityCommand}">
                 <Grid>
                     <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5 0">
-                        <TextBlock Text="{cc:DoubleBinding {Binding MapManagerService.ActivePath.TotalDistance},{Binding DistanceUnitsPerPixel},
+                        <TextBlock Text="{cc:DoubleBinding {Binding MapManagerService.ActivePath.TotalDistance},{Binding MapManagerService.MapInfo.DistanceUnitsPerPixel},
                             Converter={StaticResource PixelsToUnitsConverter},
                             StringFormat=N0}"/>
                         <TextBlock Text=" "/>

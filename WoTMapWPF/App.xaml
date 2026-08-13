@@ -121,11 +121,11 @@
                                             <TextBlock Name="DistanceTextBlock" 
                                                        Text="{local:DoubleBinding 
                                                 {Binding Distance},
-                                                {Binding Path=DataContext.DistanceUnitsPerPixel, RelativeSource={RelativeSource AncestorType={x:Type custom:MapControl}}},
+                                                {Binding Path=DataContext.MapManagerService.MapInfo.DistanceUnitsPerPixel, RelativeSource={RelativeSource AncestorType={x:Type custom:MapControl}}},
                                                 Converter={StaticResource PixelsToUnitsConverter},
                                                 StringFormat=N2}"/>
                                             <TextBlock Text=" "/>
-                                            <TextBlock Text="{Binding Path=DataContext.DistanceUnit, RelativeSource={RelativeSource AncestorType={x:Type custom:MapControl}}}"/>
+                                            <TextBlock Text="{Binding Path=DataContext.MapManagerService.MapInfo.UnitLabel, RelativeSource={RelativeSource AncestorType={x:Type custom:MapControl}}}"/>
                                         </StackPanel>
                                         <StackPanel HorizontalAlignment="Center" >
                                             <TextBlock Text="|"/>
@@ -151,7 +151,7 @@
                                     <MultiDataTrigger.Setters>
                                         <Setter TargetName="DistanceTextBlock" Property="Text" Value="{local:DoubleBinding 
                                                 {Binding CompoundDistance},
-                                                {Binding Path=DataContext.DistanceUnitsPerPixel, RelativeSource={RelativeSource AncestorType={x:Type custom:MapControl}}},
+                                                {Binding Path=DataContext.MapManagerService.MapInfo.DistanceUnitsPerPixel, RelativeSource={RelativeSource AncestorType={x:Type custom:MapControl}}},
                                                 Converter={StaticResource PixelsToUnitsConverter},
                                                 StringFormat=N2}"/>
                                     </MultiDataTrigger.Setters>

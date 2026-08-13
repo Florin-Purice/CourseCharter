@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,8 +12,8 @@ namespace WoTMapWPF.Services
 {
     public partial class MapManagerService : ObservableObject
     {
-        private readonly Stack<Path> backwardStack = new Stack<Path>();
-        private readonly Stack<Path> forwardStack = new Stack<Path>();
+        private readonly Stack<Path> backwardStack = new();
+        private readonly Stack<Path> forwardStack = new();
         private readonly CreateNewPath createNewPath;
         [ObservableProperty]
         private Path? activePath;
@@ -27,7 +27,7 @@ namespace WoTMapWPF.Services
         public event Action? NewMapLoaded;
         public event Action? ActivePathAltered;
         public event Action<PropertyChangedEventArgs>? ActivePathPropertiesChanged;
-        public event Action? AutosavePossible;
+        public event Action? AutosaveRequested;
 
         [ObservableProperty]
         public partial Map Map { get; private set; }
@@ -85,7 +85,7 @@ namespace WoTMapWPF.Services
                 //add state to undo-stack, clear the redo-stack
                 backwardStack.Push((Path)ActivePath.Clone());
                 forwardStack.Clear();
-                OnAutosavePossible();
+                OnAutosaveRequested();
             }
         }
 
@@ -96,7 +96,7 @@ namespace WoTMapWPF.Services
                 forwardStack.Push(backwardStack.Pop());
                 Path path = backwardStack.Peek();
                 ActivePath = (Path)path.Clone();
-                OnAutosavePossible();
+                OnAutosaveRequested();
             }
         }
 
@@ -107,7 +107,7 @@ namespace WoTMapWPF.Services
                 Path path = forwardStack.Pop();
                 backwardStack.Push(path);
                 ActivePath = (Path)path.Clone();
-                OnAutosavePossible();
+                OnAutosaveRequested();
             }
         }
 
@@ -118,9 +118,9 @@ namespace WoTMapWPF.Services
             forwardStack.Clear();
         }
 
-        private void OnAutosavePossible()
+        private void OnAutosaveRequested()
         {
-            AutosavePossible?.Invoke();
+            AutosaveRequested?.Invoke();
         }
 
         partial void OnMapChanged(Map value)
