@@ -42,7 +42,11 @@ namespace WoTMapWPF.CustomControls
                             WriteIndented = true
                         });
                         if (path != null)
+                        {
+                            //add necesary ref to MapManager
+                            path.Path?.SetMapManager(mapManagerService);
                             paths.Add(path);
+                        }
                     }
                     catch { }
             paths.Sort((a, b) => a == null ? 1 : a.Name.CompareTo(b.Name));

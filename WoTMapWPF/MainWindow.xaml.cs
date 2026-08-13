@@ -107,7 +107,7 @@ namespace WoTMapWPF
             //load user selected theme
             if (Settings.Exists("ThemeName"))
             {
-                string themeName = (string)App.Current.Resources["ThemeName"];
+                string themeName = Settings.Get<string>("ThemeName");
                 ((App)App.Current).ChangeTheme(themeName);
             }
         }

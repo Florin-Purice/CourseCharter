@@ -42,9 +42,19 @@ namespace WoTMapWPF.CustomControls
         public partial bool IsNodesInfoVisible { get; private set; } = false;
         public bool IsNodesInfoHidden => !IsNodesInfoVisible;
         public Scene Scene => scene;
+        public MapManagerService MapManagerService => mapManagerService;
         public Map? Map => MapManagerService.Map;
         public Path? Path => MapManagerService.ActivePath;
-        public MapManagerService MapManagerService => mapManagerService;
+        public double DistanceUnitsPerPixel 
+        {
+            get
+            {
+                double x = 0;
+                if(MapManagerService.MapInfo != null)
+                    x = (double)MapManagerService.MapInfo.SampleUnits/MapManagerService.MapInfo.SamplePixels;
+                return x;
+            }  
+        }
 
         [RelayCommand]
         public void ToggleNodesInfoVisibility() => IsNodesInfoVisible = !IsNodesInfoVisible;
