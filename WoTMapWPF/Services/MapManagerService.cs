@@ -30,7 +30,7 @@ namespace WoTMapWPF.Services
         public event Action? AutosavePossible;
 
         [ObservableProperty]
-        public partial Map? Map { get; private set; }
+        public partial Map Map { get; private set; }
         [ObservableProperty]
         public partial MapFileDefinition? MapInfo { get; private set; }
 
@@ -38,6 +38,8 @@ namespace WoTMapWPF.Services
         {
             try
             {
+                //dispose of old map
+                Map.Dispose();
                 string? saveLocation = Settings.GetOrDefault<string>("SaveLocation");
                 if (saveLocation == null)
                     return false;
@@ -121,7 +123,7 @@ namespace WoTMapWPF.Services
             AutosavePossible?.Invoke();
         }
 
-        partial void OnMapChanged(Map? value)
+        partial void OnMapChanged(Map value)
         {
             NewMapLoaded?.Invoke();
         }

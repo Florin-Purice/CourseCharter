@@ -10,13 +10,19 @@ namespace WoTMapWPF.Graphics
 {
     internal class TextureLoader
     {
-        public static readonly Dictionary<string, int> LoadedTextures = new();
+        public static readonly Dictionary<string, TextureRecord> LoadedTextures = [];
 
         public static int LoadTexture(string path, out int width, out int height)
         {
-            width = 0; height = 0;
+            width = 0; 
+            height = 0;
             if (LoadedTextures.ContainsKey(path))
-                return LoadedTextures[path];
+            {
+                TextureRecord texture = LoadedTextures[path];
+                width = texture.Width;
+                height = texture.Height;
+                return texture.TextureId;
+            }
             if (path == null || !File.Exists(path))
                 return 0;
             try
@@ -38,7 +44,7 @@ namespace WoTMapWPF.Graphics
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
                 GL.BindTexture(TextureTarget.Texture2D, 0);
-                LoadedTextures[path] = textureId;
+                LoadedTextures[path] = new TextureRecord(textureId, textureBitmap.Width, textureBitmap.Height);
                 return textureId;
             }
             catch
@@ -53,7 +59,12 @@ namespace WoTMapWPF.Graphics
             if (uri == null || uri.OriginalString == null)
                 return 0;
             if (LoadedTextures.ContainsKey(uri.OriginalString))
-                return LoadedTextures[uri.OriginalString];
+            {
+                TextureRecord texture = LoadedTextures[uri.OriginalString];
+                width = texture.Width;
+                height = texture.Height;
+                return texture.TextureId;
+            }
             try
             {
                 StreamResourceInfo sri = App.GetResourceStream(uri);
@@ -78,7 +89,7 @@ namespace WoTMapWPF.Graphics
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
                     GL.BindTexture(TextureTarget.Texture2D, 0);
-                    LoadedTextures[uri.OriginalString] = textureId;
+                    LoadedTextures[uri.OriginalString] = new TextureRecord(textureId, textureBitmap.Width, textureBitmap.Height);
                     return textureId;
                 }
             }
@@ -102,10 +113,12 @@ namespace WoTMapWPF.Graphics
         {
             if (LoadedTextures.ContainsKey(path))
             {
-                int textureId = LoadedTextures[path];
+                int textureId = LoadedTextures[path].TextureId;
                 GL.DeleteTexture(textureId);
                 LoadedTextures.Remove(path);
             }
         }
     }
+
+    public record class TextureRecord(int TextureId, int Width, int Height);
 }

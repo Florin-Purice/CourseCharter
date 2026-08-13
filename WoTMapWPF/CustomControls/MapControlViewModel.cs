@@ -43,7 +43,7 @@ namespace WoTMapWPF.CustomControls
         public bool IsNodesInfoHidden => !IsNodesInfoVisible;
         public Scene Scene => scene;
         public MapManagerService MapManagerService => mapManagerService;
-        public Map? Map => MapManagerService.Map;
+        public Map Map => MapManagerService.Map;
         public Path? Path => MapManagerService.ActivePath;
         public double DistanceUnitsPerPixel 
         {
