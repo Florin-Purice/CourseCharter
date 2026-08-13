@@ -60,6 +60,8 @@ namespace WoTMapWPF.Services
                             });
                             if (pathDef != null && pathDef.Path != null)
                             {
+                                //add necesary ref to MapManager
+                                pathDef.Path.SetMapManager(this);
                                 ChangePathAndClearHistory(pathDef.Path);
                                 StorePathState();
                             }

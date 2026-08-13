@@ -16,9 +16,12 @@ namespace WoTMapWPF.CustomControls
 
         private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            ViewModel = DataContext as MapControlViewModel;
-            ViewModel?.PropertyChanged += ViewModel_PropertyChanged;
-            ViewModel?.MapManagerService.ActivePathPropertiesChanged += MapManagerService_ActivePathPropertiesChanged;
+            if (e.NewValue != null)
+            {
+                ViewModel = e.NewValue as MapControlViewModel;
+                ViewModel?.PropertyChanged += ViewModel_PropertyChanged;
+                ViewModel?.MapManagerService.ActivePathPropertiesChanged += MapManagerService_ActivePathPropertiesChanged;
+            }
         }
 
         public MapControlViewModel? ViewModel { get; private set; }
@@ -84,6 +87,12 @@ namespace WoTMapWPF.CustomControls
         {
             if(e.PropertyName == "SelectedIndex" && ViewModel?.Path != null)
                     ChangeListViewSelectedNode(ViewModel.Path.SelectedIndex);
+        }
+
+        private void PathNodesInfoListView_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (ViewModel?.Path != null)
+                ChangeListViewSelectedNode(ViewModel.Path.SelectedIndex);
         }
     }
 }

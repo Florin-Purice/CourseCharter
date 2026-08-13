@@ -49,10 +49,11 @@
                            ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}"/>
                 </Grid>
                 <ListView Name="PathNodesInfoListView"
-                  Grid.Row="1"
-                  ItemsSource="{Binding Path.Nodes}"
-                  Tag="ShowAll"
-                  SelectionChanged="PathNodesInfoListView_SelectionChanged">
+                          Grid.Row="1"
+                          ItemsSource="{Binding Path.Nodes}"
+                          Tag="ShowAll"
+                          SelectionChanged="PathNodesInfoListView_SelectionChanged"
+                          Loaded="PathNodesInfoListView_Loaded">
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem" BasedOn="{StaticResource PathNodeListViewItemStyle}">
                             <EventSetter Event="GotKeyboardFocus" Handler="ListViewItem_GotKeyboardFocus"/>
@@ -72,11 +73,11 @@
                      Command="{Binding ToggleNodesInfoVisibilityCommand}">
                 <Grid>
                     <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5 0">
-                        <TextBlock Text="{cc:DoubleBinding {Binding Path.TotalDistance},{Binding DistanceUnitsPerPixel},
+                        <TextBlock Text="{cc:DoubleBinding {Binding MapManagerService.ActivePath.TotalDistance},{Binding DistanceUnitsPerPixel},
                             Converter={StaticResource PixelsToUnitsConverter},
                             StringFormat=N0}"/>
                         <TextBlock Text=" "/>
-                        <TextBlock Text="{Binding DistanceUnit}"/>
+                        <TextBlock Text="{Binding MapManagerService.MapInfo.UnitLabel}"/>
                     </StackPanel>
                     <Border HorizontalAlignment="Right" ToolTip="Show details">
                         <Image Source="Res/expand_button.png" Height="20" 
