@@ -34,6 +34,15 @@
                             </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="BorderThickness" Value="1"/>
+                            <Setter Property="BorderBrush" Value="{DynamicResource ThemeColorInactive}"/>
+                            <Setter Property="Background" Value="{DynamicResource ThemeColorMuted}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource ThemeColorText}"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
                 </ListView>
             </Border>
             <Border Grid.Row="1" Style="{DynamicResource PaddedBorder}">

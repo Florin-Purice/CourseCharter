@@ -37,6 +37,7 @@
                                     <ColumnDefinition Width="300"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
+                                
                                 <Grid Grid.Column="0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="30"/>
@@ -51,6 +52,9 @@
                                     </Button>
                                     <TextBlock Grid.Column="1" Text="{Binding Name}"/>
                                 </Grid>
+                                
+                                
+                                
                                 <Grid Grid.Column="1">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
@@ -64,9 +68,20 @@
                                         <Image Source="..\Res\close_button.png"/>
                                     </Button>
                                 </Grid>
+                                
+                                
                             </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="BorderThickness" Value="1"/>
+                            <Setter Property="BorderBrush" Value="{DynamicResource ThemeColorInactive}"/>
+                            <Setter Property="Background" Value="{DynamicResource ThemeColorMuted}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource ThemeColorText}"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
                 </ListView>
             </Border>
             <Border Grid.Row="2" Style="{DynamicResource PaddedBorder}">

@@ -31,7 +31,6 @@ namespace WoTMapWPF
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            App app = (App)App.Current;
             //save window position/size
             if (WindowState == WindowState.Maximized)
             {

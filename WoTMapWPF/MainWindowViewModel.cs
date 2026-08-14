@@ -52,7 +52,14 @@ namespace WoTMapWPF
         public void ShowLoadMapPanel()
         {
             if (!navigationManager.Navigate(NavigationTarget.LoadMapPanel))
+            {
+                notificationService.DoNotify(new NotificationMessage
+                {
+                    Message = "No saved maps found. Please create a map first.",
+                    Type = NotificationType.ShowAndHide
+                });
                 navigationManager.Navigate(NavigationTarget.MapPanel);
+            }
         }
 
         [RelayCommand]

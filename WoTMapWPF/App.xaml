@@ -68,13 +68,6 @@
                     <Style TargetType="TextBlock">
                         <Setter Property="VerticalAlignment" Value="Center"/>
                     </Style>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                        <Setter Property="BorderThickness" Value="1"/>
-                        <Setter Property="BorderBrush" Value="{DynamicResource ThemeColorInactive}"/>
-                        <Setter Property="Background" Value="{DynamicResource ThemeColorMuted}"/>
-                        <Setter Property="Foreground" Value="{DynamicResource ThemeColorText}"/>
-                    </Style>
                     <Style TargetType="Border" x:Key="PanelBorderStyle">
                         <Setter Property="BorderBrush" Value="{DynamicResource ThemeColorInactive}"/>
                         <Setter Property="BorderThickness" Value="4"/>
