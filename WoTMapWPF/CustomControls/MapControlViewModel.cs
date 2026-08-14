@@ -41,6 +41,8 @@ namespace WoTMapWPF.CustomControls
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsNodesInfoHidden))]
         public partial bool IsNodesInfoVisible { get; private set; } = false;
+        [ObservableProperty]
+        public partial bool IsShowOnlyNamedNodesChecked { get; set; }
         public bool IsNodesInfoHidden => !IsNodesInfoVisible;
         public Scene Scene => scene;
         public MapManagerService MapManagerService => mapManagerService;
