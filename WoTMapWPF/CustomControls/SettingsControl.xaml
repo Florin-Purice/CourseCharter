@@ -8,7 +8,8 @@
              xmlns:custom="clr-namespace:WoTMapWPF.CustomControls"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type=custom:SettingsControlViewModel}"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             Style="{DynamicResource FormPanel}">
     <Border Style="{DynamicResource PanelBorderStyle}">
         <Grid Style="{StaticResource SettingsControlStyle}">
             <Grid.ColumnDefinitions>

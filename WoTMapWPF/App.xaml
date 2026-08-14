@@ -356,17 +356,21 @@
             </Style>
             <!--#endregion-->
 
-            <!--#region MainMenuButton-->
-            <!--<Style x:Key="NotificationControlStyle" TargetType="custom:NotificationControl">
+            <!--#region NotificationControl-->
+            <Style x:Key="NotificationControlStyle" TargetType="UserControl">
+                <Setter Property="Visibility" Value="Hidden"/>
                 <Setter Property="Opacity" Value="0.9"/>
                 <Setter Property="Height" Value="100"/>
                 <Setter Property="Background" Value="{DynamicResource ThemeColorSuccess}"/>
                 <Setter Property="Foreground" Value="{DynamicResource ThemeColorText}"/>
                 <Style.Triggers>
-                    <Trigger Property="IsError" Value="True">
+                    <DataTrigger Binding="{Binding IsVisible}" Value="True">
+                        <Setter Property="Visibility" Value="Visible"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding IsError}" Value="True">
                         <Setter Property="Background" Value="{DynamicResource ThemeColorError}"/>
                         <Setter Property="Foreground" Value="{DynamicResource ThemeColorText}"/>
-                    </Trigger>
+                    </DataTrigger>
                 </Style.Triggers>
                 <Style.Resources>
                     <Style TargetType="TextBlock">
@@ -376,7 +380,7 @@
                         <Setter Property="HorizontalAlignment" Value="Center"/>
                     </Style>
                 </Style.Resources>
-            </Style>-->
+            </Style>
             <!--#endregion-->
 
             <!--#region MainMenuButton-->
