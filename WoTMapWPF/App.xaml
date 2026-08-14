@@ -136,7 +136,7 @@
                             <ControlTemplate.Triggers>
                                 <MultiDataTrigger>
                                     <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding Path=Tag, RelativeSource={RelativeSource AncestorType=ListView}}" Value="ShowNamedOnly"/>
+                                        <Condition Binding="{Binding Path=DataContext.IsShowOnlyNamedNodesChecked , RelativeSource={RelativeSource AncestorType={x:Type custom:MapControl}}}" Value="True"/>
                                         <Condition Binding="{Binding IsNamed}" Value="False"/>
                                     </MultiDataTrigger.Conditions>
                                     <MultiDataTrigger.Setters>
@@ -145,7 +145,7 @@
                                 </MultiDataTrigger>
                                 <MultiDataTrigger>
                                     <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding Path=Tag, RelativeSource={RelativeSource AncestorType=ListView}}" Value="ShowNamedOnly"/>
+                                        <Condition Binding="{Binding Path=DataContext.IsShowOnlyNamedNodesChecked, RelativeSource={RelativeSource AncestorType={x:Type custom:MapControl}}}" Value="True"/>
                                         <Condition Binding="{Binding IsNamed}" Value="True"/>
                                     </MultiDataTrigger.Conditions>
                                     <MultiDataTrigger.Setters>
@@ -171,7 +171,8 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-
+            
+            <!--#region MapControl-->
             <Style TargetType="Grid" x:Key="MapControlStyle">
                 <Style.Resources>
                     <Style TargetType="GridSplitter" x:Key="VerticalGridSplitterStyle">
@@ -240,7 +241,8 @@
                     </Style>
                 </Style.Resources>
             </Style>
-
+            <!--#endregion-->
+            
             <!--#region GuideControl-->
             <Style TargetType="Grid" x:Key="GuideControlStyle">
                 <Style.Resources>

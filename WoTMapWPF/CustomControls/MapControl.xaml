@@ -37,10 +37,8 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <CheckBox Grid.Column="0"
-                          VerticalContentAlignment="Center"
-                          Checked="CheckBox_Checked"
-                          Unchecked="CheckBox_Unchecked"
-                          IsChecked="False"/>
+                              VerticalContentAlignment="Center"
+                              IsChecked="{Binding IsShowOnlyNamedNodesChecked}"/>
                     <TextBlock Grid.Column="1" 
                            Foreground="{DynamicResource ThemeColorText}"
                            TextTrimming="CharacterEllipsis"
