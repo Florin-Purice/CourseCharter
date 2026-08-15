@@ -2,13 +2,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using WoTMapWPF.CustomControls;
 using WoTMapWPF.Services;
-using WoTMapWPF.Stores;
 
 namespace WoTMapWPF
 {
     public partial class MainWindowViewModel : ViewModelBase
     {
-        private readonly NavigationStore navigationStore;
         private readonly INavigationManager navigationManager;
         private readonly NotificationService notificationService;
         [ObservableProperty]
@@ -23,17 +21,15 @@ namespace WoTMapWPF
             MapManagerService mapManagerService,
             NotificationControlViewModel notificationControlViewModel)
         {
-            this.navigationStore = navigationStore;
+            NavigationStore = navigationStore;
             this.navigationManager = navigationManager;
             MapManagerService = mapManagerService;
             NotificationControlViewModel = notificationControlViewModel;
             this.notificationService = notificationService;
-            navigationStore.ViewModelChanged += NavigationStore_ViewModelChanged;
             WindowTitleBase = "CourseCharter";
         }
 
-        public ViewModelBase? CurrentViewModel => navigationStore.CurrentViewModel;
-
+        public NavigationStore NavigationStore { get; }
         public MapManagerService MapManagerService { get; }
 
         [RelayCommand]
@@ -100,11 +96,6 @@ namespace WoTMapWPF
         public void ShowSettingsPanel()
         {
             navigationManager.Navigate(NavigationTarget.SettingsPanel);
-        }
-
-        private void NavigationStore_ViewModelChanged()
-        {
-            OnPropertyChanged(nameof(CurrentViewModel));
         }
     }
 }

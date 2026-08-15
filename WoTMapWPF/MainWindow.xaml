@@ -8,7 +8,7 @@
         xmlns:custom="clr-namespace:WoTMapWPF.CustomControls"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
-        Title="CourseCharter" 
+        Title="{Binding NavigationStore.WindowTitle}" 
         Height="700" Width="1200"
         SourceInitialized="Window_SourceInitialized"
         Closing="Window_Closing"
@@ -91,7 +91,7 @@
             </Button>
         </Grid>
         <Border Grid.Column="1" Style="{DynamicResource PanelContainerStyle}">
-            <ContentControl Content="{Binding CurrentViewModel}"/>
+            <ContentControl Content="{Binding NavigationStore.CurrentViewModel}"/>
         </Border>
         <StackPanel Grid.ColumnSpan="2" VerticalAlignment="Bottom">
             <ContentControl Content="{Binding NotificationControlViewModel}"/>
