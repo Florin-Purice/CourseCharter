@@ -22,6 +22,7 @@
 
             <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
             <local:PixelsToUnitsConverter x:Key="PixelsToUnitsConverter"/>
+            <local:EqualityConverter x:Key="EqualityConverter"/>
             <System:Double x:Key="FontSizeMain">18</System:Double>
             <System:Double x:Key="FontSizeSmall">14</System:Double>
             <System:Double x:Key="FontSizeLarge">24</System:Double>
@@ -404,6 +405,15 @@
                                 <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                             </Border>
                             <ControlTemplate.Triggers>
+                                <DataTrigger Value="True">
+                                    <DataTrigger.Binding>
+                                        <MultiBinding Converter="{StaticResource EqualityConverter}">
+                                            <Binding Path="Tag"  RelativeSource="{RelativeSource Self}"/>
+                                            <Binding Path="DataContext.NavigationStore.PanelTag"  RelativeSource="{RelativeSource AncestorType={x:Type local:MainWindow}}"/>
+                                        </MultiBinding>
+                                    </DataTrigger.Binding>
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
                                 <Trigger Property="IsDefaulted" Value="true">
                                     <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ThemeColorHighlight}"/>
                                 </Trigger>

@@ -25,6 +25,7 @@ namespace WoTMapWPF.Services
             MapControlViewModel viewModel = createViewModel();
             navigationStore.CurrentViewModel = viewModel;
             navigationStore.WindowTitle = windowTitle;
+            navigationStore.PanelTag = "Map";
             return true;
         }
     }

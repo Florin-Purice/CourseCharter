@@ -180,6 +180,7 @@ namespace WoTMapWPF
             return new NavigationService<NewMapControlViewModel>(
                 provider.GetRequiredService<NavigationStore>(),
                 () => provider.GetRequiredService<NewMapControlViewModel>(),
+                "NewMap",
                 windowTitle);
         }
 
@@ -189,6 +190,7 @@ namespace WoTMapWPF
             return new NavigationService<LoadMapControlViewModel>(
                 provider.GetRequiredService<NavigationStore>(),
                 () => provider.GetRequiredService<LoadMapControlViewModel>(),
+                "LoadMap",
                 windowTitle,
                 (vm) => vm.Maps.Count > 0);
         }
@@ -199,6 +201,7 @@ namespace WoTMapWPF
             return new NavigationService<SavePathControlViewModel>(
                 provider.GetRequiredService<NavigationStore>(),
                 () => provider.GetRequiredService<SavePathControlViewModel>(),
+                "SavePath",
                 windowTitle,
                 (vm) => vm.IsValid);
         }
@@ -209,6 +212,7 @@ namespace WoTMapWPF
             return new NavigationService<LoadPathControlViewModel>(
                 provider.GetRequiredService<NavigationStore>(),
                 () => provider.GetRequiredService<LoadPathControlViewModel>(),
+                "LoadPath",
                 windowTitle,
                 (vm) => vm.Paths.Count > 0);
         }
@@ -219,6 +223,7 @@ namespace WoTMapWPF
             return new NavigationService<GuideControlViewModel>(
                 provider.GetRequiredService<NavigationStore>(),
                 () => provider.GetRequiredService<GuideControlViewModel>(),
+                "Guide",
                 windowTitle);
         }
 
@@ -228,6 +233,7 @@ namespace WoTMapWPF
             return new NavigationService<SettingsControlViewModel>(
                 provider.GetRequiredService<NavigationStore>(),
                 () => provider.GetRequiredService<SettingsControlViewModel>(),
+                "Settings",
                 windowTitle);
         }
     }

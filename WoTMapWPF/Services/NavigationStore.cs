@@ -10,5 +10,8 @@ namespace WoTMapWPF.Services
 
         [ObservableProperty]
         public partial string WindowTitle { get; set; } = string.Empty;
+
+        [ObservableProperty]
+        public partial string PanelTag { get; set; } = string.Empty;
     }
 }
