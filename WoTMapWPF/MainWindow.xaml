@@ -53,31 +53,37 @@
             </Grid.RowDefinitions>
             <StackPanel Style="{DynamicResource MainMenuPanel}">
                 <Button Style="{DynamicResource MainMenuButtonStyle}"
+                        Tag="Map"
                         ToolTip="Show map"
                         Command="{Binding ShowMapPanelCommand}">
                     <Image Source="Res/map_button.png"/>
                 </Button>
                 <Button Style="{DynamicResource MainMenuButtonStyle}"
+                        Tag="NewMap"
                         ToolTip="Create a new map"
                         Command="{Binding ShowNewMapPanelCommand}">
                     <Image Source="Res/save_map_button.png"/>
                 </Button>
                 <Button Style="{DynamicResource MainMenuButtonStyle}"
+                        Tag="LoadMap"
                         ToolTip="Load map"
                         Command="{Binding ShowLoadMapPanelCommand}">
                     <Image Source="Res/load_map_button.png"/>
                 </Button>
-                <Button Style="{DynamicResource MainMenuButtonStyle}"
+                <Button Style="{DynamicResource MainMenuButtonStyle}" 
+                        Tag="SavePath"
                         ToolTip="Save current path"
                         Command="{Binding ShowSavePathPanelCommand}">
                     <Image Source="Res/save_path_button.png"/>
                 </Button>
-                <Button Style="{DynamicResource MainMenuButtonStyle}"
+                <Button Style="{DynamicResource MainMenuButtonStyle}" 
+                        Tag="LoadPath"
                         ToolTip="Load a path"
                         Command="{Binding ShowLoadPathPanelCommand}">
                     <Image Source="Res/load_path_button.png"/>
                 </Button>
                 <Button Style="{DynamicResource MainMenuButtonStyle}" 
+                        Tag="Guide"
                         ToolTip="How to use"
                         Command="{Binding ShowGuidePanelCommand}">
                     <Image Source="Res/T_Ctrl_Key_White.png"/>
@@ -85,6 +91,7 @@
             </StackPanel>
             <Button Grid.Row="2" 
                     Style="{DynamicResource MainMenuButtonStyle}" 
+                    Tag="Settings"
                     ToolTip="Settings"
                     Command="{Binding ShowSettingsPanelCommand}">
                 <Image Source="Res/settings_button.png"/>

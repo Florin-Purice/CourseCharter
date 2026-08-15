@@ -8,13 +8,15 @@ namespace WoTMapWPF.Services
     {
         private readonly NavigationStore navigationStore;
         private readonly Func<T> createViewModel;
+        private readonly string panelTag;
         private readonly string windowTitle;
         private readonly Func<T, bool>? checkValidity;
 
-        public NavigationService(NavigationStore navigationStore, Func<T> createViewModel, string windowTitle, Func<T, bool>? checkValidity = null)
+        public NavigationService(NavigationStore navigationStore, Func<T> createViewModel, string panelTag, string windowTitle, Func<T, bool>? checkValidity = null)
         {
             this.navigationStore = navigationStore;
             this.createViewModel = createViewModel;
+            this.panelTag = panelTag;
             this.windowTitle = windowTitle;
             this.checkValidity = checkValidity;
         }
@@ -26,6 +28,7 @@ namespace WoTMapWPF.Services
             {
                 navigationStore.CurrentViewModel = viewModel;
                 navigationStore.WindowTitle = windowTitle;
+                navigationStore.PanelTag = panelTag;
                 return true;
             }
             return false;
