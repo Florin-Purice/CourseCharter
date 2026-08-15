@@ -3,6 +3,8 @@ using Microsoft.Extensions.Hosting;
 using OpenTK.Wpf;
 using System;
 using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
@@ -41,6 +43,11 @@ namespace WoTMapWPF
             string saveLocation = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + appTitle;
             app.Resources["SaveLocation"] = saveLocation;
             app.Resources["AppTitle"] = appTitle;
+            app.Resources["JsonSerializerOptions"] = new JsonSerializerOptions()
+            {
+                NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
+                WriteIndented = true
+            };
             app.LoadSettings();
 
             app.MainWindow = host.Services.GetRequiredService<MainWindow>();

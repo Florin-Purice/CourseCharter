@@ -68,11 +68,7 @@ namespace WoTMapWPF.CustomControls
                 pathFileDefinition.Name = Name;
                 pathFileDefinition.ImageMD5 = imageMD5;
                 pathFileDefinition.Path = mapManagerService.ActivePath;
-                string jsonString = JsonSerializer.Serialize(pathFileDefinition, new JsonSerializerOptions()
-                {
-                    NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
-                    WriteIndented = true
-                });
+                string jsonString = JsonSerializer.Serialize(pathFileDefinition, Settings.Get<JsonSerializerOptions>("JsonSerializerOptions"));
                 Directory.CreateDirectory($"{saveLocation}\\maps\\{imageMD5}\\paths");
                 File.WriteAllText($"{saveLocation}\\maps\\{imageMD5}\\paths\\{Name}.info", jsonString);
                 notificationService.DoNotify(new NotificationMessage

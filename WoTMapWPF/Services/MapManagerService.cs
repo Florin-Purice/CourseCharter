@@ -55,11 +55,7 @@ namespace WoTMapWPF.Services
                         if (File.Exists(fileName))
                         {
                             string jsonString = File.ReadAllText(fileName);
-                            PathFileDefinition? pathDef = JsonSerializer.Deserialize<PathFileDefinition>(jsonString, new JsonSerializerOptions()
-                            {
-                                NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
-                                WriteIndented = true
-                            });
+                            PathFileDefinition? pathDef = JsonSerializer.Deserialize<PathFileDefinition>(jsonString, Settings.Get<JsonSerializerOptions>("JsonSerializerOptions"));
                             if (pathDef != null && pathDef.Path != null)
                             {
                                 //add necesary ref to MapManager

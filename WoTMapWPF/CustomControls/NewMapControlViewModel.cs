@@ -97,11 +97,7 @@ namespace WoTMapWPF.CustomControls
                 map.SamplePixels = SamplePixels;
                 map.ImageExt = imageFileExtension;
 
-                string jsonString = JsonSerializer.Serialize(map, new JsonSerializerOptions()
-                {
-                    NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
-                    WriteIndented = true
-                });
+                string jsonString = JsonSerializer.Serialize(map, Settings.Get<JsonSerializerOptions>("JsonSerializerOptions"));
                 Directory.CreateDirectory($"{saveLocation}\\maps\\{ImageMD5}");
                 if (!File.Exists($"{saveLocation}\\maps\\{ImageMD5}\\map_image{imageFileExtension}"))
                     File.Copy(ImageFilePath, $"{saveLocation}\\maps\\{ImageMD5}\\map_image{imageFileExtension}", true);

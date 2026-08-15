@@ -71,11 +71,7 @@ namespace WoTMapWPF.CustomControls
                         try
                         {
                             string jsonString = File.ReadAllText(mapInfoFile);
-                            MapFileDefinition? map = JsonSerializer.Deserialize<MapFileDefinition>(jsonString, new JsonSerializerOptions()
-                            {
-                                NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
-                                WriteIndented = true
-                            });
+                            MapFileDefinition? map = JsonSerializer.Deserialize<MapFileDefinition>(jsonString, Settings.Get<JsonSerializerOptions>("JsonSerializerOptions"));
                             if (map != null)
                                 maps.Add(map);
                         }
@@ -131,11 +127,7 @@ namespace WoTMapWPF.CustomControls
                                 try
                                 {
                                     string jsonString = File.ReadAllText(mapInfoFile);
-                                    MapFileDefinition? map = JsonSerializer.Deserialize<MapFileDefinition>(jsonString, new JsonSerializerOptions()
-                                    {
-                                        NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
-                                        WriteIndented = true
-                                    });
+                                    MapFileDefinition? map = JsonSerializer.Deserialize<MapFileDefinition>(jsonString, Settings.Get<JsonSerializerOptions>("JsonSerializerOptions"));
                                     if (map != null)
                                     {
                                         if (SelectedMap.Equals(map))

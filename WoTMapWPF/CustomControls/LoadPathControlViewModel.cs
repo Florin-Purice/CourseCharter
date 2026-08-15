@@ -36,11 +36,7 @@ namespace WoTMapWPF.CustomControls
                     try
                     {
                         string jsonString = File.ReadAllText(pathInfoFile);
-                        PathFileDefinition? path = JsonSerializer.Deserialize<PathFileDefinition>(jsonString, new JsonSerializerOptions()
-                        {
-                            NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
-                            WriteIndented = true
-                        });
+                        PathFileDefinition? path = JsonSerializer.Deserialize<PathFileDefinition>(jsonString, Settings.Get<JsonSerializerOptions>("JsonSerializerOptions"));
                         if (path != null)
                         {
                             //add necesary ref to MapManager
@@ -104,11 +100,7 @@ namespace WoTMapWPF.CustomControls
                             try
                             {
                                 string jsonString = File.ReadAllText(pathInfoFile);
-                                PathFileDefinition? path = JsonSerializer.Deserialize<PathFileDefinition>(jsonString, new JsonSerializerOptions()
-                                {
-                                    NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
-                                    WriteIndented = true
-                                });
+                                PathFileDefinition? path = JsonSerializer.Deserialize<PathFileDefinition>(jsonString, Settings.Get<JsonSerializerOptions>("JsonSerializerOptions"));
                                 if (path != null)
                                 {
                                     if (SelectedPath.Equals(path))
