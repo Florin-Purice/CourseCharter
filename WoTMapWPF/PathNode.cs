@@ -29,7 +29,7 @@ namespace WoTMapWPF
 
         public object Clone()
         {
-            PathNode clone = new PathNode
+            PathNode clone = new()
             {
                 Position = (GLPosition)this.Position.Clone(),
                 Index = this.Index,
@@ -45,31 +45,31 @@ namespace WoTMapWPF
         /// <summary>
         /// GL position where the marker is drawn
         /// </summary>
-        public GLPosition Position { get { return position; } set { position = value; OnPropertyChanged("Position"); } }
+        public GLPosition Position { get { return position; } set { position = value; OnPropertyChanged(nameof(Position)); } }
         /// <summary>
         /// The index of this node in the path containing it, starting with 0
         /// </summary>
-        public int Index { get { return index; } set { index = value; OnPropertyChanged("Index"); } }
+        public int Index { get { return index; } set { index = value; OnPropertyChanged(nameof(Index)); } }
         /// <summary>
         /// User defined name
         /// </summary>
-        public string Name { get { return name; } set { name = value; OnPropertyChanged("Name"); } }
+        public string Name { get { return name; } set { name = value; OnPropertyChanged(nameof(Name)); } }
         /// <summary>
         /// Distance to next path node, in pixels on map image
         /// </summary>
-        public double Distance { get { return distance; } set { distance = value; OnPropertyChanged("Distance"); } }
+        public double Distance { get { return distance; } set { distance = value; OnPropertyChanged(nameof(Distance)); } }
         /// <summary>
         /// True for all path nodes except last
         /// </summary>
-        public bool HasDistance { get { return hasDistance; } set { hasDistance = value; OnPropertyChanged("HasDistance"); } }
+        public bool HasDistance { get { return hasDistance; } set { hasDistance = value; OnPropertyChanged(nameof(HasDistance)); } }
         /// <summary>
         /// True if has user defined name. Also true for first and last node
         /// </summary>
-        public bool IsNamed { get { return isNamed; } set { isNamed = value; OnPropertyChanged("IsNamed"); } }
+        public bool IsNamed { get { return isNamed; } set { isNamed = value; OnPropertyChanged(nameof(IsNamed)); } }
         /// <summary>
         /// Distance in map pixels to next named node
         /// </summary>
-        public double CompoundDistance { get { return compoundDistance; } set { compoundDistance = value; OnPropertyChanged("CompoundDistance"); } }
+        public double CompoundDistance { get { return compoundDistance; } set { compoundDistance = value; OnPropertyChanged(nameof(CompoundDistance)); } }
 
         [JsonIgnore]
         public string DisplayName

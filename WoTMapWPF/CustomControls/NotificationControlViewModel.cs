@@ -10,17 +10,17 @@ namespace WoTMapWPF.CustomControls
     {
         private CancellationTokenSource? cancellationTokenSource;
 
-        [ObservableProperty]
-        private string text = string.Empty;
-        [ObservableProperty]
-        private bool isVisible = false;
-        [ObservableProperty]
-        private bool isError = false;
-
         public NotificationControlViewModel(NotificationService notificationService)
         {
             notificationService.Notify += NotificationService_Notify;
         }
+
+        [ObservableProperty]
+        public partial string Text { get; set; } = string.Empty;
+        [ObservableProperty]
+        public partial bool IsVisible { get; set; } = false;
+        [ObservableProperty]
+        public partial bool IsError { get; set; } = false;
 
         private void NotificationService_Notify(NotificationMessage obj)
         {

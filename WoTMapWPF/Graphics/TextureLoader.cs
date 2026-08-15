@@ -104,8 +104,10 @@ namespace WoTMapWPF.Graphics
             return LoadTexture(path, out int w, out int h);
         }
 
-        public static int LoadTexture(Uri uri)
+        public static int LoadTexture(Uri? uri)
         {
+            if (uri == null)
+                return -1;
             return LoadTexture(uri, out int w, out int h);
         }
 

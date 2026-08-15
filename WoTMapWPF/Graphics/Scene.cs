@@ -5,7 +5,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Windows;
 using System.Windows.Media;
 using WoTMapWPF.Services;
 using static WoTMapWPF.PathNode;
@@ -22,10 +21,10 @@ namespace WoTMapWPF.Graphics
         private int fixedColorUniformLocation;
         private Matrix4 viewMatrix = Matrix4.Identity;
         private Matrix4 projectionMatrix = Matrix4.Identity;
-        private RouteMarker normalMarker = new RouteMarker(RouteMarker.MarkerType.Normal);
-        private RouteMarker normalSelectedMarker = new RouteMarker(RouteMarker.MarkerType.NormalSelected);
-        private RouteMarker endMarker = new RouteMarker(RouteMarker.MarkerType.End);
-        private RouteMarker endSelectedMarker = new RouteMarker(RouteMarker.MarkerType.EndSelected);
+        private readonly RouteMarker normalMarker = new(RouteMarker.MarkerType.Normal);
+        private readonly RouteMarker normalSelectedMarker = new(RouteMarker.MarkerType.NormalSelected);
+        private readonly RouteMarker endMarker = new(RouteMarker.MarkerType.End);
+        private readonly RouteMarker endSelectedMarker = new(RouteMarker.MarkerType.EndSelected);
         private int moveMarkerIndex = -1;
 
         public Scene(GLWpfControl glc, MapManagerService mapManagerService)
@@ -112,13 +111,13 @@ namespace WoTMapWPF.Graphics
 
         public void AddMarker(double mouseX, double mouseY)
         {
-            if(ActivePath != null)
+            if (ActivePath != null)
             {
                 (float xu, float yu) = MousePositionToGlCoord(mouseX, mouseY);
                 if (IsLocationOnMap(xu, yu))
                 {
                     int markerIndex;
-                    GLPosition position = new GLPosition(xu, yu);
+                    GLPosition position = new(xu, yu);
                     if (ActivePath.SelectedIndex >= 0 && ActivePath.SelectedIndex < ActivePath.Nodes.Count)
                         markerIndex = ActivePath.SelectedIndex + 1;
                     else
@@ -171,7 +170,7 @@ namespace WoTMapWPF.Graphics
                     float yuMov = (float)yPixels / PixelsPerUnit + ActivePath.Nodes[nearby].Position.Y;
                     if (IsLocationOnMap(xuMov, yuMov))
                     {
-                        GLPosition newPosition = new GLPosition(xuMov, yuMov);
+                        GLPosition newPosition = new(xuMov, yuMov);
                         ActivePath.Nodes[nearby].Position = newPosition;
                     }
                     moveMarkerIndex = nearby;
@@ -182,6 +181,18 @@ namespace WoTMapWPF.Graphics
         public void ChangeShaderFixedColor(byte r, byte g, byte b, byte a)
         {
             GL.Uniform4(fixedColorUniformLocation, r / 255f, g / 255f, b / 255f, a / 255f);
+        }
+
+        private static string ReadShaderString(string fileName)
+        {
+            using Stream? stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("WoTMapWPF.Graphics.Shaders." + fileName);
+            if (stream != null)
+            {
+                using StreamReader reader = new(stream);
+                return reader.ReadToEnd();
+            }
+            else
+                return string.Empty;
         }
 
         private void Draw()
@@ -286,18 +297,6 @@ namespace WoTMapWPF.Graphics
             Matrix4 translateM = Matrix4.CreateTranslation(-CameraTranslateX, -CameraTranslateY, 0f);
             Matrix4 scaleM = Matrix4.CreateScale(Scale);
             viewMatrix = translateM * scaleM;
-        }
-
-        private string ReadShaderString(string fileName)
-        {
-            using Stream? stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("WoTMapWPF.Graphics.Shaders." + fileName);
-            if (stream != null)
-            {
-                using StreamReader reader = new StreamReader(stream);
-                return reader.ReadToEnd();
-            }
-            else
-                return string.Empty;
         }
 
         private (float glX, float glY) MousePositionToGlCoord(double mouseX, double mouseY)

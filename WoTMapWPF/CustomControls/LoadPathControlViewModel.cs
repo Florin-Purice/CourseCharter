@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using WoTMapWPF.Services;
 using static WoTMapWPF.App;
 
@@ -29,18 +28,14 @@ namespace WoTMapWPF.CustomControls
             this.mapManagerService = mapManagerService;
 
             string? saveLocation = Settings.GetOrDefault<string>("SaveLocation");
-            List<PathFileDefinition> paths = new List<PathFileDefinition>();
+            List<PathFileDefinition> paths = [];
             string dir = $"{saveLocation}\\maps\\{mapManagerService.MapInfo?.ImageMD5}\\paths";
             if (Directory.Exists(dir))
                 foreach (string pathInfoFile in Directory.GetFiles(dir, "*.info"))
                     try
                     {
                         string jsonString = File.ReadAllText(pathInfoFile);
-                        PathFileDefinition? path = JsonSerializer.Deserialize<PathFileDefinition>(jsonString, new JsonSerializerOptions()
-                        {
-                            NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
-                            WriteIndented = true
-                        });
+                        PathFileDefinition? path = JsonSerializer.Deserialize<PathFileDefinition>(jsonString, Settings.Get<JsonSerializerOptions>("JsonSerializerOptions"));
                         if (path != null)
                         {
                             //add necesary ref to MapManager
@@ -49,15 +44,14 @@ namespace WoTMapWPF.CustomControls
                         }
                     }
                     catch { }
-            paths.Sort((a, b) => a == null ? 1 : a.Name.CompareTo(b.Name));
+            paths.Sort((a, b) => a != null && a.Name != null ? a.Name.CompareTo(b.Name) : 1);
             foreach (PathFileDefinition path in paths)
                 Paths.Add(path);
         }
 
         [ObservableProperty]
         public partial PathFileDefinition? SelectedPath { get; set; }
-
-        public ObservableCollection<PathFileDefinition> Paths { get; set; } = new ObservableCollection<PathFileDefinition>();
+        public ObservableCollection<PathFileDefinition> Paths { get; set; } = [];
 
         [RelayCommand]
         private void LoadPath()
@@ -93,22 +87,18 @@ namespace WoTMapWPF.CustomControls
             if (SelectedPath != null)
             {
                 string message = $"Are you sure you want to delete the path \"{SelectedPath.Name}\"?";
-                ConfirmActionWindow caw = new ConfirmActionWindow(message);
+                ConfirmActionWindow caw = new(message);
                 if (caw.ShowDialog().GetValueOrDefault())
                 {
                     string? saveLocation = Settings.GetOrDefault<string>("SaveLocation");
-                    List<PathFileDefinition> paths = new List<PathFileDefinition>();
+                    List<PathFileDefinition> paths = [];
                     string dir = $"{saveLocation}\\maps\\{mapManagerService.MapInfo?.ImageMD5}\\paths";
                     if (Directory.Exists(dir))
                         foreach (string pathInfoFile in Directory.GetFiles(dir, "*.info"))
                             try
                             {
                                 string jsonString = File.ReadAllText(pathInfoFile);
-                                PathFileDefinition? path = JsonSerializer.Deserialize<PathFileDefinition>(jsonString, new JsonSerializerOptions()
-                                {
-                                    NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
-                                    WriteIndented = true
-                                });
+                                PathFileDefinition? path = JsonSerializer.Deserialize<PathFileDefinition>(jsonString, Settings.Get<JsonSerializerOptions>("JsonSerializerOptions"));
                                 if (path != null)
                                 {
                                     if (SelectedPath.Equals(path))
@@ -129,7 +119,7 @@ namespace WoTMapWPF.CustomControls
                     {
                         SelectedPath = null;
                         Paths.Clear();
-                        paths.Sort((a, b) => a == null ? 1 : a.Name.CompareTo(b.Name));
+                        paths.Sort((a, b) => a != null && a.Name != null ? a.Name.CompareTo(b.Name) : 1);
                         foreach (PathFileDefinition path in paths)
                             Paths.Add(path);
                     }

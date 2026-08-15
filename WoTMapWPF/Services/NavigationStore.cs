@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
 
 namespace WoTMapWPF.Services
 {
@@ -7,10 +6,8 @@ namespace WoTMapWPF.Services
     {
         [ObservableProperty]
         public partial ViewModelBase? CurrentViewModel { get; set; }
-
         [ObservableProperty]
         public partial string WindowTitle { get; set; } = string.Empty;
-
         [ObservableProperty]
         public partial string PanelTag { get; set; } = string.Empty;
     }

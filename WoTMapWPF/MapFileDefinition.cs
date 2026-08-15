@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Text.Json.Serialization;
-using WoTMapWPF.Services;
 
 namespace WoTMapWPF
 {
@@ -10,6 +9,7 @@ namespace WoTMapWPF
         public string UnitLabel { get; set; } = string.Empty;
         public string ImageMD5 { get; set; } = string.Empty;
         public string ImageExt { get; set; } = string.Empty;
+
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(DistanceUnitsPerPixel))]
         public partial int SampleUnits { get; set; }
@@ -21,7 +21,7 @@ namespace WoTMapWPF
 
         public override bool Equals(object? obj)
         {
-            if (obj == null || !(obj is MapFileDefinition))
+            if (obj == null || obj is not MapFileDefinition)
                 return false;
             MapFileDefinition other = (MapFileDefinition)obj;
             if (Name == other.Name &&

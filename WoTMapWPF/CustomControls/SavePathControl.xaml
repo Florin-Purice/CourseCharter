@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WoTMapWPF.CustomControls"
-             xmlns:app="clr-namespace:WoTMapWPF"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type=local:SavePathControlViewModel}"
              d:DesignHeight="450" d:DesignWidth="800"
@@ -25,7 +24,7 @@
                 <TextBlock>Name</TextBlock>
             </Border>
             <Border Grid.Row="1" Grid.Column="1" Style="{DynamicResource PaddedBorder}">
-                <app:AutoCompleteTextBox Text="{Binding Name}" SuggestionValues="{Binding NameSuggestionValues}" TextChanged="FileNameFilter_TextChanged"/>
+                <local:AutoCompleteTextBox Text="{Binding Name}" SuggestionValues="{Binding NameSuggestionValues}" TextChanged="FileNameFilter_TextChanged"/>
             </Border>
             <Border Grid.Row="2" Grid.ColumnSpan="2" Style="{DynamicResource PaddedBorder}">
                 <Button Style="{DynamicResource SubmitButton}" Command="{Binding SaveCommand}" Content="Save"/>

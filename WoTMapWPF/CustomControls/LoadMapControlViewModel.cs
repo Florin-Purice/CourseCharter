@@ -5,10 +5,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Windows.Media.Imaging;
 using System.Windows.Resources;
-using WoTMapWPF.Graphics;
 using WoTMapWPF.Services;
 
 namespace WoTMapWPF.CustomControls
@@ -19,16 +17,9 @@ namespace WoTMapWPF.CustomControls
         private readonly NotificationService notificationService;
         private readonly MapManagerService mapManagerService;
 
-        [ObservableProperty]
-        private MapFileDefinition? selectedMap;
-        [ObservableProperty]
-        private WriteableBitmap previewOnBitmap;
-        [ObservableProperty]
-        private WriteableBitmap previewOffBitmap;
-
         public LoadMapControlViewModel(
             INavigationManager navigationManager,
-            NotificationService notificationService, 
+            NotificationService notificationService,
             MapManagerService mapManagerService)
         {
             this.navigationManager = navigationManager;
@@ -36,8 +27,8 @@ namespace WoTMapWPF.CustomControls
             this.mapManagerService = mapManagerService;
 
             int imageHeight = 64;
-            BitmapImage bitmapImage = new BitmapImage();
-            Uri uri = new Uri("../Res/preview_off.png", UriKind.Relative);
+            BitmapImage bitmapImage = new();
+            Uri uri = new("../Res/preview_off.png", UriKind.Relative);
             StreamResourceInfo sri = App.GetResourceStream(uri);
             using (Stream stream = sri.Stream)
             {
@@ -47,7 +38,7 @@ namespace WoTMapWPF.CustomControls
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                 bitmapImage.EndInit();
                 bitmapImage.Freeze();
-                previewOffBitmap = new WriteableBitmap(bitmapImage);
+                PreviewOffBitmap = new WriteableBitmap(bitmapImage);
             }
             uri = new Uri("../Res/preview_on.png", UriKind.Relative);
             sri = App.GetResourceStream(uri);
@@ -60,22 +51,18 @@ namespace WoTMapWPF.CustomControls
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                 bitmapImage.EndInit();
                 bitmapImage.Freeze();
-                previewOnBitmap = new WriteableBitmap(bitmapImage);
+                PreviewOnBitmap = new WriteableBitmap(bitmapImage);
             }
 
             string? saveLocation = Settings.GetOrDefault<string>("SaveLocation");
-            List<MapFileDefinition> maps = new List<MapFileDefinition>();
+            List<MapFileDefinition> maps = [];
             if (Directory.Exists($"{saveLocation}\\maps"))
                 foreach (string subdir in Directory.GetDirectories($"{saveLocation}\\maps"))
                     foreach (string mapInfoFile in Directory.GetFiles(subdir, "*.info"))
                         try
                         {
                             string jsonString = File.ReadAllText(mapInfoFile);
-                            MapFileDefinition? map = JsonSerializer.Deserialize<MapFileDefinition>(jsonString, new JsonSerializerOptions()
-                            {
-                                NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
-                                WriteIndented = true
-                            });
+                            MapFileDefinition? map = JsonSerializer.Deserialize<MapFileDefinition>(jsonString, Settings.Get<JsonSerializerOptions>("JsonSerializerOptions"));
                             if (map != null)
                                 maps.Add(map);
                         }
@@ -83,15 +70,15 @@ namespace WoTMapWPF.CustomControls
             maps.Sort((a, b) => a == null ? 1 : a.Name.CompareTo(b.Name));
             foreach (MapFileDefinition map in maps)
                 Maps.Add(map);
-            ////also recolor preview button images in case the theme was changed
-            //SolidColorBrush brush = (SolidColorBrush)App.Current.Resources["ThemeColorText"];
-            //if (PreviewOffBitmap != null)
-            //    BitmapColorChanger.ChangeColorKeepAlpha(PreviewOffBitmap, brush.Color);
-            //if (PreviewOnBitmap != null)
-            //    BitmapColorChanger.ChangeColorKeepAlpha(PreviewOnBitmap, brush.Color);
         }
 
-        public ObservableCollection<MapFileDefinition> Maps { get; set; } = new ObservableCollection<MapFileDefinition>();
+        [ObservableProperty]
+        public partial MapFileDefinition? SelectedMap { get; set; }
+        [ObservableProperty]
+        public partial WriteableBitmap PreviewOnBitmap { get; set; }
+        [ObservableProperty]
+        public partial WriteableBitmap PreviewOffBitmap { get; set; }
+        public ObservableCollection<MapFileDefinition> Maps { get; set; } = [];
 
         [RelayCommand]
         public void LoadMap()
@@ -120,22 +107,18 @@ namespace WoTMapWPF.CustomControls
             if (SelectedMap != null)
             {
                 string message = $"Are you sure you want to delete the map \"{SelectedMap.Name}\"?\nThis can also result in the removal of associated paths.";
-                ConfirmActionWindow caw = new ConfirmActionWindow(message);
+                ConfirmActionWindow caw = new(message);
                 if (caw.ShowDialog().GetValueOrDefault())
                 {
                     string? saveLocation = Settings.GetOrDefault<string>("SaveLocation");
-                    List<MapFileDefinition> maps = new List<MapFileDefinition>();
+                    List<MapFileDefinition> maps = [];
                     if (Directory.Exists($"{saveLocation}\\maps"))
                         foreach (string subdir in Directory.GetDirectories($"{saveLocation}\\maps"))
                             foreach (string mapInfoFile in Directory.GetFiles(subdir, "*.info"))
                                 try
                                 {
                                     string jsonString = File.ReadAllText(mapInfoFile);
-                                    MapFileDefinition? map = JsonSerializer.Deserialize<MapFileDefinition>(jsonString, new JsonSerializerOptions()
-                                    {
-                                        NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
-                                        WriteIndented = true
-                                    });
+                                    MapFileDefinition? map = JsonSerializer.Deserialize<MapFileDefinition>(jsonString, Settings.Get<JsonSerializerOptions>("JsonSerializerOptions"));
                                     if (map != null)
                                     {
                                         if (SelectedMap.Equals(map))

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using WoTMapWPF.Graphics;
 
 namespace WoTMapWPF.CustomControls
 {
@@ -62,7 +60,7 @@ namespace WoTMapWPF.CustomControls
             switch (e.PropertyName)
             {
                 case "Path":
-                    if(ViewModel?.Path != null)
+                    if (ViewModel?.Path != null)
                     {
                         PathNodesInfoListView.ItemsSource = ViewModel.Path.Nodes;
                         ChangeListViewSelectedNode(ViewModel.Path.SelectedIndex);
@@ -85,8 +83,8 @@ namespace WoTMapWPF.CustomControls
 
         private void MapManagerService_ActivePathPropertiesChanged(System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if(e.PropertyName == "SelectedIndex" && ViewModel?.Path != null)
-                    ChangeListViewSelectedNode(ViewModel.Path.SelectedIndex);
+            if (e.PropertyName == "SelectedIndex" && ViewModel?.Path != null)
+                ChangeListViewSelectedNode(ViewModel.Path.SelectedIndex);
         }
 
         private void PathNodesInfoListView_Loaded(object sender, RoutedEventArgs e)

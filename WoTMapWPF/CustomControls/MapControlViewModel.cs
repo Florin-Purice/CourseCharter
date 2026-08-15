@@ -4,7 +4,6 @@ using OpenTK.Wpf;
 using System;
 using System.IO;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Timers;
 using System.Windows;
 using System.Windows.Input;
@@ -203,11 +202,7 @@ namespace WoTMapWPF.CustomControls
                     ImageMD5 = MapManagerService.MapInfo?.ImageMD5,
                     Path = this.Path
                 };
-                string jsonString = JsonSerializer.Serialize(pathFileDefinition, new JsonSerializerOptions()
-                {
-                    NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
-                    WriteIndented = true
-                });
+                string jsonString = JsonSerializer.Serialize(pathFileDefinition, Settings.Get<JsonSerializerOptions>("JsonSerializerOptions"));
                 Directory.CreateDirectory($"{saveLocation}\\maps\\{pathFileDefinition.ImageMD5}\\autosave");
                 try
                 {

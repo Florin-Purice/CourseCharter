@@ -16,7 +16,7 @@ namespace WoTMapWPF.Graphics
         public Map()
         {
             TexturePath = "../Res/no_map.png";
-            Uri textureUri = new Uri(TexturePath, UriKind.Relative);
+            Uri textureUri = new(TexturePath, UriKind.Relative);
             TextureID = TextureLoader.LoadTexture(textureUri, out int wp, out int hp);
             AspectRatio = (float)wp / (float)hp;
             HeightP = hp;
@@ -65,24 +65,19 @@ namespace WoTMapWPF.Graphics
         {
             float halfH = Scene.VERTICAL_UNITS / 2;
             float halfW = halfH * AspectRatio;
-            Vector2[] vertices = new Vector2[]
-               {
+            Vector2[] vertices = [
                 new Vector2(-halfW, -halfH),
                 new Vector2(halfW, -halfH),
                 new Vector2(halfW, halfH),
-                new Vector2(-halfW, halfH)
-               };
-            Vector2[] uv = new Vector2[]
-            {
+                new Vector2(-halfW, halfH)];
+            Vector2[] uv = [
                 new Vector2(0, 1),
                 new Vector2(1, 1),
                 new Vector2(1, 0),
-                new Vector2(0, 0)
-            };
-            int[] indices = new int[] {
+                new Vector2(0, 0)];
+            int[] indices = [
                 0, 1, 2,
-                0, 2, 3
-            };
+                0, 2, 3];
             IndicesCount = indices.Length;
 
             GL.GenBuffers(1, out int posVbo);

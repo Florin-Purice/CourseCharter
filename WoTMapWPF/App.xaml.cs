@@ -3,8 +3,9 @@ using Microsoft.Extensions.Hosting;
 using OpenTK.Wpf;
 using System;
 using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Xml;
 using WoTMapWPF.CustomControls;
@@ -41,6 +42,11 @@ namespace WoTMapWPF
             string saveLocation = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + appTitle;
             app.Resources["SaveLocation"] = saveLocation;
             app.Resources["AppTitle"] = appTitle;
+            app.Resources["JsonSerializerOptions"] = new JsonSerializerOptions()
+            {
+                NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
+                WriteIndented = true
+            };
             app.LoadSettings();
 
             app.MainWindow = host.Services.GetRequiredService<MainWindow>();
@@ -92,7 +98,7 @@ namespace WoTMapWPF
         public void ChangeTheme(string themeFileName)
         {
             string themePath = "Themes/" + themeFileName;
-            Uri themeUri = new Uri(themePath, UriKind.RelativeOrAbsolute);
+            Uri themeUri = new(themePath, UriKind.RelativeOrAbsolute);
             ThemeDictionary.MergedDictionaries.Clear();
             ThemeDictionary.MergedDictionaries.Add(new ResourceDictionary() { Source = themeUri });
         }
@@ -110,20 +116,18 @@ namespace WoTMapWPF
 
         public void SaveSettings()
         {
-            XmlWriterSettings writerSettings = new XmlWriterSettings();
-            writerSettings.Indent = true;
-            writerSettings.IndentChars = "\t";
+            XmlWriterSettings writerSettings = new()
+            {
+                Indent = true,
+                IndentChars = "\t"
+            };
             string saveLocation = (string)Resources["SaveLocation"];
             string settingsFile = $"{saveLocation}\\{settingsFileName}";
             Directory.CreateDirectory(saveLocation);
-            using (FileStream stream = File.Create(settingsFile))
-            {
-                using (XmlWriter xmlWriter = XmlWriter.Create(stream, writerSettings))
-                {
-                    ResourceDictionary resourceDictionary = SettingsDictionary.MergedDictionaries[0];
-                    XamlWriter.Save(resourceDictionary, xmlWriter);
-                }
-            }
+            using FileStream stream = File.Create(settingsFile);
+            using XmlWriter xmlWriter = XmlWriter.Create(stream, writerSettings);
+            ResourceDictionary resourceDictionary = SettingsDictionary.MergedDictionaries[0];
+            XamlWriter.Save(resourceDictionary, xmlWriter);
         }
 
         private void LoadSettings()
@@ -132,19 +136,17 @@ namespace WoTMapWPF
             string settingsFile = $"{saveLocation}\\{settingsFileName}";
             if (File.Exists(settingsFile))
             {
-                using (FileStream stream = File.OpenRead(settingsFile))
+                using FileStream stream = File.OpenRead(settingsFile);
+                ResourceDictionary rd = (ResourceDictionary)XamlReader.Load(stream);
+                ResourceDictionary defaultDict = new() { Source = new Uri("DefaultSettings.xaml", UriKind.Relative) };
+                foreach (string key in defaultDict.Keys)
                 {
-                    ResourceDictionary rd = (ResourceDictionary)XamlReader.Load(stream);
-                    ResourceDictionary defaultDict = new ResourceDictionary() { Source = new Uri("DefaultSettings.xaml", UriKind.Relative) };
-                    foreach (string key in defaultDict.Keys)
-                    {
-                        if (!rd.Contains(key))
-                            rd.Add(key, defaultDict[key]);
-                    }
-                    //replace default settings dict with user specific settings
-                    SettingsDictionary.MergedDictionaries.Clear();
-                    SettingsDictionary.MergedDictionaries.Add(rd);
+                    if (!rd.Contains(key))
+                        rd.Add(key, defaultDict[key]);
                 }
+                //replace default settings dict with user specific settings
+                SettingsDictionary.MergedDictionaries.Clear();
+                SettingsDictionary.MergedDictionaries.Add(rd);
             }
         }
 
@@ -155,7 +157,7 @@ namespace WoTMapWPF
 
         private static INavigationManager CreateNavigationManager(IServiceProvider provider)
         {
-            NavigationManager navManager = new NavigationManager();
+            NavigationManager navManager = new();
             navManager.Register(NavigationTarget.MapPanel, CreateMapNavigationService(provider));
             navManager.Register(NavigationTarget.NewMapPanel, CreateNewMapNavigationService(provider));
             navManager.Register(NavigationTarget.LoadMapPanel, CreateLoadMapNavigationService(provider));

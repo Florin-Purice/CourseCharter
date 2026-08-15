@@ -10,32 +10,11 @@ namespace WoTMapWPF.CustomControls
 {
     public partial class SettingsControlViewModel : ViewModelBase
     {
-        [ObservableProperty]
-        private WriteableBitmap pinBitmap;
-        [ObservableProperty]
-        private WriteableBitmap pinSelectedBitmap;
-        [ObservableProperty]
-        private WriteableBitmap dashedPathBitmap;
-        [ObservableProperty]
-        private Color colorA;
-        [ObservableProperty]
-        private Color colorB;
-        [ObservableProperty]
-        private Color colorC;
-        [ObservableProperty]
-        private bool isPathAutosaveEnabled;
-        [ObservableProperty]
-        private int lineStippleFactor;
-        [ObservableProperty]
-        private double lineWidth;
-        [ObservableProperty]
-        private double pinSize;
-
         public SettingsControlViewModel()
         {
             int imageHeight = 300;
-            BitmapImage bitmapImage = new BitmapImage();
-            Uri uri = new Uri("../Res/pinA.png", UriKind.Relative);
+            BitmapImage bitmapImage = new();
+            Uri uri = new("../Res/pinA.png", UriKind.Relative);
             StreamResourceInfo sri = App.GetResourceStream(uri);
             using (Stream stream = sri.Stream)
             {
@@ -45,7 +24,7 @@ namespace WoTMapWPF.CustomControls
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                 bitmapImage.EndInit();
                 bitmapImage.Freeze();
-                pinBitmap = new WriteableBitmap(bitmapImage);
+                PinBitmap = new WriteableBitmap(bitmapImage);
             }
             uri = new Uri("../Res/pinB.png", UriKind.Relative);
             sri = App.GetResourceStream(uri);
@@ -58,7 +37,7 @@ namespace WoTMapWPF.CustomControls
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                 bitmapImage.EndInit();
                 bitmapImage.Freeze();
-                pinSelectedBitmap = new WriteableBitmap(bitmapImage);
+                PinSelectedBitmap = new WriteableBitmap(bitmapImage);
             }
             uri = new Uri("../Res/dashed_path.png", UriKind.Relative);
             sri = App.GetResourceStream(uri);
@@ -71,12 +50,33 @@ namespace WoTMapWPF.CustomControls
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                 bitmapImage.EndInit();
                 bitmapImage.Freeze();
-                dashedPathBitmap = new WriteableBitmap(bitmapImage);
+                DashedPathBitmap = new WriteableBitmap(bitmapImage);
             }
             InitializeColorsFromSettings();
         }
 
         public event Action? ResetToDefault;
+
+        [ObservableProperty]
+        public partial WriteableBitmap PinBitmap { get; set; }
+        [ObservableProperty]
+        public partial WriteableBitmap PinSelectedBitmap { get; set; }
+        [ObservableProperty]
+        public partial WriteableBitmap DashedPathBitmap { get; set; }
+        [ObservableProperty]
+        public partial Color ColorA { get; set; }
+        [ObservableProperty]
+        public partial Color ColorB { get; set; }
+        [ObservableProperty]
+        public partial Color ColorC { get; set; }
+        [ObservableProperty]
+        public partial bool IsPathAutosaveEnabled { get; set; }
+        [ObservableProperty]
+        public partial int LineStippleFactor { get; set; }
+        [ObservableProperty]
+        public partial double LineWidth { get; set; }
+        [ObservableProperty]
+        public partial double PinSize { get; set; }
 
         public void InitializeColorsFromSettings()
         {
@@ -109,7 +109,7 @@ namespace WoTMapWPF.CustomControls
         [RelayCommand]
         public void Reset()
         {
-            ConfirmActionWindow caw = new ConfirmActionWindow("Are you sure you want to restore default settings?");
+            ConfirmActionWindow caw = new("Are you sure you want to restore default settings?");
             if (caw.ShowDialog().GetValueOrDefault())
             {
                 Settings.RestoreDefault();
@@ -118,7 +118,7 @@ namespace WoTMapWPF.CustomControls
             }
         }
 
-        private void ChangeColorSetting(string settingName, Color newColor, WriteableBitmap writeableBitmap)
+        private static void ChangeColorSetting(string settingName, Color newColor, WriteableBitmap writeableBitmap)
         {
             Settings.Set(settingName, new SolidColorBrush(newColor));
             BitmapColorChanger.ChangeColorKeepAlpha(writeableBitmap, newColor);

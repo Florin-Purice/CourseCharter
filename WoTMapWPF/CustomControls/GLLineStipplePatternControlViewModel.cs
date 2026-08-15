@@ -1,18 +1,15 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace WoTMapWPF.CustomControls
 {
-    public class GLLineStipplePatternControlViewModel : INotifyPropertyChanged
+    public partial class GLLineStipplePatternControlViewModel : ObservableObject
     {
-        private short stipplePattern;
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-
         public GLLineStipplePatternControlViewModel()
         {
-            BitList = new List<StippleBit>();
+            BitList = [];
             for (int i = 0; i < 16; i++)
                 BitList.Add(new StippleBit(false));
             InitializeBitList();
@@ -20,8 +17,10 @@ namespace WoTMapWPF.CustomControls
                 bit.PropertyChanged += Bit_PropertyChanged;
         }
 
+        [ObservableProperty]
+        public partial short StipplePattern { get; set; }
+
         public List<StippleBit> BitList { get; private set; }
-        public short StipplePattern { get => stipplePattern; set { stipplePattern = value; OnPropertyChanged("StipplePattern"); } }
 
         public void InitializeBitList()
         {
@@ -36,11 +35,6 @@ namespace WoTMapWPF.CustomControls
                     BitList[bitIndex++].Value = bitValue;
                 }
             }
-        }
-
-        private void OnPropertyChanged(string propName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
         }
 
         private void Bit_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -59,18 +53,10 @@ namespace WoTMapWPF.CustomControls
             StipplePattern = BitConverter.ToInt16(stippleBytes, 0);
         }
 
-        public class StippleBit : INotifyPropertyChanged
+        public partial class StippleBit(bool value) : ObservableObject
         {
-            private bool value;
-
-            public event PropertyChangedEventHandler? PropertyChanged;
-
-            public StippleBit(bool value)
-            {
-                Value = value;
-            }
-
-            public bool Value { get => value; set { this.value = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Value")); } }
+            [ObservableProperty]
+            public partial bool Value { get; set; } = value;
         }
     }
 }

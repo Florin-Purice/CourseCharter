@@ -11,6 +11,11 @@ namespace WoTMapWPF.CustomControls
     /// </summary>
     public partial class NewMapControl : UserControl
     {
+        [GeneratedRegex("[^0-9a-zA-Z _.-]")]
+        private static partial Regex AlphaNumRegex();
+        [GeneratedRegex("[^0-9]")]
+        private static partial Regex NumRegex();
+
         public NewMapControl()
         {
             InitializeComponent();
@@ -26,7 +31,7 @@ namespace WoTMapWPF.CustomControls
         {
             TextBox textboxSender = (TextBox)sender;
             int cursorPosition = textboxSender.SelectionStart;
-            textboxSender.Text = Regex.Replace(textboxSender.Text, "[^0-9a-zA-Z _.-]", "");
+            textboxSender.Text = AlphaNumRegex().Replace(textboxSender.Text, "");
             textboxSender.SelectionStart = cursorPosition;
         }
 
@@ -40,7 +45,7 @@ namespace WoTMapWPF.CustomControls
         {
             TextBox textboxSender = (TextBox)sender;
             int cursorPosition = textboxSender.SelectionStart;
-            textboxSender.Text = Regex.Replace(textboxSender.Text, "[^0-9]", "");
+            textboxSender.Text = NumRegex().Replace(textboxSender.Text, "");
             textboxSender.SelectionStart = cursorPosition;
         }
 
@@ -56,8 +61,8 @@ namespace WoTMapWPF.CustomControls
             int cursorPosition = textboxSender.SelectionStart;
             char[] invalidFileNameChars = System.IO.Path.GetInvalidFileNameChars();
             char[] invalidPathChars = System.IO.Path.GetInvalidPathChars();
-            char[] invalidChars = invalidFileNameChars.Concat(invalidPathChars).ToArray();
-            StringBuilder stringBuilder = new StringBuilder();
+            char[] invalidChars = [.. invalidFileNameChars, .. invalidPathChars];
+            StringBuilder stringBuilder = new();
             foreach (char c in textboxSender.Text)
                 if (!invalidChars.Contains(c))
                     stringBuilder.Append(c);

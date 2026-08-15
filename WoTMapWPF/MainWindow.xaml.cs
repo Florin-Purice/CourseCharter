@@ -36,11 +36,7 @@ namespace WoTMapWPF
                     try
                     {
                         string jsonString = File.ReadAllText(mapPath);
-                        MapFileDefinition? map = JsonSerializer.Deserialize<MapFileDefinition>(jsonString, new JsonSerializerOptions()
-                        {
-                            NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
-                            WriteIndented = true
-                        });
+                        MapFileDefinition? map = JsonSerializer.Deserialize<MapFileDefinition>(jsonString, Settings.Get<JsonSerializerOptions>("JsonSerializerOptions"));
                         if (map != null)
                             ViewModel.MapManagerService.LoadMap(map);
                     }

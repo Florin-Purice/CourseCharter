@@ -26,8 +26,8 @@ namespace WoTMapWPF.CustomControls
             int cursorPosition = textboxSender.SelectionStart;
             char[] invalidFileNameChars = System.IO.Path.GetInvalidFileNameChars();
             char[] invalidPathChars = System.IO.Path.GetInvalidPathChars();
-            char[] invalidChars = invalidFileNameChars.Concat(invalidPathChars).ToArray();
-            StringBuilder stringBuilder = new StringBuilder();
+            char[] invalidChars = [.. invalidFileNameChars, .. invalidPathChars];
+            StringBuilder stringBuilder = new();
             foreach (char c in textboxSender.Text)
                 if (!invalidChars.Contains(c))
                     stringBuilder.Append(c);
