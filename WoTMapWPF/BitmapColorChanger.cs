@@ -7,11 +7,8 @@ namespace WoTMapWPF
 {
     public class BitmapColorChanger
     {
-
         public static void ChangeColorKeepAlpha(WriteableBitmap bitmap, Color color)
         {
-            int width = bitmap.PixelWidth;
-            int height = bitmap.PixelHeight;
             PixelColor[,] pixelColors = GetPixels(bitmap);
             for (int i = 0; i < bitmap.PixelWidth; i++)
                 for (int j = 0; j < bitmap.PixelHeight; j++)

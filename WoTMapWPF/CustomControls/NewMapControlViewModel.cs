@@ -7,7 +7,6 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Windows.Media.Imaging;
 using WoTMapWPF.Services;
 
@@ -19,36 +18,9 @@ namespace WoTMapWPF.CustomControls
         private readonly NotificationService notificationService;
         private readonly MapManagerService mapManagerService;
 
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(UnitsPerPixel))]
-        [Range(1, int.MaxValue)]
-        private int sampleUnits;
-
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(UnitsPerPixel))]
-        [Range(1, int.MaxValue)]
-        private int samplePixels;
-
-        [ObservableProperty]
-        private string name;
-        [ObservableProperty]
-        private string unitLabel = string.Empty;
-        [ObservableProperty]
-        private string imageFileName;
-        [ObservableProperty]
-        private string imageFilePath = string.Empty;
-        [ObservableProperty]
-        private string imageMD5 = string.Empty;
-        [ObservableProperty]
-        private List<string> nameSuggestionValues = new List<string>();
-        [ObservableProperty]
-        private double imageHeight = 200;
-        [ObservableProperty]
-        private BitmapImage? mapImage;
-
         public NewMapControlViewModel(
             INavigationManager navigationManager,
-            NotificationService notificationService, 
+            NotificationService notificationService,
             MapManagerService mapManagerService)
         {
             this.navigationManager = navigationManager;
@@ -56,7 +28,7 @@ namespace WoTMapWPF.CustomControls
             this.mapManagerService = mapManagerService;
 
             string? saveLocation = Settings.GetOrDefault<string>("SaveLocation");
-            List<string> existingMaps = new List<string>();
+            List<string> existingMaps = [];
             if (Directory.Exists($"{saveLocation}\\maps"))
                 foreach (string subdir in Directory.GetDirectories($"{saveLocation}\\maps"))
                     existingMaps.AddRange(Directory.GetFiles(subdir, "*.info"));
@@ -69,6 +41,31 @@ namespace WoTMapWPF.CustomControls
                 existingMaps[i] = System.IO.Path.GetFileNameWithoutExtension(existingMaps[i]);
             NameSuggestionValues = existingMaps;
         }
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(UnitsPerPixel))]
+        [Range(1, int.MaxValue)]
+        public partial int SampleUnits { get; set; }
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(UnitsPerPixel))]
+        [Range(1, int.MaxValue)]
+        public partial int SamplePixels { get; set; }
+        [ObservableProperty]
+        public partial string Name { get; set; }
+        [ObservableProperty]
+        public partial string UnitLabel { get; set; } = string.Empty;
+        [ObservableProperty]
+        public partial string ImageFileName { get; set; }
+        [ObservableProperty]
+        public partial string ImageFilePath { get; set; } = string.Empty;
+        [ObservableProperty]
+        public partial string ImageMD5 { get; set; } = string.Empty;
+        [ObservableProperty]
+        public partial List<string> NameSuggestionValues { get; set; } = [];
+        [ObservableProperty]
+        public partial double ImageHeight { get; set; } = 200;
+        [ObservableProperty]
+        public partial BitmapImage? MapImage { get; set; }
 
         public double UnitsPerPixel => (double)SampleUnits / SamplePixels;
 
@@ -84,19 +81,20 @@ namespace WoTMapWPF.CustomControls
                 string? saveLocation = Settings.GetOrDefault<string>("SaveLocation");
                 if (File.Exists($"{saveLocation}\\maps\\{ImageMD5}\\{Name}.info"))
                 {
-                    ConfirmActionWindow caw = new ConfirmActionWindow($"A map with the name \"{Name}\" already exists for the selected image base.\nDo you wish to replace it?");
+                    ConfirmActionWindow caw = new($"A map with the name \"{Name}\" already exists for the selected image base.\nDo you wish to replace it?");
                     if (!caw.ShowDialog().GetValueOrDefault())
                         return;
                 }
                 string imageFileExtension = System.IO.Path.GetExtension(ImageFilePath);
-                MapFileDefinition map = new MapFileDefinition();
-                map.Name = Name;
-                map.UnitLabel = UnitLabel;
-                map.ImageMD5 = ImageMD5;
-                map.SampleUnits = SampleUnits;
-                map.SamplePixels = SamplePixels;
-                map.ImageExt = imageFileExtension;
-
+                MapFileDefinition map = new()
+                {
+                    Name = Name,
+                    UnitLabel = UnitLabel,
+                    ImageMD5 = ImageMD5,
+                    SampleUnits = SampleUnits,
+                    SamplePixels = SamplePixels,
+                    ImageExt = imageFileExtension
+                };
                 string jsonString = JsonSerializer.Serialize(map, Settings.Get<JsonSerializerOptions>("JsonSerializerOptions"));
                 Directory.CreateDirectory($"{saveLocation}\\maps\\{ImageMD5}");
                 if (!File.Exists($"{saveLocation}\\maps\\{ImageMD5}\\map_image{imageFileExtension}"))
@@ -120,14 +118,14 @@ namespace WoTMapWPF.CustomControls
         [RelayCommand]
         public void SelectImage()
         {
-            OpenFileDialog ofd = new OpenFileDialog();
+            OpenFileDialog ofd = new();
             if (ofd.ShowDialog().GetValueOrDefault())
             {
                 if (ofd.CheckFileExists)
                 {
                     try
                     {
-                        BitmapImage bitmapImage = new BitmapImage();
+                        BitmapImage bitmapImage = new();
                         bitmapImage.BeginInit();
                         bitmapImage.UriSource = new Uri(ofd.FileName);
                         bitmapImage.DecodePixelHeight = (int)ImageHeight;
@@ -137,12 +135,10 @@ namespace WoTMapWPF.CustomControls
                         MapImage = bitmapImage;
                         using (MD5 md5 = MD5.Create())
                         {
-                            using (FileStream stream = File.OpenRead(ofd.FileName))
-                            {
-                                byte[] hashBytes = md5.ComputeHash(stream);
-                                string hashString = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
-                                ImageMD5 = hashString;
-                            }
+                            using FileStream stream = File.OpenRead(ofd.FileName);
+                            byte[] hashBytes = md5.ComputeHash(stream);
+                            string hashString = Convert.ToHexStringLower(hashBytes);
+                            ImageMD5 = hashString;
                         }
                         ImageFilePath = ofd.FileName;
                         ImageFileName = ofd.SafeFileName;

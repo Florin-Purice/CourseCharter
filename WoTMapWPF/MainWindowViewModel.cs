@@ -5,32 +5,21 @@ using WoTMapWPF.Services;
 
 namespace WoTMapWPF
 {
-    public partial class MainWindowViewModel : ViewModelBase
+    public partial class MainWindowViewModel(
+        NavigationStore navigationStore,
+        INavigationManager navigationManager,
+        NotificationService notificationService,
+        MapManagerService mapManagerService,
+        NotificationControlViewModel notificationControlViewModel
+        ) : ViewModelBase
     {
-        private readonly INavigationManager navigationManager;
-        private readonly NotificationService notificationService;
         [ObservableProperty]
-        private NotificationControlViewModel notificationControlViewModel;
+        public partial string WindowTitleBase { get; set; } = "CourseCharter";
         [ObservableProperty]
-        private string windowTitleBase;
+        public partial NotificationControlViewModel NotificationControlViewModel { get; set; } = notificationControlViewModel;
 
-        public MainWindowViewModel(
-            NavigationStore navigationStore, 
-            INavigationManager navigationManager,
-            NotificationService notificationService,
-            MapManagerService mapManagerService,
-            NotificationControlViewModel notificationControlViewModel)
-        {
-            NavigationStore = navigationStore;
-            this.navigationManager = navigationManager;
-            MapManagerService = mapManagerService;
-            NotificationControlViewModel = notificationControlViewModel;
-            this.notificationService = notificationService;
-            WindowTitleBase = "CourseCharter";
-        }
-
-        public NavigationStore NavigationStore { get; }
-        public MapManagerService MapManagerService { get; }
+        public NavigationStore NavigationStore { get; } = navigationStore;
+        public MapManagerService MapManagerService { get; } = mapManagerService;
 
         [RelayCommand]
         public void ShowMapPanel()

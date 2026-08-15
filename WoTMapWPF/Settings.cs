@@ -1,8 +1,4 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Windows;
-
-namespace WoTMapWPF
+﻿namespace WoTMapWPF
 {
     internal static class Settings
     {
@@ -29,7 +25,7 @@ namespace WoTMapWPF
         /// <returns></returns>
         public static T? GetOrDefault<T>(string settingName)
         {
-            if(app.Resources.Contains(settingName))
+            if (app.Resources.Contains(settingName))
                 return (T)app.Resources[settingName];
             else
                 return default;

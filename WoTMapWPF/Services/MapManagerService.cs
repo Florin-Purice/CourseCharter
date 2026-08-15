@@ -4,25 +4,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using WoTMapWPF.Graphics;
-using static WoTMapWPF.App;
 
 namespace WoTMapWPF.Services
 {
-    public partial class MapManagerService : ObservableObject
+    public partial class MapManagerService(App.CreateNewPath createNewPath) : ObservableObject
     {
         private readonly Stack<Path> backwardStack = new();
         private readonly Stack<Path> forwardStack = new();
-        private readonly CreateNewPath createNewPath;
-        [ObservableProperty]
-        private Path? activePath;
-
-        public MapManagerService(CreateNewPath createNewPath)
-        {
-            Map = new Map();
-            this.createNewPath = createNewPath;
-        }
 
         public event Action? NewMapLoaded;
         public event Action? ActivePathAltered;
@@ -30,7 +19,9 @@ namespace WoTMapWPF.Services
         public event Action? AutosaveRequested;
 
         [ObservableProperty]
-        public partial Map Map { get; private set; }
+        public partial Path? ActivePath { get; set; }
+        [ObservableProperty]
+        public partial Map Map { get; private set; } = new Map();
         [ObservableProperty]
         public partial MapFileDefinition? MapInfo { get; private set; }
 

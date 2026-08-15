@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using WoTMapWPF.Services;
 
 namespace WoTMapWPF.CustomControls
@@ -13,11 +12,6 @@ namespace WoTMapWPF.CustomControls
         private readonly INavigationManager navigationManager;
         private readonly NotificationService notificationService;
         private readonly MapManagerService mapManagerService;
-
-        [ObservableProperty]
-        private string name = string.Empty;
-        [ObservableProperty]
-        private List<string> nameSuggestionValues = new List<string>();
 
         public SavePathControlViewModel(
             INavigationManager navigationManager,
@@ -36,7 +30,7 @@ namespace WoTMapWPF.CustomControls
             {
                 string? saveLocation = Settings.GetOrDefault<string>("SaveLocation");
                 string? mapImageHash = mapManagerService.MapInfo?.ImageMD5;
-                List<string> existingPaths = new List<string>();
+                List<string> existingPaths = [];
                 string dir = $"{saveLocation}\\maps\\{mapImageHash}\\paths";
                 if (Directory.Exists(dir))
                     existingPaths.AddRange(Directory.GetFiles(dir, "*.info"));
@@ -47,6 +41,11 @@ namespace WoTMapWPF.CustomControls
                 IsValid = true;
             }
         }
+
+        [ObservableProperty]
+        public partial string Name { get; set; } = string.Empty;
+        [ObservableProperty]
+        public partial List<string> NameSuggestionValues { get; set; } = [];
 
         public Path? Path => mapManagerService.ActivePath;
         public bool IsValid { get; private set; } = true;
@@ -60,14 +59,16 @@ namespace WoTMapWPF.CustomControls
                 string? imageMD5 = mapManagerService.MapInfo?.ImageMD5;
                 if (File.Exists($"{saveLocation}\\maps\\{imageMD5}\\paths\\{Name}.info"))
                 {
-                    ConfirmActionWindow caw = new ConfirmActionWindow($"A path with the name \"{Name}\" already exists.\nDo you wish to replace it?");
+                    ConfirmActionWindow caw = new($"A path with the name \"{Name}\" already exists.\nDo you wish to replace it?");
                     if (!caw.ShowDialog().GetValueOrDefault())
                         return;
                 }
-                PathFileDefinition pathFileDefinition = new PathFileDefinition();
-                pathFileDefinition.Name = Name;
-                pathFileDefinition.ImageMD5 = imageMD5;
-                pathFileDefinition.Path = mapManagerService.ActivePath;
+                PathFileDefinition pathFileDefinition = new()
+                {
+                    Name = Name,
+                    ImageMD5 = imageMD5,
+                    Path = mapManagerService.ActivePath
+                };
                 string jsonString = JsonSerializer.Serialize(pathFileDefinition, Settings.Get<JsonSerializerOptions>("JsonSerializerOptions"));
                 Directory.CreateDirectory($"{saveLocation}\\maps\\{imageMD5}\\paths");
                 File.WriteAllText($"{saveLocation}\\maps\\{imageMD5}\\paths\\{Name}.info", jsonString);

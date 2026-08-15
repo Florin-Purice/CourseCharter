@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace WoTMapWPF
+namespace WoTMapWPF.CustomControls
 {
     public class AutoCompleteTextBox : TextBox
     {
@@ -27,10 +24,10 @@ namespace WoTMapWPF
         {
             base.OnTextChanged(e);
             string input = Text;
-            if(SuggestionValues != null && input.Length > currentInput.Length && input != currentSuggestion)
+            if (SuggestionValues != null && input.Length > currentInput.Length && input != currentSuggestion)
             {
-                currentSuggestion = SuggestionValues.FirstOrDefault(s => s.StartsWith(input));
-                if(currentSuggestion != null)
+                currentSuggestion = SuggestionValues.FirstOrDefault(s => s.StartsWith(input)) ?? string.Empty;
+                if (!string.IsNullOrEmpty(currentSuggestion))
                 {
                     int selectionStart = input.Length;
                     int selectionLength = currentSuggestion.Length - input.Length;

@@ -42,9 +42,6 @@ namespace WoTMapWPF.CustomControls
             }
         }
 
-        private void GLLineStipplePatternControl_PatternChanged(object sender, short e)
-        {
-            Settings.Set("LineStipplePattern", e);
-        }
+        private void GLLineStipplePatternControl_PatternChanged(object sender, short e) => Settings.Set("LineStipplePattern", e);
     }
 }

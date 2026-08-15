@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -21,9 +18,8 @@ namespace WoTMapWPF.CustomControls
 
         private async void PreviewButton_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (((Button)sender).Content is Image)
+            if (((Button)sender).Content is Image image)
             {
-                Image image = (Image)((Button)sender).Content;
                 if (image.Tag == null)
                 {
                     image.Tag = new object();
@@ -40,21 +36,19 @@ namespace WoTMapWPF.CustomControls
             }
         }
 
-        private BitmapImage? LoadImage(string path, int decodeHeight)
+        private static BitmapImage? LoadImage(string path, int decodeHeight)
         {
             try
             {
-                using (FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read))
-                {
-                    BitmapImage bitmapImage = new BitmapImage();
-                    bitmapImage.BeginInit();
-                    bitmapImage.StreamSource = fileStream;
-                    bitmapImage.DecodePixelHeight = decodeHeight;
-                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmapImage.EndInit();
-                    bitmapImage.Freeze();
-                    return bitmapImage;
-                }
+                using FileStream fileStream = new(path, FileMode.Open, FileAccess.Read);
+                BitmapImage bitmapImage = new();
+                bitmapImage.BeginInit();
+                bitmapImage.StreamSource = fileStream;
+                bitmapImage.DecodePixelHeight = decodeHeight;
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.EndInit();
+                bitmapImage.Freeze();
+                return bitmapImage;
             }
             catch
             {

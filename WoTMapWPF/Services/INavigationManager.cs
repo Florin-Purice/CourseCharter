@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace WoTMapWPF.Services
 {
@@ -16,10 +14,8 @@ namespace WoTMapWPF.Services
 
         public bool Navigate(NavigationTarget navigateTo)
         {
-            if (registeredNavs.ContainsKey(navigateTo))
-            {
-                return registeredNavs[navigateTo].Navigate();
-            }
+            if (registeredNavs.TryGetValue(navigateTo, out INavigationService? value))
+                return value.Navigate();
             else
                 return false;
         }

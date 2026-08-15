@@ -15,30 +15,31 @@ namespace WoTMapWPF.CustomControls
     /// </summary>
     public partial class GLLineStipplePatternControl : UserControl
     {
-        GLLineStipplePatternControlViewModel viewModel;
-
-        public event EventHandler<short>? PatternChanged;
 
         public GLLineStipplePatternControl()
         {
             InitializeComponent();
-            viewModel = (GLLineStipplePatternControlViewModel)DataContext;
+            ViewModel = (GLLineStipplePatternControlViewModel)DataContext;
             PopulateBitContainer();
-            viewModel.PropertyChanged += OnPropertyChanged;
+            ViewModel.PropertyChanged += OnPropertyChanged;
         }
+
+        public event EventHandler<short>? PatternChanged;
+
+        public GLLineStipplePatternControlViewModel ViewModel { get; }
 
         /// <summary>
         /// Reset view to match value of "LineStipplePattern" resource
         /// </summary>
         public void Reload()
         {
-            viewModel.InitializeBitList();
+            ViewModel.InitializeBitList();
         }
 
         private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "StipplePattern")
-                PatternChanged?.Invoke(this, viewModel.StipplePattern);
+                PatternChanged?.Invoke(this, ViewModel.StipplePattern);
         }
 
         private void PopulateBitContainer()
@@ -48,8 +49,10 @@ namespace WoTMapWPF.CustomControls
             {
                 bitGrid = new Grid();
                 Grid.SetColumn(bitGrid, i);
-                Binding tagBinding = new Binding("Value");
-                tagBinding.Source = viewModel.BitList[i];
+                Binding tagBinding = new("Value")
+                {
+                    Source = ViewModel.BitList[i]
+                };
                 bitGrid.SetBinding(Grid.TagProperty, tagBinding);
                 bitGrid.SetResourceReference(Grid.StyleProperty, "BitGridStyle");
                 bitGrid.PreviewMouseLeftButtonDown += BitGrid_PreviewMouseLeftButtonDown;
@@ -82,16 +85,16 @@ namespace WoTMapWPF.CustomControls
         {
             Grid bitGrid = (Grid)bitContainer;
             int position = Grid.GetColumn(bitGrid);
-            if (viewModel.BitList[position].Value == false)
-                viewModel.BitList[position].Value = true;
+            if (ViewModel.BitList[position].Value == false)
+                ViewModel.BitList[position].Value = true;
         }
 
         private void DeactivateBit(object bitContainer)
         {
             Grid bitGrid = (Grid)bitContainer;
             int position = Grid.GetColumn(bitGrid);
-            if (viewModel.BitList[position].Value == true)
-                viewModel.BitList[position].Value = false;
+            if (ViewModel.BitList[position].Value == true)
+                ViewModel.BitList[position].Value = false;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace WoTMapWPF
+namespace WoTMapWPF.CustomControls
 {
     /// <summary>
     /// Interaction logic for ConfirmActionWindow.xaml
