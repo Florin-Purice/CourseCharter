@@ -25,6 +25,27 @@ namespace WoTMapWPF
         {
             DataContext = ViewModel = viewModel;
             InitializeComponent();
+            //load last opened map
+            if (Settings.Exists("LastOpenedMapName") && Settings.Exists("LastOpenedMapImageMD5"))
+            {
+                string mapName = Settings.Get<string>("LastOpenedMapName");
+                string mapImageMD5 = Settings.Get<string>("LastOpenedMapImageMD5");
+                string saveLocation = Settings.Get<string>("SaveLocation");
+                string mapPath = $"{saveLocation}\\maps\\{mapImageMD5}\\{mapName}.info";
+                if (File.Exists(mapPath))
+                    try
+                    {
+                        string jsonString = File.ReadAllText(mapPath);
+                        MapFileDefinition? map = JsonSerializer.Deserialize<MapFileDefinition>(jsonString, new JsonSerializerOptions()
+                        {
+                            NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
+                            WriteIndented = true
+                        });
+                        if (map != null)
+                            ViewModel.MapManagerService.LoadMap(map);
+                    }
+                    catch { }
+            }
         }
 
         public MainWindowViewModel ViewModel { get; }
@@ -78,31 +99,6 @@ namespace WoTMapWPF
             }
             if (Settings.Exists("IsWindowMaximized") && Settings.Get<bool>("IsWindowMaximized"))
                 WindowState = WindowState.Maximized;
-            //load last opened map
-            if (Settings.Exists("LastOpenedMapName") && Settings.Exists("LastOpenedMapImageMD5"))
-            {
-                string mapName = Settings.Get<string>("LastOpenedMapName");
-                string mapImageMD5 = Settings.Get<string>("LastOpenedMapImageMD5");
-                string saveLocation = Settings.Get<string>("SaveLocation");
-                string mapPath = $"{saveLocation}\\maps\\{mapImageMD5}\\{mapName}.info";
-                if (File.Exists(mapPath))
-                    try
-                    {
-                        string jsonString = File.ReadAllText(mapPath);
-                        MapFileDefinition? map = JsonSerializer.Deserialize<MapFileDefinition>(jsonString, new JsonSerializerOptions()
-                        {
-                            NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
-                            WriteIndented = true
-                        });
-                        if (map != null)
-                            if (ViewModel.MapManagerService.LoadMap(map))
-                            {
-                                //only reason to call this method here is for updating title with correct map name
-                                //ShowDefaultPanel();
-                            }
-                    }
-                    catch { }
-            }
             //load user selected theme
             if (Settings.Exists("ThemeName"))
             {

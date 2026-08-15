@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using WoTMapWPF.Stores;
 
 namespace WoTMapWPF.Services
 {
@@ -9,12 +8,14 @@ namespace WoTMapWPF.Services
     {
         private readonly NavigationStore navigationStore;
         private readonly Func<T> createViewModel;
+        private readonly string windowTitle;
         private readonly Func<T, bool>? checkValidity;
 
-        public NavigationService(NavigationStore navigationStore, Func<T> createViewModel, Func<T, bool>? checkValidity = null)
+        public NavigationService(NavigationStore navigationStore, Func<T> createViewModel, string windowTitle, Func<T, bool>? checkValidity = null)
         {
             this.navigationStore = navigationStore;
             this.createViewModel = createViewModel;
+            this.windowTitle = windowTitle;
             this.checkValidity = checkValidity;
         }
 
@@ -23,7 +24,8 @@ namespace WoTMapWPF.Services
             T viewModel = createViewModel();
             if (checkValidity == null || checkValidity(viewModel))
             {
-                navigationStore.ChangeViewModel(viewModel);
+                navigationStore.CurrentViewModel = viewModel;
+                navigationStore.WindowTitle = windowTitle;
                 return true;
             }
             return false;

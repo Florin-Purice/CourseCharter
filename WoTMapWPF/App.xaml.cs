@@ -10,7 +10,6 @@ using System.Xml;
 using WoTMapWPF.CustomControls;
 using WoTMapWPF.Graphics;
 using WoTMapWPF.Services;
-using WoTMapWPF.Stores;
 
 namespace WoTMapWPF
 {
@@ -19,7 +18,8 @@ namespace WoTMapWPF
     /// </summary>
     public partial class App : Application
     {
-        private readonly string settingsFileName = "Settings.xaml";
+        private static readonly string settingsFileName = "Settings.xaml";
+        private static readonly string appTitle = "CourseCharter";
 
         [STAThread]
         public static void Main(string[] args)
@@ -37,6 +37,12 @@ namespace WoTMapWPF
 
             App app = new();
             app.InitializeComponent();
+
+            string saveLocation = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + appTitle;
+            app.Resources["SaveLocation"] = saveLocation;
+            app.Resources["AppTitle"] = appTitle;
+            app.LoadSettings();
+
             app.MainWindow = host.Services.GetRequiredService<MainWindow>();
             app.MainWindow.Visibility = Visibility.Visible;
             host.Services.GetRequiredService<INavigationService>().Navigate();
@@ -120,11 +126,9 @@ namespace WoTMapWPF
             }
         }
 
-        private void Application_Startup(object sender, StartupEventArgs e)
+        private void LoadSettings()
         {
-            string appTitle = "CourseCharter";
-            string saveLocation = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + appTitle;
-            Resources["SaveLocation"] = saveLocation;
+            string saveLocation = (string)Resources["SaveLocation"];
             string settingsFile = $"{saveLocation}\\{settingsFileName}";
             if (File.Exists(settingsFile))
             {
@@ -164,61 +168,67 @@ namespace WoTMapWPF
 
         private static INavigationService CreateMapNavigationService(IServiceProvider provider)
         {
-            return new NavigationService<MapControlViewModel>(
+            return new MapNavigationService(
                 provider.GetRequiredService<NavigationStore>(),
-                () => provider.GetRequiredService<MapControlViewModel>()
-            );
+                () => provider.GetRequiredService<MapControlViewModel>(),
+                provider.GetRequiredService<MapManagerService>());
         }
 
         private static INavigationService CreateNewMapNavigationService(IServiceProvider provider)
         {
+            string windowTitle = $"{appTitle} - New Map";
             return new NavigationService<NewMapControlViewModel>(
                 provider.GetRequiredService<NavigationStore>(),
-                () => provider.GetRequiredService<NewMapControlViewModel>()
-            );
+                () => provider.GetRequiredService<NewMapControlViewModel>(),
+                windowTitle);
         }
 
         private static INavigationService CreateLoadMapNavigationService(IServiceProvider provider)
         {
+            string windowTitle = $"{appTitle} - Load Map";
             return new NavigationService<LoadMapControlViewModel>(
                 provider.GetRequiredService<NavigationStore>(),
                 () => provider.GetRequiredService<LoadMapControlViewModel>(),
-                (vm) => vm.Maps.Count > 0
-            );
+                windowTitle,
+                (vm) => vm.Maps.Count > 0);
         }
 
         private static INavigationService CreateSavePathNavigationService(IServiceProvider provider)
         {
+            string windowTitle = $"{appTitle} - Save Path";
             return new NavigationService<SavePathControlViewModel>(
                 provider.GetRequiredService<NavigationStore>(),
                 () => provider.GetRequiredService<SavePathControlViewModel>(),
-                (vm) => vm.IsValid
-            );
+                windowTitle,
+                (vm) => vm.IsValid);
         }
 
         private static INavigationService CreateLoadPathNavigationService(IServiceProvider provider)
         {
+            string windowTitle = $"{appTitle} - Load Path";
             return new NavigationService<LoadPathControlViewModel>(
                 provider.GetRequiredService<NavigationStore>(),
                 () => provider.GetRequiredService<LoadPathControlViewModel>(),
-                (vm) => vm.Paths.Count > 0
-            );
+                windowTitle,
+                (vm) => vm.Paths.Count > 0);
         }
 
         private static INavigationService CreateGuideNavigationService(IServiceProvider provider)
         {
+            string windowTitle = $"{appTitle} - Guide";
             return new NavigationService<GuideControlViewModel>(
                 provider.GetRequiredService<NavigationStore>(),
-                () => provider.GetRequiredService<GuideControlViewModel>()
-            );
+                () => provider.GetRequiredService<GuideControlViewModel>(),
+                windowTitle);
         }
 
         private static INavigationService CreateSettingsNavigationService(IServiceProvider provider)
         {
+            string windowTitle = $"{appTitle} - Settings";
             return new NavigationService<SettingsControlViewModel>(
                 provider.GetRequiredService<NavigationStore>(),
-                () => provider.GetRequiredService<SettingsControlViewModel>()
-            );
+                () => provider.GetRequiredService<SettingsControlViewModel>(),
+                windowTitle);
         }
     }
 }

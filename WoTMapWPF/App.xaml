@@ -4,7 +4,6 @@
              xmlns:local="clr-namespace:WoTMapWPF"
              xmlns:custom="clr-namespace:WoTMapWPF.CustomControls"
              xmlns:System="clr-namespace:System;assembly=mscorlib"
-             Startup="Application_Startup"
              Exit="Application_Exit">
     <Application.Resources>
         <ResourceDictionary>
