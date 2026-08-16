@@ -52,7 +52,7 @@ namespace WoTMapWPF.CustomControls
                 bitmapImage.Freeze();
                 DashedPathBitmap = new WriteableBitmap(bitmapImage);
             }
-            InitializeColorsFromSettings();
+            InitializeValuesFromSettings();
         }
 
         public event Action? ResetToDefault;
@@ -72,13 +72,15 @@ namespace WoTMapWPF.CustomControls
         [ObservableProperty]
         public partial bool IsPathAutosaveEnabled { get; set; }
         [ObservableProperty]
+        public partial short LineStipplePattern { get; set; }
+        [ObservableProperty]
         public partial int LineStippleFactor { get; set; }
         [ObservableProperty]
         public partial double LineWidth { get; set; }
         [ObservableProperty]
         public partial double PinSize { get; set; }
 
-        public void InitializeColorsFromSettings()
+        public void InitializeValuesFromSettings()
         {
             SolidColorBrush? A = Settings.GetOrDefault<SolidColorBrush>("PinColor");
             ColorA = A != null ? A.Color : default;
@@ -87,24 +89,20 @@ namespace WoTMapWPF.CustomControls
             SolidColorBrush? C = Settings.GetOrDefault<SolidColorBrush>("DashedPathColor");
             ColorC = C != null ? C.Color : default;
             IsPathAutosaveEnabled = Settings.GetOrDefault<bool>("IsPathAutosaveEnabled");
+            LineStipplePattern = Settings.GetOrDefault<short>("LineStipplePattern");
             LineStippleFactor = Settings.GetOrDefault<int>("LineStippleFactor");
             LineWidth = Settings.GetOrDefault<double>("LineWidth");
             PinSize = Settings.GetOrDefault<double>("PinSize");
         }
 
         partial void OnIsPathAutosaveEnabledChanged(bool value) => Settings.Set(nameof(IsPathAutosaveEnabled), value);
-
         partial void OnLineStippleFactorChanged(int value) => Settings.Set(nameof(LineStippleFactor), value);
-
         partial void OnLineWidthChanged(double value) => Settings.Set(nameof(LineWidth), value);
-
         partial void OnPinSizeChanged(double value) => Settings.Set(nameof(PinSize), value);
-
         partial void OnColorAChanged(Color value) => ChangeColorSetting("PinColor", value, PinBitmap);
-
         partial void OnColorBChanged(Color value) => ChangeColorSetting("PinSelectedColor", value, PinSelectedBitmap);
-
         partial void OnColorCChanged(Color value) => ChangeColorSetting("DashedPathColor", value, DashedPathBitmap);
+        partial void OnLineStipplePatternChanged(short value) => Settings.Set(nameof(LineStipplePattern), value);
 
         [RelayCommand]
         public void Reset()
@@ -113,7 +111,7 @@ namespace WoTMapWPF.CustomControls
             if (caw.ShowDialog().GetValueOrDefault())
             {
                 Settings.RestoreDefault();
-                InitializeColorsFromSettings();
+                InitializeValuesFromSettings();
                 ResetToDefault?.Invoke();
             }
         }
