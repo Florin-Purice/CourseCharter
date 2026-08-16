@@ -264,22 +264,10 @@
             <!--#endregion-->
 
             <!--#region LineStippleControl-->
-            <Style TargetType="Grid" x:Key="LineStippleControlStyle">
-                <Style.Resources>
-                    <Style TargetType="Grid" x:Key="BitGridStyle">
-                        <Setter Property="Height" Value="15"/>
-                        <Setter Property="Width" Value="{Binding Path=Height, RelativeSource={RelativeSource Self}}"/>
-                        <Setter Property="Background" Value="{DynamicResource ThemeColorInactive}"/>
-                        <Style.Triggers>
-                            <Trigger Property="Tag">
-                                <Trigger.Value>
-                                    <System:Boolean>True</System:Boolean>
-                                </Trigger.Value>
-                                <Setter Property="Background" Value="{DynamicResource DashedPathColor}"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Style.Resources>
+            <Style TargetType="custom:LineStipple" x:Key="LineStippleControlStyle">
+                <Setter Property="BitSize" Value="15"/>
+                <Setter Property="ColorInactive" Value="{DynamicResource ThemeColorInactive}"/>
+                <Setter Property="ColorActive" Value="{DynamicResource DashedPathColor}"/>
             </Style>
             <!--#endregion-->
 

@@ -18,7 +18,6 @@ namespace WoTMapWPF.CustomControls
 
         private void OnResetToDefault()
         {
-            LineStippleControl.Reload();
             SelectCorrectListViewThemeItem();
         }
 
@@ -38,10 +37,8 @@ namespace WoTMapWPF.CustomControls
             {
                 string themeName = (string)selectedItem.Tag;
                 ((App)App.Current).ChangeTheme(themeName);
-                ((App)(App.Current)).ChangeUserSetting("ThemeName", themeName);
+                Settings.Set("ThemeName", themeName);
             }
         }
-
-        private void GLLineStipplePatternControl_PatternChanged(object sender, short e) => Settings.Set("LineStipplePattern", e);
     }
 }

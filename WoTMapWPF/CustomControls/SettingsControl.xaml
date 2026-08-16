@@ -229,9 +229,9 @@
                                 <ColumnDefinition Width="250"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0">Stipple pattern</TextBlock>
-                            <custom:GLLineStipplePatternControl Grid.Column="1"
-                                                                x:Name="LineStippleControl"
-                                                                PatternChanged="GLLineStipplePatternControl_PatternChanged"/>
+                            <custom:LineStipple Grid.Column="1"
+                                                Style="{DynamicResource LineStippleControlStyle}"
+                                                Pattern="{Binding LineStipplePattern}"/>
                         </Grid>
                     </Border>
                     <Border Grid.Row="1" Style="{DynamicResource SettingBorderStyle}">
