@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Windows.Controls;
 
 namespace WoTMapWPF.CustomControls
@@ -7,14 +7,19 @@ namespace WoTMapWPF.CustomControls
     {
         public SettingsControl()
         {
-            ViewModel = DataContext as SettingsControlViewModel;
-            ViewModel?.ResetToDefault += OnResetToDefault;
             InitializeComponent();
+            DataContextChanged += SettingsControl_DataContextChanged;
             //preselect the correct theme
             SelectCorrectListViewThemeItem();
         }
 
         public SettingsControlViewModel? ViewModel { get; private set; }
+
+        private void SettingsControl_DataContextChanged(object sender, System.Windows.DependencyPropertyChangedEventArgs e)
+        {
+            ViewModel = DataContext as SettingsControlViewModel;
+            ViewModel?.ResetToDefault += OnResetToDefault;
+        }
 
         private void OnResetToDefault()
         {
@@ -37,7 +42,7 @@ namespace WoTMapWPF.CustomControls
             {
                 string themeName = (string)selectedItem.Tag;
                 ((App)App.Current).ChangeTheme(themeName);
-                Settings.Set("ThemeName", themeName);
+                Settings.Set("ThemeName", themeName); 
             }
         }
     }
