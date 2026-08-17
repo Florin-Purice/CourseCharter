@@ -8,7 +8,7 @@
 
         public override bool Equals(object? obj)
         {
-            if (obj == null || !(obj is PathFileDefinition))
+            if (obj == null || obj is not PathFileDefinition)
                 return false;
             PathFileDefinition other = (PathFileDefinition)obj;
             if (Name == other.Name &&

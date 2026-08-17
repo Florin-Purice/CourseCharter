@@ -5,17 +5,16 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WoTMapWPF.CustomControls"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.DataContext>
-        <local:NotificationControlViewModel/>
-    </UserControl.DataContext>
-    <Grid>
+             d:DataContext="{d:DesignInstance Type=local:NotificationControlViewModel}"
+             d:DesignHeight="450" d:DesignWidth="800"
+             Style="{DynamicResource NotificationControlStyle}">
+    <Grid Style="{DynamicResource NotificationGridStyle}">
         <ScrollViewer Grid.Row="0"
                       VerticalScrollBarVisibility="Auto">
             <TextBlock Text="{Binding Text}"/>
         </ScrollViewer>
         <StackPanel HorizontalAlignment="Right">
-            <Button Click="CloseButton_Click" Style="{DynamicResource CloseButtonStyle}">
+            <Button Style="{DynamicResource CloseButtonStyle}" Command="{Binding CloseCommand}">
                 <Image Source="..\Res\close_button.png"/>
             </Button>
         </StackPanel>

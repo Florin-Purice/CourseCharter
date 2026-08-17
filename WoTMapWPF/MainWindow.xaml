@@ -7,17 +7,39 @@
         xmlns:local="clr-namespace:WoTMapWPF"
         xmlns:custom="clr-namespace:WoTMapWPF.CustomControls"
         mc:Ignorable="d"
-        Title="CourseCharter" 
+        d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
+        Title="{Binding NavigationStore.WindowTitle}" 
         Height="700" Width="1200"
         SourceInitialized="Window_SourceInitialized"
         Closing="Window_Closing"
         FontSize="{DynamicResource FontSizeMain}"
         Background="{DynamicResource ThemeColorMain}">
-    <Window.DataContext>
-        <local:MainWindowViewModel DistanceUnit="km"
-                                   MapImageMD5=""
-                                   WindowTitleBase="CourseCharter"/>
-    </Window.DataContext>
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type custom:MapControlViewModel}">
+            <custom:MapControl/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type custom:NewMapControlViewModel}">
+            <custom:NewMapControl/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type custom:LoadMapControlViewModel}">
+            <custom:LoadMapControl/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type custom:SavePathControlViewModel}">
+            <custom:SavePathControl/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type custom:LoadPathControlViewModel}">
+            <custom:LoadPathControl/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type custom:GuideControlViewModel}">
+            <custom:GuideControl/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type custom:SettingsControlViewModel}">
+            <custom:SettingsControl/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type custom:NotificationControlViewModel}">
+            <custom:NotificationControl/>
+        </DataTemplate>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -30,175 +52,56 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <StackPanel Style="{DynamicResource MainMenuPanel}">
-                <Button Name="ShowMapButton" 
-                    Style="{DynamicResource MainMenuButtonStyle}"
-                    IsEnabled="False"
-                    Click="ShowMapButton_Click"
-                    ToolTip="Show map">
+                <Button Style="{DynamicResource MainMenuButtonStyle}"
+                        Tag="Map"
+                        ToolTip="Show map"
+                        Command="{Binding ShowMapPanelCommand}">
                     <Image Source="Res/map_button.png"/>
                 </Button>
-                <Button Name="ShowNewMapButton" 
-                    Style="{DynamicResource MainMenuButtonStyle}" 
-                    Click="ShowNewMapButton_Click"
-                    ToolTip="Create a new map">
+                <Button Style="{DynamicResource MainMenuButtonStyle}"
+                        Tag="NewMap"
+                        ToolTip="Create a new map"
+                        Command="{Binding ShowNewMapPanelCommand}">
                     <Image Source="Res/save_map_button.png"/>
                 </Button>
-                <Button Name="ShowLoadMapButton" 
-                    Style="{DynamicResource MainMenuButtonStyle}" 
-                    Click="ShowLoadMapButton_Click"
-                    ToolTip="Load map">
+                <Button Style="{DynamicResource MainMenuButtonStyle}"
+                        Tag="LoadMap"
+                        ToolTip="Load map"
+                        Command="{Binding ShowLoadMapPanelCommand}">
                     <Image Source="Res/load_map_button.png"/>
                 </Button>
-                <Button Name="ShowSavePathButton" 
-                    Style="{DynamicResource MainMenuButtonStyle}" 
-                    Click="ShowSavePathButton_Click"
-                    ToolTip="Save current path">
+                <Button Style="{DynamicResource MainMenuButtonStyle}" 
+                        Tag="SavePath"
+                        ToolTip="Save current path"
+                        Command="{Binding ShowSavePathPanelCommand}">
                     <Image Source="Res/save_path_button.png"/>
                 </Button>
-                <Button Name="ShowLoadPathButton" 
-                    Style="{DynamicResource MainMenuButtonStyle}" 
-                    Click="ShowLoadPathButton_Click"
-                    ToolTip="Load a path">
+                <Button Style="{DynamicResource MainMenuButtonStyle}" 
+                        Tag="LoadPath"
+                        ToolTip="Load a path"
+                        Command="{Binding ShowLoadPathPanelCommand}">
                     <Image Source="Res/load_path_button.png"/>
                 </Button>
-                <Button Name="ShowGuideButton" 
-                    Style="{DynamicResource MainMenuButtonStyle}" 
-                    Click="ShowGuideButton_Click"
-                    ToolTip="How to use">
+                <Button Style="{DynamicResource MainMenuButtonStyle}" 
+                        Tag="Guide"
+                        ToolTip="How to use"
+                        Command="{Binding ShowGuidePanelCommand}">
                     <Image Source="Res/T_Ctrl_Key_White.png"/>
                 </Button>
             </StackPanel>
             <Button Grid.Row="2" 
-                    Name="ShowSettingsButton"
                     Style="{DynamicResource MainMenuButtonStyle}" 
-                    Click="ShowSettingsButton_Click"
-                    ToolTip="Settings">
+                    Tag="Settings"
+                    ToolTip="Settings"
+                    Command="{Binding ShowSettingsPanelCommand}">
                 <Image Source="Res/settings_button.png"/>
             </Button>
         </Grid>
         <Border Grid.Column="1" Style="{DynamicResource PanelContainerStyle}">
-            <Grid>
-                <Grid x:Name="MapControl" Style="{DynamicResource MapControlStyle}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto" MinWidth="150"/>
-                    </Grid.ColumnDefinitions>
-                    <glwpf:GLWpfControl Name="GLControl"
-                                Grid.Column="0" Grid.ColumnSpan="3"
-                                Render="GLControl_Render"
-                                SizeChanged="GLControl_SizeChanged"
-                                MouseWheel="GLControl_MouseWheel"
-                                MouseMove="GLControl_MouseMove"
-                                KeyDown="GLControl_KeyDown"
-                                MouseUp="GLControl_MouseUp"
-                                MouseLeftButtonUp="GLControl_MouseLeftButtonUp"
-                                MouseLeave="GLControl_MouseLeave"/>
-                    <GridSplitter Grid.Column="1" 
-                                  Style="{DynamicResource VerticalGridSplitterStyle}"
-                                  Visibility="{Binding Path=Visibility, ElementName=NodesInfoGrid}"/>
-                    <Grid Grid.Column="2">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Grid Grid.Row="0" Name="NodesInfoGrid" Visibility="Hidden">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Grid Grid.Row="0" 
-                                  Background="{DynamicResource ThemeColorVibrant}">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <CheckBox Grid.Column="0"
-                                          VerticalContentAlignment="Center"
-                                          Checked="CheckBox_Checked"
-                                          Unchecked="CheckBox_Unchecked"
-                                          IsChecked="False"/>
-                                <TextBlock Grid.Column="1" 
-                                           Foreground="{DynamicResource ThemeColorText}"
-                                           TextTrimming="CharacterEllipsis"
-                                           FontSize="{DynamicResource FontSizeSmall}"
-                                           Text="Show only named nodes"
-                                           ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}"/>
-                            </Grid>
-                            <ListView Name="PathNodesInfoListView"
-                                  Grid.Row="1"
-                                  ItemsSource="{Binding Path.Nodes}"
-                                  Tag="ShowAll"
-                                  SelectionChanged="PathNodesInfoListView_SelectionChanged">
-                                <ListView.ItemContainerStyle>
-                                    <Style TargetType="ListViewItem" BasedOn="{StaticResource PathNodeListViewItemStyle}">
-                                        <EventSetter Event="GotKeyboardFocus" Handler="ListViewItem_GotKeyboardFocus"/>
-                                    </Style>
-                                </ListView.ItemContainerStyle>
-                                <ListView.ItemTemplate>
-                                    <DataTemplate>
-                                        <local:CustomTextBox MouseDoubleClick="NameBox_MouseDoubleClick"
-                                                         Grid.Column="0"
-                                                         Text="{Binding DisplayName, UpdateSourceTrigger=Explicit}">
-                                        </local:CustomTextBox>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>
-                        </Grid>
-                        <Button  Grid.Row="1"
-                                 Click="ShowNodesButton_Click"
-                                 HorizontalContentAlignment="Stretch">
-                            <Grid>
-                                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5 0">
-                                    <TextBlock Text="{local:DoubleBinding {Binding Path.TotalDistance},{Binding DistanceUnitsPerPixel},
-                                        Converter={StaticResource PixelsToUnitsConverter},
-                                        StringFormat=N0}"/>
-                                    <TextBlock Text=" "/>
-                                    <TextBlock Text="{Binding DistanceUnit}"/>
-                                </StackPanel>
-                                <Border HorizontalAlignment="Right" ToolTip="Show details">
-                                    <Image Name="ShowNodesButtonImage"
-                                           Source="Res/expand_button.png" Height="20"/>
-                                </Border>
-                                <Border HorizontalAlignment="Right" ToolTip="Hide details">
-                                    <Image Name="HideNodesButtonImage" 
-                                           Source="Res/collapse_button.png" Height="20"
-                                           Visibility="Hidden"/>
-                                </Border>
-                            </Grid>
-                        </Button>
-                    </Grid>
-                </Grid>
-                <custom:NewMapControl x:Name="NewMapControl"
-                              Style="{DynamicResource FormPanel}"
-                              Visibility="Hidden"
-                              SaveButtonClicked="NewMapControl_SaveButtonClicked"/>
-                <custom:LoadMapControl x:Name="LoadMapControl"
-                               Style="{DynamicResource FormPanel}"
-                               Visibility="Hidden"
-                               LoadButtonClicked="LoadMapControl_LoadButtonClicked"
-                                       DeleteRequested="LoadMapControl_DeleteRequested"/>
-                <custom:SavePathControl x:Name="SavePathControl"
-                                        Style="{DynamicResource FormPanel}"
-                                        Visibility="Hidden"
-                                        SaveButtonClicked="SavePathControl_SaveButtonClicked"/>
-                <custom:LoadPathControl x:Name="LoadPathControl"
-                                        Style="{DynamicResource FormPanel}"
-                                        Visibility="Hidden"
-                                        LoadButtonClicked="LoadPathControl_LoadButtonClicked"
-                                        DeleteRequested="LoadPathControl_DeleteRequested"/>
-                <custom:GuideControl x:Name="GuideControl"
-                                        Style="{DynamicResource FormPanel}"
-                                        Visibility="Hidden"/>
-                <custom:SettingsControl x:Name="SettingsControl"
-                                        Style="{DynamicResource FormPanel}"
-                                        Visibility="Hidden"/>
-            </Grid>
+            <ContentControl Content="{Binding NavigationStore.CurrentViewModel}"/>
         </Border>
         <StackPanel Grid.ColumnSpan="2" VerticalAlignment="Bottom">
-            <custom:NotificationControl x:Name="NotificationControl"
-                                        Style="{DynamicResource NotificationControlStyle}"
-                                        Visibility="Hidden"/>
+            <ContentControl Content="{Binding NotificationControlViewModel}"/>
         </StackPanel>
     </Grid>
 </Window>

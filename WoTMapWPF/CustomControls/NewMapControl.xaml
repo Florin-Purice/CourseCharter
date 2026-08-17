@@ -4,12 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WoTMapWPF.CustomControls"
-             xmlns:app="clr-namespace:WoTMapWPF"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.DataContext>
-        <local:NewMapControlViewModel/>
-    </UserControl.DataContext>
+             d:DataContext="{d:DesignInstance Type=local:NewMapControlViewModel}"
+             d:DesignHeight="450" d:DesignWidth="800"
+             Style="{DynamicResource FormPanel}">
     <Border Style="{DynamicResource PanelBorderStyle}">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -32,7 +30,7 @@
                 <TextBlock ToolTip="Map name">Name</TextBlock>
             </Border>
             <Border Grid.Row="1" Grid.Column="1" Style="{DynamicResource PaddedBorder}">
-                <app:AutoCompleteTextBox Text="{Binding Name}" SuggestionValues="{Binding NameSuggestionValues}" TextChanged="FileNameFilter_TextChanged"/>
+                <local:AutoCompleteTextBox Text="{Binding Name}" SuggestionValues="{Binding NameSuggestionValues}" TextChanged="FileNameFilter_TextChanged"/>
             </Border>
             <Border Grid.Row="2" Grid.Column="0" Style="{DynamicResource PaddedLabelBorder}">
                 <TextBlock ToolTip="Name of the distance unit (e.g. km, mile)">Distance unit label</TextBlock>
@@ -62,16 +60,16 @@
                 <TextBlock Text="{Binding UnitsPerPixel}"/>
             </Border>
             <Border Grid.Row="6" Grid.Column="0" Style="{DynamicResource PaddedBorder}">
-                <Button Click="OpenFileButton_Click">Select map image</Button>
+                <Button Command="{Binding SelectImageCommand}" Content="Select map image"/>
             </Border>
             <Border Grid.Row="6" Grid.Column="1" Style="{DynamicResource PaddedBorder}">
                 <TextBlock Text="{Binding ImageFileName}"/>
             </Border>
             <Border Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Style="{DynamicResource PaddedBorder}">
-                <Image Name="MapImage" Height="200"/>
+                <Image Height="{Binding ImageHeight}" Source="{Binding MapImage}"/>
             </Border>
             <Border Grid.Row="8" Grid.ColumnSpan="2" Style="{DynamicResource PaddedBorder}">
-                <Button Style="{DynamicResource SubmitButton}" Click="SaveButton_Click">Save</Button>
+                <Button Style="{DynamicResource SubmitButton}" Command="{Binding SaveCommand}" Content="Save"/>
             </Border>
         </Grid>
     </Border>

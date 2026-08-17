@@ -1,17 +1,27 @@
-﻿namespace WoTMapWPF
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System.Text.Json.Serialization;
+
+namespace WoTMapWPF
 {
-    public class MapFileDefinition
+    public partial class MapFileDefinition : ObservableObject
     {
         public string Name { get; set; } = string.Empty;
-        public int SampleUnits { get; set; }
-        public int SamplePixels { get; set; }
         public string UnitLabel { get; set; } = string.Empty;
         public string ImageMD5 { get; set; } = string.Empty;
         public string ImageExt { get; set; } = string.Empty;
 
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(DistanceUnitsPerPixel))]
+        public partial int SampleUnits { get; set; }
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(DistanceUnitsPerPixel))]
+        public partial int SamplePixels { get; set; }
+        [JsonIgnore]
+        public double DistanceUnitsPerPixel => (double)SampleUnits / SamplePixels;
+
         public override bool Equals(object? obj)
         {
-            if (obj == null || !(obj is MapFileDefinition))
+            if (obj == null || obj is not MapFileDefinition)
                 return false;
             MapFileDefinition other = (MapFileDefinition)obj;
             if (Name == other.Name &&

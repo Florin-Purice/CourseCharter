@@ -5,10 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WoTMapWPF.CustomControls"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.DataContext>
-        <local:LoadMapControlViewModel/>
-    </UserControl.DataContext>
+             d:DataContext="{d:DesignInstance Type=local:LoadMapControlViewModel}"
+             d:DesignHeight="450" d:DesignWidth="800"
+             Style="{DynamicResource FormPanel}">
     <Border Style="{DynamicResource PanelBorderStyle}">
         <Grid>
             <Grid.RowDefinitions>
@@ -38,6 +37,7 @@
                                     <ColumnDefinition Width="300"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
+                                
                                 <Grid Grid.Column="0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="30"/>
@@ -52,26 +52,40 @@
                                     </Button>
                                     <TextBlock Grid.Column="1" Text="{Binding Name}"/>
                                 </Grid>
+                                
+                                
+                                
                                 <Grid Grid.Column="1">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Grid.Column="0" Text="{Binding UnitLabel}"/>
-                                    <Button Visibility="{Binding Path=IsSelected, RelativeSource={RelativeSource AncestorType=ListViewItem}, Converter={StaticResource BoolToVisConverter}}"
-                                    Grid.Column="1"
-                                    Style="{DynamicResource CloseButtonStyle}"
-                                    Click="DeleteButton_Click">
+                                    <Button Visibility="{Binding Path=IsSelected, RelativeSource={RelativeSource AncestorType=ListViewItem}, Converter={StaticResource BoolToVisConverter}}" 
+                                            Grid.Column="1"
+                                            Style="{DynamicResource CloseButtonStyle}" 
+                                            Command="{Binding DataContext.DeleteMapCommand, RelativeSource={RelativeSource AncestorType=local:LoadMapControl}}">
                                         <Image Source="..\Res\close_button.png"/>
                                     </Button>
                                 </Grid>
+                                
+                                
                             </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="BorderThickness" Value="1"/>
+                            <Setter Property="BorderBrush" Value="{DynamicResource ThemeColorInactive}"/>
+                            <Setter Property="Background" Value="{DynamicResource ThemeColorMuted}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource ThemeColorText}"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
                 </ListView>
             </Border>
             <Border Grid.Row="2" Style="{DynamicResource PaddedBorder}">
-                <Button Click="LoadButton_Click" Style="{DynamicResource SubmitButton}">Load</Button>
+                <Button Style="{DynamicResource SubmitButton}" Command="{Binding LoadMapCommand}" Content="Load"/>
             </Border>
         </Grid>
     </Border>

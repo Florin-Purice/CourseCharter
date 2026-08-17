@@ -26,17 +26,7 @@ namespace WoTMapWPF
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
-            //convertback will not return the correct value, but it is never used
-            double units;
-            try
-            {
-                units = System.Convert.ToDouble(value);
-            }
-            catch
-            {
-                units = 0;
-            }
-            return new object[] { units };
+            throw new NotImplementedException();
         }
     }
 }

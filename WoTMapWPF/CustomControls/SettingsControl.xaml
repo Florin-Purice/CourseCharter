@@ -7,10 +7,9 @@
              xmlns:colorpicker="clr-namespace:ColorPicker;assembly=ColorPicker"
              xmlns:custom="clr-namespace:WoTMapWPF.CustomControls"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.DataContext>
-        <local:SettingsControlViewModel/>
-    </UserControl.DataContext>
+             d:DataContext="{d:DesignInstance Type=custom:SettingsControlViewModel}"
+             d:DesignHeight="450" d:DesignWidth="800"
+             Style="{DynamicResource FormPanel}">
     <Border Style="{DynamicResource PanelBorderStyle}">
         <Grid Style="{StaticResource SettingsControlStyle}">
             <Grid.ColumnDefinitions>
@@ -182,21 +181,15 @@
                                 <Image Name="PinImage" Source="{Binding PinBitmap}"/>
                                 <Image Name="PinSelectedImage" Source="{Binding PinSelectedBitmap}"/>
                             </Grid>
-                            <colorpicker:SquarePicker Grid.Column="1" 
-                                          Name="ColorPickerA"
-                                          ColorChanged="ColorPickerA_ColorChanged"
-                                          SelectedColor="{Binding ColorA}"
-                                          ToolTip="Normal pin color"/>
-                            <colorpicker:SquarePicker Grid.Column="2" 
-                                          Name="ColorPickerB"
-                                          ColorChanged="ColorPickerB_ColorChanged"
-                                          SelectedColor="{Binding ColorB}"
-                                          ToolTip="Selected pin color"/>
+                            <colorpicker:SquarePicker Grid.Column="1"
+                                                      SelectedColor="{Binding ColorA, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                      ToolTip="Normal pin color"/>
+                            <colorpicker:SquarePicker Grid.Column="2"
+                                                      SelectedColor="{Binding ColorB, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                      ToolTip="Selected pin color"/>
                             <colorpicker:SquarePicker Grid.Column="3"
-                                          Name="ColorPickerC"
-                                          ColorChanged="ColorPickerC_ColorChanged"
-                                          SelectedColor="{Binding ColorC}"
-                                          ToolTip="Path line color"/>
+                                                      SelectedColor="{Binding ColorC, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                      ToolTip="Path line color"/>
                         </Grid>
                     </Border>
                     <Border Grid.Row="1" Style="{DynamicResource SettingBorderStyle}">
@@ -207,8 +200,8 @@
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0">Pin size</TextBlock>
                             <Slider Grid.Column="1" Minimum="40" Maximum="200"
-                            VerticalAlignment="Center"
-                            Value="{Binding PinSize}"/>
+                                    VerticalAlignment="Center"
+                                    Value="{Binding PinSize}"/>
                         </Grid>
                     </Border>
                 </Grid>
@@ -236,9 +229,9 @@
                                 <ColumnDefinition Width="250"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0">Stipple pattern</TextBlock>
-                            <custom:GLLineStipplePatternControl Grid.Column="1"
-                                            x:Name="LineStippleControl"
-                                            PatternChanged="GLLineStipplePatternControl_PatternChanged"/>
+                            <custom:LineStipple Grid.Column="1"
+                                                Style="{DynamicResource LineStippleControlStyle}"
+                                                Pattern="{Binding LineStipplePattern}"/>
                         </Grid>
                     </Border>
                     <Border Grid.Row="1" Style="{DynamicResource SettingBorderStyle}">
@@ -249,9 +242,8 @@
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0">Stipple factor</TextBlock>
                             <Slider Grid.Column="1" Minimum="1" Maximum="10"
-                            VerticalAlignment="Center"
-                            Value="{Binding LineStippleFactor}"
-                            IsSnapToTickEnabled="True" TickFrequency="1"/>
+                                    Value="{Binding LineStippleFactor}"
+                                    IsSnapToTickEnabled="True" TickFrequency="1"/>
                         </Grid>
                     </Border>
                     <Border Grid.Row="2" Style="{DynamicResource SettingBorderStyle}">
@@ -262,8 +254,8 @@
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0">Line width</TextBlock>
                             <Slider Grid.Column="1" Minimum="1" Maximum="20"
-                            VerticalAlignment="Center"
-                            Value="{Binding LineWidth}"/>
+                                    VerticalAlignment="Center"
+                                    Value="{Binding LineWidth}"/>
                         </Grid>
                     </Border>
                 </Grid>
@@ -284,8 +276,8 @@
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <CheckBox Name="PathAutosaveCheckbox" Grid.Column="1" VerticalContentAlignment="Center"
-                              IsChecked="{Binding IsPathAutosaveEnabled}"/>
+                        <CheckBox Grid.Column="1" VerticalContentAlignment="Center"
+                                  IsChecked="{Binding IsPathAutosaveEnabled}"/>
                         <TextBlock Grid.Column="0">Austosave path</TextBlock>
                     </Grid>
                 </Border>
@@ -294,11 +286,11 @@
             <Border Grid.Row="9" Grid.ColumnSpan="2"
                 Style="{DynamicResource SettingsLabelBorderStyle}" 
                 BorderThickness="2">
-                <Button Grid.Row="9" 
-                    Click="ResetButton_Click"
-                    Width="200" Margin="10"
-                    FontSize="{DynamicResource FontSizeMain}" FontWeight="Bold"
-                    Content="Load default settings"/>
+                <Button Grid.Row="9"
+                        Width="200" Margin="10"
+                        FontSize="{DynamicResource FontSizeMain}" FontWeight="Bold"
+                        Command="{Binding ResetCommand}"
+                        Content="Load default settings"/>
             </Border>
         </Grid>
     </Border>

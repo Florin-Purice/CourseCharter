@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 
-namespace WoTMapWPF
+namespace WoTMapWPF.CustomControls
 {
     public class CustomTextBox : TextBox
     {

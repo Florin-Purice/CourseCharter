@@ -12,12 +12,12 @@ namespace WoTMapWPF.Graphics
         public int TextureID;
         public readonly int Vao;
         public readonly int IndicesCount;
-        private readonly List<int> buffers = new();
-        private MarkerType markerType;
+        private readonly List<int> buffers = [];
+        private readonly MarkerType markerType;
 
         public RouteMarker(MarkerType markerType)
         {
-            Uri textureUri = null;
+            Uri? textureUri = null;
             this.markerType = markerType;
             switch (markerType)
             {
@@ -39,24 +39,19 @@ namespace WoTMapWPF.Graphics
             PosX = 0; PosY = 0;
             float width = 1f;
             float height = 1f;
-            Vector2[] vertices = new Vector2[]
-               {
+            Vector2[] vertices = [
                 new Vector2(-width/2, -height/2),
                 new Vector2(width/2, -height/2),
                 new Vector2(width/2, height/2),
-                new Vector2(-width/2, height/2)
-               };
-            Vector2[] uv = new Vector2[]
-            {
+                new Vector2(-width/2, height/2)];
+            Vector2[] uv = [
                 new Vector2(0, 1),
                 new Vector2(1, 1),
                 new Vector2(1, 0),
-                new Vector2(0, 0)
-            };
-            int[] indices = new int[] {
+                new Vector2(0, 0)];
+            int[] indices = [
                 0, 1, 2,
-                0, 2, 3
-            };
+                0, 2, 3];
             IndicesCount = indices.Length;
 
             GL.GenBuffers(1, out int posVbo);

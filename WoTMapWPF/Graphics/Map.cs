@@ -11,13 +11,12 @@ namespace WoTMapWPF.Graphics
         public int Vao;
         public int IndicesCount;
         public readonly string TexturePath;
-        private static Map? _mapInstance = null;
-        private readonly List<int> buffers = new List<int>();
+        private readonly List<int> buffers = [];
 
-        private Map()
+        public Map()
         {
             TexturePath = "../Res/no_map.png";
-            Uri textureUri = new Uri(TexturePath, UriKind.Relative);
+            Uri textureUri = new(TexturePath, UriKind.Relative);
             TextureID = TextureLoader.LoadTexture(textureUri, out int wp, out int hp);
             AspectRatio = (float)wp / (float)hp;
             HeightP = hp;
@@ -25,7 +24,7 @@ namespace WoTMapWPF.Graphics
             Init();
         }
 
-        private Map(string texPath)
+        public Map(string texPath)
         {
             TexturePath = texPath;
             TextureID = TextureLoader.LoadTexture(texPath, out int wp, out int hp);
@@ -58,43 +57,27 @@ namespace WoTMapWPF.Graphics
             GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
-        public static Map? Instance { get => _mapInstance; }
         public float AspectRatio { get; private set; }
         public float HeightP { get; private set; }
         public float WidthP { get; private set; }
-
-        public static Map New(string? texPath = null)
-        {
-            _mapInstance?.Dispose();
-            if (texPath == null)
-                _mapInstance = new Map();
-            else
-                _mapInstance = new Map(texPath);
-            return _mapInstance;
-        }
 
         private void Init()
         {
             float halfH = Scene.VERTICAL_UNITS / 2;
             float halfW = halfH * AspectRatio;
-            Vector2[] vertices = new Vector2[]
-               {
+            Vector2[] vertices = [
                 new Vector2(-halfW, -halfH),
                 new Vector2(halfW, -halfH),
                 new Vector2(halfW, halfH),
-                new Vector2(-halfW, halfH)
-               };
-            Vector2[] uv = new Vector2[]
-            {
+                new Vector2(-halfW, halfH)];
+            Vector2[] uv = [
                 new Vector2(0, 1),
                 new Vector2(1, 1),
                 new Vector2(1, 0),
-                new Vector2(0, 0)
-            };
-            int[] indices = new int[] {
+                new Vector2(0, 0)];
+            int[] indices = [
                 0, 1, 2,
-                0, 2, 3
-            };
+                0, 2, 3];
             IndicesCount = indices.Length;
 
             GL.GenBuffers(1, out int posVbo);

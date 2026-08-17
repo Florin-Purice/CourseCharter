@@ -10,6 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ApplicationDefinition Remove="App.xaml" />
+    <Page Include="App.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Graphics\Shaders\basic_shader.frag" />
     <None Remove="Graphics\Shaders\basic_shader.vert" />
     <None Remove="Res\close_button.png" />
@@ -151,6 +156,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.10" />
     <PackageReference Include="OpenTK.GLWpfControl" Version="4.3.6" />
     <PackageReference Include="OpenTK.redist.glfw" Version="3.4.0.47" />
     <PackageReference Include="PixiEditor.ColorPicker" Version="3.4.2.3" />

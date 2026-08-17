@@ -1,41 +1,85 @@
-﻿using System.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using WoTMapWPF.CustomControls;
+using WoTMapWPF.Services;
 
 namespace WoTMapWPF
 {
-    public class MainWindowViewModel : INotifyPropertyChanged
+    public partial class MainWindowViewModel(
+        NavigationStore navigationStore,
+        INavigationManager navigationManager,
+        IMessenger messenger,
+        MapManagerService mapManagerService,
+        NotificationControlViewModel notificationControlViewModel
+        ) : ViewModelBase
     {
-        private string distanceUnit;
-        private double distanceUnitsPerPixel;
-        private string mapImageMD5;
-        private string mapName;
-        private string windowTitleBase;
-        private Path path;
-        private Path? oldPath;
+        [ObservableProperty]
+        public partial string WindowTitleBase { get; set; } = "CourseCharter";
+        [ObservableProperty]
+        public partial NotificationControlViewModel NotificationControlViewModel { get; set; } = notificationControlViewModel;
 
-        public MainWindowViewModel()
+        public NavigationStore NavigationStore { get; } = navigationStore;
+        public MapManagerService MapManagerService { get; } = mapManagerService;
+
+        [RelayCommand]
+        public void ShowMapPanel()
         {
-            distanceUnit = string.Empty;
-            distanceUnitsPerPixel = 1;
-            mapImageMD5 = string.Empty;
-            mapName = string.Empty;
-            windowTitleBase = string.Empty;
-            path = new Path();
-            oldPath = null;
+            navigationManager.Navigate(NavigationTarget.MapPanel);
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        public string DistanceUnit { get => distanceUnit; set { distanceUnit = value; OnPropertyChanged("DistanceUnit"); } }
-        public double DistanceUnitsPerPixel { get => distanceUnitsPerPixel; set { distanceUnitsPerPixel = value; OnPropertyChanged("DistanceUnitsPerPixel"); } }
-        public string MapImageMD5 { get => mapImageMD5; set { mapImageMD5 = value; OnPropertyChanged("MapImageMD5"); } }
-        public string MapName { get => mapName; set { mapName = value; OnPropertyChanged("MapName"); } }
-        public Path Path { get => path; set { OldPath = path; path = value; OnPropertyChanged("Path"); } }
-        public Path? OldPath { get => oldPath; set { oldPath = value; OnPropertyChanged("OldPath"); } }
-        public string WindowTitleBase { get => windowTitleBase; set { windowTitleBase = value; OnPropertyChanged("WindowTitleBase"); } }
-
-        private void OnPropertyChanged(string propName)
+        [RelayCommand]
+        public void ShowNewMapPanel()
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+            navigationManager.Navigate(NavigationTarget.NewMapPanel);
+        }
+
+        [RelayCommand]
+        public void ShowLoadMapPanel()
+        {
+            if (!navigationManager.Navigate(NavigationTarget.LoadMapPanel))
+            {
+                messenger.Send(new NotificationMessage(
+                    Message: "No saved maps found. Please create a map first.",
+                    Type: NotificationType.ShowAndHide));
+                navigationManager.Navigate(NavigationTarget.MapPanel);
+            }
+        }
+
+        [RelayCommand]
+        public void ShowSavePathPanel()
+        {
+            if (!navigationManager.Navigate(NavigationTarget.SavePathPanel))
+            {
+                messenger.Send(new NotificationMessage(
+                    Message: "There is no path to save.",
+                    Type: NotificationType.ShowAndHide));
+                navigationManager.Navigate(NavigationTarget.MapPanel);
+            }
+        }
+
+        [RelayCommand]
+        public void ShowLoadPathPanel()
+        {
+            if (!navigationManager.Navigate(NavigationTarget.LoadPathPanel))
+            {
+                messenger.Send(new NotificationMessage(
+                    Message: "No saved paths found for current map.",
+                    Type: NotificationType.ShowAndHide));
+                navigationManager.Navigate(NavigationTarget.MapPanel);
+            }
+        }
+
+        [RelayCommand]
+        public void ShowGuidePanel()
+        {
+            navigationManager.Navigate(NavigationTarget.GuidePanel);
+        }
+
+        [RelayCommand]
+        public void ShowSettingsPanel()
+        {
+            navigationManager.Navigate(NavigationTarget.SettingsPanel);
         }
     }
 }
