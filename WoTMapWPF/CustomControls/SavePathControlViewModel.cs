@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using WoTMapWPF.Graphics;
 using WoTMapWPF.Services;
 
 namespace WoTMapWPF.CustomControls
@@ -10,16 +12,16 @@ namespace WoTMapWPF.CustomControls
     public partial class SavePathControlViewModel : ViewModelBase
     {
         private readonly INavigationManager navigationManager;
-        private readonly NotificationService notificationService;
+        private readonly IMessenger messenger;
         private readonly MapManagerService mapManagerService;
 
         public SavePathControlViewModel(
             INavigationManager navigationManager,
-            NotificationService notificationService,
+            IMessenger messenger,
             MapManagerService mapManagerService)
         {
             this.navigationManager = navigationManager;
-            this.notificationService = notificationService;
+            this.messenger = messenger;
             this.mapManagerService = mapManagerService;
 
             if (Path?.Nodes.Count < 1)
@@ -72,11 +74,9 @@ namespace WoTMapWPF.CustomControls
                 string jsonString = JsonSerializer.Serialize(pathFileDefinition, Settings.Get<JsonSerializerOptions>("JsonSerializerOptions"));
                 Directory.CreateDirectory($"{saveLocation}\\maps\\{imageMD5}\\paths");
                 File.WriteAllText($"{saveLocation}\\maps\\{imageMD5}\\paths\\{Name}.info", jsonString);
-                notificationService.DoNotify(new NotificationMessage
-                {
-                    Message = $"Saved path \"{pathFileDefinition.Name}\".",
-                    Type = NotificationType.ShowAndHide
-                });
+                messenger.Send(new NotificationMessage(
+                    Message: $"Saved path \"{pathFileDefinition.Name}\".",
+                    Type: NotificationType.ShowAndHide));
                 navigationManager.Navigate(NavigationTarget.MapPanel);
             }
         }

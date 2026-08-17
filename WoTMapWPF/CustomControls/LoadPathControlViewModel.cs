@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -12,18 +13,18 @@ namespace WoTMapWPF.CustomControls
     public partial class LoadPathControlViewModel : ViewModelBase
     {
         private readonly INavigationManager navigationManager;
-        private readonly NotificationService notificationService;
+        private readonly IMessenger messenger;
         private readonly CreateNewPath createNewPath;
         private readonly MapManagerService mapManagerService;
 
         public LoadPathControlViewModel(
             INavigationManager navigationManager,
-            NotificationService notificationService,
+            IMessenger messenger,
             CreateNewPath createNewPath,
             MapManagerService mapManagerService)
         {
             this.navigationManager = navigationManager;
-            this.notificationService = notificationService;
+            this.messenger = messenger;
             this.createNewPath = createNewPath;
             this.mapManagerService = mapManagerService;
 
@@ -63,19 +64,15 @@ namespace WoTMapWPF.CustomControls
                 {
                     mapManagerService.ChangePathAndClearHistory(SelectedPath.Path);
                     mapManagerService.StorePathState();
-                    notificationService.DoNotify(new NotificationMessage
-                    {
-                        Message = $"Loaded path \"{SelectedPath.Name}\".",
-                        Type = NotificationType.ShowAndHide
-                    });
+                    messenger.Send(new NotificationMessage(
+                        Message: $"Loaded path \"{SelectedPath.Name}\".",
+                        Type: NotificationType.ShowAndHide));
                 }
                 catch
                 {
-                    notificationService.DoNotify(new NotificationMessage
-                    {
-                        Message = "Could not load path.",
-                        Type = NotificationType.ShowError
-                    });
+                    messenger.Send(new NotificationMessage(
+                        Message: "Could not load path.",
+                        Type: NotificationType.ShowError));
                 }
                 navigationManager.Navigate(NavigationTarget.MapPanel);
             }
@@ -104,11 +101,9 @@ namespace WoTMapWPF.CustomControls
                                     if (SelectedPath.Equals(path))
                                     {
                                         File.Delete(pathInfoFile);
-                                        notificationService.DoNotify(new NotificationMessage
-                                        {
-                                            Message = $"Deleted path \"{SelectedPath.Name}\".",
-                                            Type = NotificationType.ShowAndHide
-                                        });
+                                        messenger.Send(new NotificationMessage(
+                                            Message: $"Deleted path \"{SelectedPath.Name}\".",
+                                            Type: NotificationType.ShowAndHide));
                                     }
                                     else
                                         paths.Add(path);

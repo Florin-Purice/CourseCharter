@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,16 +15,16 @@ namespace WoTMapWPF.CustomControls
     public partial class LoadMapControlViewModel : ViewModelBase
     {
         private readonly INavigationManager navigationManager;
-        private readonly NotificationService notificationService;
+        private readonly IMessenger messenger;
         private readonly MapManagerService mapManagerService;
 
         public LoadMapControlViewModel(
             INavigationManager navigationManager,
-            NotificationService notificationService,
+            IMessenger messenger,
             MapManagerService mapManagerService)
         {
             this.navigationManager = navigationManager;
-            this.notificationService = notificationService;
+            this.messenger = messenger;
             this.mapManagerService = mapManagerService;
 
             int imageHeight = 64;
@@ -86,17 +87,13 @@ namespace WoTMapWPF.CustomControls
             if (SelectedMap != null)
             {
                 if (mapManagerService.LoadMap(SelectedMap))
-                    notificationService.DoNotify(new NotificationMessage
-                    {
-                        Message = $"Loaded map \"{SelectedMap.Name}\".",
-                        Type = NotificationType.ShowAndHide
-                    });
+                    messenger.Send(new NotificationMessage(
+                        Message: $"Loaded map \"{SelectedMap.Name}\".",
+                        Type: NotificationType.ShowAndHide));
                 else
-                    notificationService.DoNotify(new NotificationMessage
-                    {
-                        Message = $"Could not load map \"{SelectedMap.Name}\".",
-                        Type = NotificationType.ShowError
-                    });
+                    messenger.Send(new NotificationMessage(
+                        Message: $"Could not load map \"{SelectedMap.Name}\".",
+                        Type: NotificationType.ShowError));
                 navigationManager.Navigate(NavigationTarget.MapPanel);
             }
         }
@@ -128,19 +125,14 @@ namespace WoTMapWPF.CustomControls
                                             {
                                                 //also delete associated files (paths, map image) when there are no other map definitions using the same map image base
                                                 Directory.Delete(subdir, true);
-                                                notificationService.DoNotify(new NotificationMessage
-                                                {
-                                                    Message = $"Deleted map \"{SelectedMap.Name}\" and all associated files.",
-                                                    Type = NotificationType.ShowAndHide
-                                                });
+                                                messenger.Send(new NotificationMessage(
+                                                    Message: $"Deleted map \"{SelectedMap.Name}\" and all associated files.",
+                                                    Type: NotificationType.ShowAndHide));
                                             }
                                             else
-                                                notificationService.DoNotify(new NotificationMessage
-                                                {
-                                                    Message = $"Deleted map \"{SelectedMap.Name}\".\nAssociated files that are used by other map definitions have not been deleted.",
-                                                    Type = NotificationType.ShowAndHide,
-                                                    HideDelay = 6000
-                                                });
+                                                messenger.Send(new NotificationMessage(
+                                                    Message: $"Deleted map \"{SelectedMap.Name}\".\nAssociated files that are used by other map definitions have not been deleted.",
+                                                    Type: NotificationType.ShowAndHide));
                                         }
                                         else
                                             maps.Add(map);

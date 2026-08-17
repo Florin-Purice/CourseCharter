@@ -1,18 +1,19 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using System.Threading;
 using System.Threading.Tasks;
 using WoTMapWPF.Services;
 
 namespace WoTMapWPF.CustomControls
 {
-    public partial class NotificationControlViewModel : ViewModelBase
+    public partial class NotificationControlViewModel : ViewModelBase, IRecipient<NotificationMessage>
     {
         private CancellationTokenSource? cancellationTokenSource;
 
-        public NotificationControlViewModel(NotificationService notificationService)
+        public NotificationControlViewModel(IMessenger messenger)
         {
-            notificationService.Notify += NotificationService_Notify;
+            messenger.Register<NotificationMessage>(this);
         }
 
         [ObservableProperty]
@@ -22,29 +23,29 @@ namespace WoTMapWPF.CustomControls
         [ObservableProperty]
         public partial bool IsError { get; set; } = false;
 
-        private void NotificationService_Notify(NotificationMessage obj)
-        {
-            switch (obj.Type)
-            {
-                case NotificationType.Show:
-                    ShowNotification(obj.Message);
-                    break;
-                case NotificationType.ShowError:
-                    ShowError(obj.Message);
-                    break;
-                case NotificationType.ShowAndHide:
-                    ShowNotificationAndHide(obj.Message);
-                    break;
-                case NotificationType.ShowErrorAndHide:
-                    ShowErrorAndHide(obj.Message);
-                    break;
-            }
-        }
-
         [RelayCommand]
         public void Close()
         {
             IsVisible = false;
+        }
+
+        public void Receive(NotificationMessage message)
+        {
+            switch (message.Type)
+            {
+                case NotificationType.Show:
+                    ShowNotification(message.Message);
+                    break;
+                case NotificationType.ShowError:
+                    ShowError(message.Message);
+                    break;
+                case NotificationType.ShowAndHide:
+                    ShowNotificationAndHide(message.Message);
+                    break;
+                case NotificationType.ShowErrorAndHide:
+                    ShowErrorAndHide(message.Message);
+                    break;
+            }
         }
 
         private void ShowNotification(string message)
