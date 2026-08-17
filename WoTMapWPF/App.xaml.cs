@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OpenTK.Wpf;
 using System;
@@ -65,7 +66,7 @@ namespace WoTMapWPF
                         ));
                 services.AddSingleton<GLWpfControl>();
                 services.AddSingleton<Scene>();
-                services.AddSingleton<NotificationService>();
+                services.AddSingleton<IMessenger, WeakReferenceMessenger>();
 
                 services.AddSingleton<NavigationStore>();
                 services.AddSingleton<INavigationService>(CreateMapNavigationService);

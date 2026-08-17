@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using WoTMapWPF.CustomControls;
 using WoTMapWPF.Services;
 
@@ -8,7 +9,7 @@ namespace WoTMapWPF
     public partial class MainWindowViewModel(
         NavigationStore navigationStore,
         INavigationManager navigationManager,
-        NotificationService notificationService,
+        IMessenger messenger,
         MapManagerService mapManagerService,
         NotificationControlViewModel notificationControlViewModel
         ) : ViewModelBase
@@ -38,11 +39,9 @@ namespace WoTMapWPF
         {
             if (!navigationManager.Navigate(NavigationTarget.LoadMapPanel))
             {
-                notificationService.DoNotify(new NotificationMessage
-                {
-                    Message = "No saved maps found. Please create a map first.",
-                    Type = NotificationType.ShowAndHide
-                });
+                messenger.Send(new NotificationMessage(
+                    Message: "No saved maps found. Please create a map first.",
+                    Type: NotificationType.ShowAndHide));
                 navigationManager.Navigate(NavigationTarget.MapPanel);
             }
         }
@@ -52,11 +51,9 @@ namespace WoTMapWPF
         {
             if (!navigationManager.Navigate(NavigationTarget.SavePathPanel))
             {
-                notificationService.DoNotify(new NotificationMessage
-                {
-                    Message = "There is no path to save.",
-                    Type = NotificationType.ShowAndHide
-                });
+                messenger.Send(new NotificationMessage(
+                    Message: "There is no path to save.",
+                    Type: NotificationType.ShowAndHide));
                 navigationManager.Navigate(NavigationTarget.MapPanel);
             }
         }
@@ -66,11 +63,9 @@ namespace WoTMapWPF
         {
             if (!navigationManager.Navigate(NavigationTarget.LoadPathPanel))
             {
-                notificationService.DoNotify(new NotificationMessage
-                {
-                    Message = "No saved paths found for current map.",
-                    Type = NotificationType.ShowAndHide
-                });
+                messenger.Send(new NotificationMessage(
+                    Message: "No saved paths found for current map.",
+                    Type: NotificationType.ShowAndHide));
                 navigationManager.Navigate(NavigationTarget.MapPanel);
             }
         }

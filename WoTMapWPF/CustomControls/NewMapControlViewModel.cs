@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -15,16 +16,16 @@ namespace WoTMapWPF.CustomControls
     public partial class NewMapControlViewModel : ViewModelBase
     {
         private readonly INavigationManager navigationManager;
-        private readonly NotificationService notificationService;
+        private readonly IMessenger messenger;
         private readonly MapManagerService mapManagerService;
 
         public NewMapControlViewModel(
             INavigationManager navigationManager,
-            NotificationService notificationService,
+            IMessenger messenger,
             MapManagerService mapManagerService)
         {
             this.navigationManager = navigationManager;
-            this.notificationService = notificationService;
+            this.messenger = messenger;
             this.mapManagerService = mapManagerService;
 
             string? saveLocation = Settings.GetOrDefault<string>("SaveLocation");
@@ -100,17 +101,13 @@ namespace WoTMapWPF.CustomControls
                 if (!File.Exists($"{saveLocation}\\maps\\{ImageMD5}\\map_image{imageFileExtension}"))
                     File.Copy(ImageFilePath, $"{saveLocation}\\maps\\{ImageMD5}\\map_image{imageFileExtension}", true);
                 File.WriteAllText($"{saveLocation}\\maps\\{ImageMD5}\\{Name}.info", jsonString);
-                notificationService.DoNotify(new NotificationMessage
-                {
-                    Message = $"Saved map \"{map.Name}\".",
-                    Type = NotificationType.ShowAndHide
-                });
+                messenger.Send(new NotificationMessage(
+                    Message: $"Saved map \"{map.Name}\".",
+                    Type: NotificationType.ShowAndHide));
                 if (!mapManagerService.LoadMap(map))
-                    notificationService.DoNotify(new NotificationMessage
-                    {
-                        Message = $"Could not load map \"{map.Name}\".",
-                        Type = NotificationType.ShowError
-                    });
+                    messenger.Send(new NotificationMessage(
+                        Message: $"Could not load map \"{map.Name}\".",
+                        Type: NotificationType.ShowError));
                 navigationManager.Navigate(NavigationTarget.MapPanel);
             }
         }
